@@ -2,6 +2,9 @@
 
 import requests, pyodbc, json, hashlib, os, os.path, re, urllib, subprocess, paramiko, time
 
+# SET THE SOURCE FOLDER FOR WHERE TO LOOK FOR RESOURCESPACE ASSETS
+resourceOutFolder = "/Users/bampfa/Desktop/mediaMicroservicesTrial/outdir/resourcespace_output/"
+
 def login(destination):
 	with open("stuff.txt","r") as credentialFile:
 		credentialJSON = json.loads(credentialFile.read())
@@ -85,7 +88,6 @@ def resourceSpaceAPIcall(metadata,filePath):
 	print(resp.status_code)
 
 
-
 def ingestToResourceSpace(resource, basename):
 	print(resource)
 	idRegex = re.compile(r'(.+\_)(\d{5})(\_.*)')
@@ -130,11 +132,6 @@ def ingestToResourceSpace(resource, basename):
 
 ingestFolder = input("Drag the folder you want to ingest here: ").rstrip()
 # resourceSpaceStagingFolder = "/Users/bampfa/Sites/localFiles/"
-
-
-# SET THE SOURCE FOLDER FOR WHERE TO LOOK FOR RESOURCESPACE ASSETS
-resourceOutFolder = "/Users/bampfa/Desktop/mediaMicroservicesTrial/outdir/resourcespace_output/"
-
 
 # ASK FOR INGESTER ID; THIS IS USED BY ingestfile FOR ENTRY INTO THE MEDIAMICROSERVICES MYSQL DB
 authorized_users = ['shibata@berkeley.edu','davetaylor@berkeley.edu','gibbscman@berkeley.edu','mcq@berkeley.edu']
