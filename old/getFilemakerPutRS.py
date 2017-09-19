@@ -76,7 +76,7 @@ def resourceSpaceAPIcall(metadata,filePath):
 	cred = login(destination)[1]
 
 	completePOST = 'http://'+user+':'+cred+'@10.253.22.21:/~'+user+'/resourcespace/api/?'+query+"&sign="+signDigest
-	# print(completePOST)
+	print(completePOST)
 	
 	try:
 		resp = requests.post(completePOST)
@@ -92,8 +92,11 @@ def ingestToResourceSpace(resource, basename):
 	print(resource)
 	idRegex = re.compile(r'(.+\_)(\d{5})(\_.*)')
 	idMatch = re.match(idRegex, basename)
-	idNumber = idMatch.group(2)
-	# print(idNumber)
+	if not idMatch == None:
+		idNumber = idMatch.group(2)
+		# print(idNumber)
+	else:
+		idNumber = ""
 	
 	# GET SSH CREDENTIALS
 	destination = "red"
