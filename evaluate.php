@@ -30,12 +30,12 @@
 	print_r($fileArray)
 
 	
-	// echo '<form method="post" action="ingest.php">
-	// 		<div>
-	// 		   <!-- <input type="hidden">$file_name = $_FILES['file']['name'][$key];-->
-	// 		   <input type="submit" value="INGEST!"/><br/> 
-	// 		</div>
-	// 	</form>';
+	echo '<form method="post" action="ingest.php">
+			<div>
+			   <!-- <input type="hidden">$file_name = $_FILES['file']['name'][$key];-->
+			   <input type="submit" value="INGEST!"/><br/> 
+			</div>
+		</form>';
 
 
 
