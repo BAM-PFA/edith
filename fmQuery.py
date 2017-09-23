@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 
-import json, hashlib, os, os.path, re, urllib, subprocess
+import json, hashlib, os, os.path, re, urllib.parse, subprocess
+import pyodbc
+
+
 
 def query(idNumber,basename):
 	
 	# OPEN CONNECTION TO FILEMAKER DATABASE WITH DESCRIPTIVE METADATA
-	c = pyodbc.connect("DRIVER={FileMaker ODBC};DSN=mmTest;SERVER=localhost;UID=michael;PWD=michael")
+
+	c = pyodbc.connect("DRIVER={FileMaker ODBC};DATABASE=PFA_Collection;SERVER=bampfa-pfm13.ist.1918.berkeley.edu;UID=;PWD=")
 	c.setdecoding(pyodbc.SQL_CHAR, encoding='utf-8')
 	c.setdecoding(pyodbc.SQL_WCHAR, encoding='utf-8')
 	c.setdecoding(pyodbc.SQL_WMETADATA, encoding='utf-8')
@@ -13,12 +17,11 @@ def query(idNumber,basename):
 	cursor= c.cursor()
 	
 	# SQL TO GET REQUIRED METADATA VALUES FROM FM
-	cursor.execute("""
-		
-		SELECT summary, tilte FROM microservicesTrial WHERE original_accession_number = ?
+	# SQL TO GET REQUIRED METADATA VALUES FROM FM
+	cursor.execute("SELECT m_245a_CompleteTitle FROM CollectionItem WHERE AccessionNumberItemNumber = ?",idNumber)	
+	# for row in cursor.tables():
+	# 	print(row.table_name)	
 
-		""",idNumber)
-	
 	rows = cursor.fetchall()
 	resultData = {}	
 	resultList = [x for y in rows for x in y]
@@ -28,7 +31,7 @@ def query(idNumber,basename):
 	# IF I SET UP LOGGING THIS SHOULD BE LOGGED FOR SURE.
 	if not resultList == []:
 		resultData[84] = resultList[0]
-		resultData[8] = resultList[1]
+		# resultData[8] = resultList[1]
 		# format = resultList[0]
 		# date_ingested = resultList[1]
 

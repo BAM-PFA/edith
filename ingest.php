@@ -6,26 +6,37 @@ $targetdir = '/Users/RLAS_Admin/Sites/ingest/uploads/';
 $user = $_POST["user"];
 // ############################################
 
+
 // ############################################
 // ----PROCESS FILES SELECTED BY THE USER -----
+
+$total = count($_FILES['file']['tmp_name']);
+echo $total;
+
 foreach($_FILES['file']['tmp_name'] as $key => $tmp_name ){
     $file_name = $_FILES['file']['name'][$key];
-    $file_size = $_FILES['file']['size'][$key];
+    // $file_size = $_FILES['file']['size'][$key];
     $file_tmp = $_FILES['file']['tmp_name'][$key];
-    $file_type = $_FILES['file']['type'][$key];
-
-	$uploadedfile = $targetdir . basename($file_name);
-	// echo $file_tmp . "<br/>" . $uploadedfile . "<br/>";
-
-	if (move_uploaded_file($file_tmp, $uploadedfile)) {
-	    // file uploaded succeeded
-		echo "success";
-	} else { 
-    // file upload failed
-		echo "failure";
-
+    // $file_type = $_FILES['file']['type'][$key];
+    $basename = basename($file_name);
+    
+	if ($metadataStatus == 'accept') {
+		
+		// include 'metadataFetch.php'; 
+		// include 'evaluate.php';
+		echo $basename;
+		// $uploadedfile = $targetdir . $basename;
 	}
 }
+
+
+
+// echo '<form method="post" action=''>
+// 	<div>
+// 	   <label for="accept">Accept</label>
+// 	   <input type="submit" name="accept"/><br/>
+// 	</div>
+// 	</form>';
 // ############################################
 
 // ############################################
@@ -46,7 +57,6 @@ while (!feof($proc))
 echo '</pre>';
 // BUT THIS VERSION SHOWS EVERYTHING AFTER ALL PROCESSING IS DONE
 // $output = shell_exec($command . " 2>&1");
-// $output = shell_exec($command . " > /dev/null  2>&1 &");
 // echo $output;
 // ############################################
 
