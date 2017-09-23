@@ -2,6 +2,7 @@
 
 import sys
 import os
+<<<<<<< HEAD
 import os.path
 import subprocess
 
@@ -33,6 +34,16 @@ def listAIPs(directory):
 			
 			# print("<tr><td>"+openSelect+result.stdout.decode('utf-8')+closeSelect+"</tr></td>")
 			print("<tr><td><span style=font-weight:bold>"+item+"</tr></td>")
+=======
+
+AIPdirectory = sys.argv[1]
+
+def listAIPs(dir):
+	print("<table>")
+	for row in os.listdir(AIPdirectory):
+		if not row.startswith('.'):
+			print("<tr><td>"+row+"</tr></td>")
+>>>>>>> 0d8bef369fff3d1ce9f5033849dfa0d53549029e
 	print("</table>")
 
 listAIPs(AIPdirectory)

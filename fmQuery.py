@@ -9,7 +9,11 @@ def query(idNumber,basename):
 	
 	# OPEN CONNECTION TO FILEMAKER DATABASE WITH DESCRIPTIVE METADATA
 
+<<<<<<< HEAD
 	c = pyodbc.connect("DRIVER={FileMaker ODBC};DATABASE=PFA_Collection;SERVER=bampfa-pfm13.ist.1918.berkeley.edu;UID=;PWD=")
+=======
+	c = pyodbc.connect("DRIVER={FileMaker ODBC};DATABASE=PFA_Collection;SERVER=bampfa-pfm13.ist.1918.berkeley.edu;UID=resourcespace;PWD=mediaarchive2017")
+>>>>>>> 0d8bef369fff3d1ce9f5033849dfa0d53549029e
 	c.setdecoding(pyodbc.SQL_CHAR, encoding='utf-8')
 	c.setdecoding(pyodbc.SQL_WCHAR, encoding='utf-8')
 	c.setdecoding(pyodbc.SQL_WMETADATA, encoding='utf-8')

@@ -1,8 +1,14 @@
 <?php
 
+<<<<<<< HEAD
 $AIPdir = "/Users/RLAS_Admin/Sites/ingest/uploads";
 $lastLTOidUsed = file_get_contents("LTOid.txt");
 $command = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/listAIPs.py " . $AIPdir);
+=======
+$AIPdir = "/Users/bampfa/Sites/ingest/uploads";
+$lastLTOidUsed = file_get_contents("LTOid.txt");
+$command = escapeshellcmd("/usr/local/bin/python3 /Users/bampfa/Sites/ingest/listAIPs.py " . $AIPdir);
+>>>>>>> 0d8bef369fff3d1ce9f5033849dfa0d53549029e
 
 $output = shell_exec($command . " 2>&1");
 echo $output;
