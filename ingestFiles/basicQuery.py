@@ -3,7 +3,7 @@
 import json, sys, hashlib, os, os.path, re, urllib.parse
 import pyodbc
 
-from login.py import login
+from login import login
 
 basename = sys.argv[1]
 
@@ -19,7 +19,7 @@ else:
 # print(idNumber+"<br/><br/>")
 
 def query(idNumber):
-	destination = filemaker
+	destination = "filemaker"
 	user = login(destination)[0]
 	cred = login(destination)[1]
 	print("querying")

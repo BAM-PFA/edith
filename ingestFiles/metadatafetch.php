@@ -1,12 +1,10 @@
 <?php
 
-$command = escapeshellcmd("/usr/local/bin/python3 /Users/bampfa/Sites/ingest/basicQuery.py " . $basename);
+$command = escapeshellcmd("/usr/local/bin/python3 /Users/bampfa/Sites/ingest/ingestFiles/basicQuery.py " . $basename);
 exec($command, $output);
 $stuff = strval($output[1]);
 $data = json_decode($stuff);
-// echo $output[1];
 
-// print_r($data);
 unset($output);
 
 

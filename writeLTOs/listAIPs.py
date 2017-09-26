@@ -33,5 +33,6 @@ def listAIPs(directory):
 			
 			# print("<tr><td>"+openSelect+result.stdout.decode('utf-8')+closeSelect+"</tr></td>")
 			print("<tr><td><span style=font-weight:bold>"+item+"</tr></td>")
+	print("</table>")
 
 listAIPs(AIPdirectory)

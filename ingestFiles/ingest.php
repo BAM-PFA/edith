@@ -19,29 +19,25 @@ foreach($_FILES['file']['tmp_name'] as $key => $tmp_name ){
     $file_tmp = $_FILES['file']['tmp_name'][$key];
     // $file_type = $_FILES['file']['type'][$key];
     $basename = basename($file_name);
-    
-	if ($metadataStatus == 'accept') {
-		
-		// include 'metadataFetch.php'; 
-		// include 'evaluate.php';
-		echo $basename;
-		// $uploadedfile = $targetdir . $basename;
+    echo $basename . "HEY THERE";
+	
+    $uploadedfile = $targetdir . basename($file_name);
+    if (move_uploaded_file($file_tmp, $uploadedfile)) {
+	    // file uploaded succeeded
+		echo "success";
+
+	} else { 
+    // file upload failed
+		echo "FILE UPLOAD FOR ".$basename." FAILED";
+
 	}
 }
 
-
-
-// echo '<form method="post" action=''>
-// 	<div>
-// 	   <label for="accept">Accept</label>
-// 	   <input type="submit" name="accept"/><br/>
-// 	</div>
-// 	</form>';
 // ############################################
 
 // ############################################
 // ---- RUN PYTHON INGEST SCRIPT --------------
-$command = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/ingest.py " . $user);
+$command = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/ingestFiles/ingest.py " . $user . " 2>&1");
 
 // ---- AND DISPLAY THE RESULTS -----
 // THIS VERSION OUTPUTS THE BASH STUFF IN REAL TIME, BUT NOT THE PYTHON OUTPUT...

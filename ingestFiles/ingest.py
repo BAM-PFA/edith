@@ -10,6 +10,8 @@ from login import login
 authorized_users = ['shibata@berkeley.edu','davetaylor@berkeley.edu','gibbscman@berkeley.edu','mcq@berkeley.edu']
 mmIngestFolder = '/Users/RLAS_Admin/Sites/ingest/uploads/'
 resourceTargetDir = "/Users/RLAS_Admin/Documents/Video-Ingests/mmOutDir/resourcespace_output/"
+LTOstageDir = "/Volumes/maxxraid1/LTO_STAGE/"
+bagit = "/Library/Frameworks/Python.framework/Versions/3.6/bin/bagit.py"
 
 user = sys.argv[1]
 
@@ -56,7 +58,7 @@ def ingestToResourceSpace(user,resource, basename):
 	resourceSpaceAPIcall(user,quotedJSON,quotedPath)
 
 for item in os.listdir(mmIngestFolder):
-	print(item)
+	# print(item)
 	if not item.startswith("."):
 		filePath = os.path.abspath(mmIngestFolder+"/"+item)
 		fileNameForMediaID = os.path.splitext(item)[0]
@@ -64,6 +66,16 @@ for item in os.listdir(mmIngestFolder):
 			subprocess.call(['/usr/local/bin/ingestfile','-e','-u',user,'-I',filePath,'-m',fileNameForMediaID])
 		except IOError as err:
 			print("OS error: {0}".format(err))
+
+for AIP in os.listdir(LTOstageDir):
+	dirPath = LTOstageDir+AIP
+	if os.path.isdir(dirPath):
+		print(AIP+" is an AIP! Let's Bag It!")
+		try:
+			subprocess.call([bagit,"--contact-name",user,dirPath])
+		except:
+			print("OS error: {0}".format(err))
+
 
 for resource in os.listdir(resourceTargetDir):
 	filePath = resourceTargetDir+resource
