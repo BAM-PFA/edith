@@ -11,20 +11,23 @@ $user = $_POST["user"];
 // ----PROCESS FILES SELECTED BY THE USER -----
 
 $total = count($_FILES['file']['tmp_name']);
-echo $total;
+// echo $total;
 
 foreach($_FILES['file']['tmp_name'] as $key => $tmp_name ){
     $file_name = $_FILES['file']['name'][$key];
+    $file_name = preg_replace('/\s+/', '_', $file_name);
     // $file_size = $_FILES['file']['size'][$key];
     $file_tmp = $_FILES['file']['tmp_name'][$key];
     // $file_type = $_FILES['file']['type'][$key];
     $basename = basename($file_name);
-    echo $basename . "HEY THERE";
+    // echo $basename . "HEY THERE";
 	
     $uploadedfile = $targetdir . basename($file_name);
+    include 'metadatafetch.php';
     if (move_uploaded_file($file_tmp, $uploadedfile)) {
 	    // file uploaded succeeded
-		echo "success";
+		// echo "success";
+
 
 	} else { 
     // file upload failed
@@ -56,6 +59,6 @@ echo '</pre>';
 // echo $output;
 // ############################################
 
-echo "Goodbye!"
+echo "<br><br>Goodbye!"
 
 ?>

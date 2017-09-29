@@ -2,12 +2,15 @@
 
 $idtextfile = "/Users/RLAS_Admin/Sites/ingest/LTOid.txt";
 
-$LTOid = $_POST["LTOid"];
-$command = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/writeLTOs/writeLTO.py " . $LTOid);
-$output = shell_exec($command . " 2>&1");
-echo $output;
+$ltoA = $_POST["ltoA"];
+$ltoB = $_POST["ltoB"];
 
-file_put_contents($idtextfile, $LTOid);
+file_put_contents($idtextfile, $ltoA); 
+$command = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/writeLTOs/writeLTO.py " . $ltoA ." ". $ltoB);
+$output = shell_exec($command . " 2>&1");
+echo "<div>".$output."</div>";
+
+
 
 
 ?>

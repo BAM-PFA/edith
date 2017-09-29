@@ -3,49 +3,40 @@
 import sys
 sys.path.insert(0, '/Users/RLAS_Admin/Sites/ingest/login')
 
-import os, subprocess, paramiko
-import os.path
 from login import login
 
-LTOid = sys.argv[1]
-AIPStagingDir = "/Volumes/maxxraid1/LTO_STAGE/"
-AIPblueTarget = "/Users/BLAS2/Documents/AIP_TARGET/"
+import os, subprocess, paramiko
+
+ltoA = sys.argv[1]
+ltoB = sys.argv[2]
+
+# print("TOODLE DEE DOODLE "+ltoA+ltoB)
+
+tapeA = '/Volumes/'+ltoA
+tapeB = '/Volumes/'+ltoB
+<input type="hidden" name="foo" value="<?php echo $var;?>" />
 
 destination = "blue"
 user = login(destination)[0]
 cred = login(destination)[1]
 
-for AIP in os.listdir(AIPStagingDir):
-	aipPath = AIPStagingDir + AIP
-	if os.path.isdir(aipPath):
-		with open(aipPath+"/tagmanifest-md5.txt") as manifest:
-			for n, line in enumerate(manifest):
-				if n == 2:
-					manifestMD5 = line
-				elif n > 2:
-					break
-		print(manifestMD5)
-		# subprocess.run(['rsync','-av',aipPath,user,'@10.253.22.22:',AIPblueTarget])
-		targetFile = AIPblueTarget+AIP
-					
-		# OPEN SSH & SFTP THE FILE
-		ssh = paramiko.SSHClient()
-		ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-		try:
-		    ssh.connect('10.253.22.21', username=user,
-		        password=cred)
-		    # stdin, stdout, stderr = ssh.exec_command("writelto -t "+LTOid+" -e ")
-		    stdin, stdout, stderr = ssh.exec_command("echo ${whoami}")
-		    for line in stdout:
-		    	print(line)
+def write(tape):
+	
+	if "B" in tape:
+		drive = "1"
+	else:
+		drive = "0"
 
+	client = paramiko.SSHClient()
+	client.load_system_host_keys()
+	client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-		    
-		        
-		    ssh.close()
-		except paramiko.SSHException:
-		    print("Connection Error")
+	volumeList = []
+	client.connect('10.253.22.22',username=user, password=cred)
+	# print("HELLO ALREADY")
 
-
-
-print("Hi, now I am writing AIPs to tape id: "+LTOid+"<br/> See you later!")
+	stdin, stdout, stderr = client.exec_command("ls /Volumes")
+	for mountedVolume in stdout.read().splitlines():
+		# print(mountedVolume.decode())
+		volumeList.append(mountedVolume.decode())
+	print(volumeList)

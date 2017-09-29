@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
+import sys
+sys.path.insert(0, '/Users/RLAS_Admin/Sites/ingest/login')
+
 import requests
 import json, hashlib, os, os.path, re, urllib.parse, subprocess, time
-import sys
 
-# from fmQuery import query
 from login import login
+from fmQuery import query
 
 authorized_users = ['shibata@berkeley.edu','davetaylor@berkeley.edu','gibbscman@berkeley.edu','mcq@berkeley.edu']
 mmIngestFolder = '/Users/RLAS_Admin/Sites/ingest/uploads/'
@@ -15,18 +17,17 @@ bagit = "/Library/Frameworks/Python.framework/Versions/3.6/bin/bagit.py"
 
 user = sys.argv[1]
 
-def resourceSpaceAPIcall(user,metadata,filePath):
+def resourceSpaceAPIcall(user,metadata,filePath,RSfile):
+	# print(user)
 	destination = user
 	user = login(destination)[0]
 	cred = login(destination)[1]
+	# print("^"*100+"\n\n\n\n"+user+"\n\n\n\n"+"^"*100)
 
-	print("^"*100+"\n\n\n\n"+user+"\n\n\n\n"+"^"*100)
-
-	query = "user="+user+"&function=create_resource_from_local&param1=3&param2=0&param3="+filePath+"&param4=&param5=&param6=&param7="
-	# query = "user="+user+"&function=create_resource&param1=3&param2=0&param3="+filePath+"&param4=&param5=&param6=&param7="+metadata
+	query = "user="+user+"&function=create_resource_from_local&param1=3&param2=0&param3="+filePath+"&param4=&param5=&param6=&param7="+metadata
+	# print(query)
 	sign = hashlib.sha256(cred.encode()+query.encode())
 	signDigest = sign.hexdigest()
-
 	completePOST = 'http://localhost/~RLAS_Admin/resourcespace/api/?'+query+"&sign="+signDigest
 	# print(completePOST)
 	
@@ -38,6 +39,9 @@ def resourceSpaceAPIcall(user,metadata,filePath):
 		raise err
 
 	print(resp.status_code)
+	httpStatus = resp.status_code
+	if httpStatus == 200:
+			os.remove(RSfile)
 
 def ingestToResourceSpace(user,resource, basename):
 	idRegex = re.compile(r'(.+\_)(\d{5})(\_.*)')
@@ -50,12 +54,10 @@ def ingestToResourceSpace(user,resource, basename):
 	targetFile = resourceTargetDir+basename
 	# print(targetFile)
 	quotedPath = urllib.parse.quote(targetFile, safe='')
+	metadata = query(idNumber,basename)
+	# print(metadata)
 
-	# USING THIS DURING TESTING UNTIL FILEMAKER IS CONNECTED
-	testIDjson = json.dumps(idNumber)
-	quotedJSON = urllib.parse.quote(testIDjson.encode())
-
-	resourceSpaceAPIcall(user,quotedJSON,quotedPath)
+	resourceSpaceAPIcall(user,metadata,quotedPath,targetFile)
 
 for item in os.listdir(mmIngestFolder):
 	# print(item)
@@ -66,6 +68,7 @@ for item in os.listdir(mmIngestFolder):
 			subprocess.call(['/usr/local/bin/ingestfile','-e','-u',user,'-I',filePath,'-m',fileNameForMediaID])
 		except IOError as err:
 			print("OS error: {0}".format(err))
+		os.remove(filePath)
 
 for AIP in os.listdir(LTOstageDir):
 	dirPath = LTOstageDir+AIP
@@ -75,12 +78,11 @@ for AIP in os.listdir(LTOstageDir):
 			subprocess.call([bagit,"--contact-name",user,dirPath])
 		except:
 			print("OS error: {0}".format(err))
-
-
+		
 for resource in os.listdir(resourceTargetDir):
 	filePath = resourceTargetDir+resource
 	user = user
 	if os.path.isfile(filePath):
 		if not resource.startswith("."):
-			print("@"*100+"\n\n\nINGESTING TO RESOURCESPACE\n\n\n"+"@"*100)
+			# print("@"*100+"\n\n\nINGESTING "+resource+" TO RESOURCESPACE\n\n\n"+"@"*100)
 			ingestToResourceSpace(user,filePath,resource)
