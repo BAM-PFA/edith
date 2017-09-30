@@ -6,11 +6,18 @@ $ltoA = $_POST["ltoA"];
 $ltoB = $_POST["ltoB"];
 
 file_put_contents($idtextfile, $ltoA); 
-$command = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/writeLTOs/writeLTO.py " . $ltoA ." ". $ltoB);
-$output = shell_exec($command . " 2>&1");
-echo "<div>".$output."</div>";
+$write = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/writeLTOs/writeLTO.py " . $ltoA ." ". $ltoB . " 2>&1");
 
+while (@ ob_end_flush()); // end all output buffers if any
 
+$proc = popen($write, 'r');
+echo '<pre>';
+while (!feof($proc))
+{
+	echo fread($proc, 4096);
+	@ flush();
+}
+echo '</pre>';
 
 
 ?>
