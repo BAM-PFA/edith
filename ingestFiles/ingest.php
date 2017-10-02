@@ -13,6 +13,17 @@ $user = $_POST["user"];
 $total = count($_FILES['file']['tmp_name']);
 // echo $total;
 
+echo '<script src="jquery-1.7.1.js" type="text/javascript"></script>
+<script src="jquery.confirm.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function(){
+        function confirmclose() {
+                return "Are you sure? you want to close";
+        }
+        window.onbeforeunload = confirmclose;
+    });
+</script>';
+
 foreach($_FILES['file']['tmp_name'] as $key => $tmp_name ){
     $file_name = $_FILES['file']['name'][$key];
     $file_name = preg_replace('/\s+/', '_', $file_name);

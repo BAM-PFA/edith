@@ -56,7 +56,7 @@ echo "<form method='post' action='writeLTO.php'>
 	<div>
 	   <input type='hidden' name='ltoA' value=".$ltoA." />
 	   <input type='hidden' name='ltoB' value=".$ltoB." />
-	   <label for='ingest'>Once both drives are mounted you can press INGEST: </label>
+	   <label for='ingest'><br><br>Once both drives are mounted you can press INGEST: </label>
 	   <input type='submit' name='ingest' value='INGEST' />
 	</div>
 	</form>";

@@ -34,8 +34,8 @@ def writeSub(tape):
 		stdin, stdout, stderr = client.exec_command("export PATH=$PATH:/usr/local/bin")
 		stdin, stdout, stderr = client.exec_command("echo $PATH")
 		stdin, stdout, stderr = client.exec_command("/usr/local/bin/writelto -t "+tape+" -e N "+sourceDir)
-		for line in stderr.read().splitlines():
-			print(line.decode())
+		for line,error in stdout.read().splitlines(),stderr.read().splitlines():
+			print(line.decode(),error.decode())
 
 		return "yes"
 		
