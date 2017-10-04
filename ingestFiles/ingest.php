@@ -1,5 +1,5 @@
 <?php
-
+echo "<html><body>"
 // ############################################
 // -------- USER INPUT ------------------------
 $targetdir = '/Users/RLAS_Admin/Sites/ingest/uploads/';
@@ -13,16 +13,19 @@ $user = $_POST["user"];
 $total = count($_FILES['file']['tmp_name']);
 // echo $total;
 
-echo '<script src="jquery-1.7.1.js" type="text/javascript"></script>
-<script src="jquery.confirm.js" type="text/javascript"></script>
-<script type="text/javascript">
-    $(function(){
-        function confirmclose() {
-                return "Are you sure? you want to close";
-        }
-        window.onbeforeunload = confirmclose;
-    });
-</script>';
+echo "<script>
+window.onbeforeunload = function (e) {
+    e = e || window.event;
+
+    // For IE and Firefox prior to version 4
+    if (e) {
+        e.returnValue = 'Sure?';
+    }
+
+    // For Safari
+    return 'Sure?';
+};
+</script>";
 
 foreach($_FILES['file']['tmp_name'] as $key => $tmp_name ){
     $file_name = $_FILES['file']['name'][$key];
@@ -70,6 +73,6 @@ echo '</pre>';
 // echo $output;
 // ############################################
 
-echo "<br><br>Goodbye!"
+echo "<br><br>Goodbye!</body></html>"
 
 ?>

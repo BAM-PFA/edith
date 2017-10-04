@@ -36,21 +36,37 @@ echo "<form method='post' action=''>
 if(isset($_POST['tapeIDsubmit'])){
 $ltoA = $_POST['LTOid'];
 $ltoB = str_replace("A","B",$ltoA);
-echo "<div>The Tape ID for the A drive is: <span style='font-weight:bold'>".$ltoA."</span>.<br/>Currently checking if the tape is mounted.</div>";
-	$checkMountA = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/writeLTOs/checkMount.py ".$ltoA);
-	$outputA = shell_exec($checkMountA . " 2>&1");
-	echo $outputA;
-	// if(!$outputA=="OK"){
-	// 	echo $outputA;
-	// }
 
-echo "<br/><br/><div>The Tape ID for the B drive is: <span style='font-weight:bold'>".$ltoB."</span>.<br/>Currently checking if the tape is mounted.</div><br/>";
-	$checkMountB = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/writeLTOs/checkMount.py ".$ltoB);
-	$outputB = shell_exec($checkMountB . " 2>&1");
-	echo $outputB;
-	// if(!$outputB=="OK"){
-	// 	echo $outputB;
-	// }
+$ltos = array("A" => $ltoA, "B" => $ltoB);
+
+foreach ($ltos as $key => $value) {
+	
+	echo "<div>The Tape ID for the ".$key." drive is: <span style='font-weight:bold'>".$value."</span>.<br/><br/>Currently checking if the tape is mounted.</div>";
+	$checkMount = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/writeLTOs/checkMount.py ".$value);
+	while (@ ob_end_flush()); // end all output buffers if any
+
+	$proc = popen($checkMount, 'r');
+	// echo '<pre>';
+	while (!feof($proc))
+	{
+	    echo fread($proc, 4096);
+	    @ flush();
+	}
+	// echo '</pre>';
+
+
+}
+
+// echo "<div>The Tape ID for the A drive is: <span style='font-weight:bold'>".$ltoA."</span>.<br/>Currently checking if the tape is mounted.</div>";
+// 	$checkMountA = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/writeLTOs/checkMount.py ".$ltoA);
+// 	$outputA = shell_exec($checkMountA . " 2>&1");
+// 	echo $outputA;
+
+// echo "<br/><br/><div>The Tape ID for the B drive is: <span style='font-weight:bold'>".$ltoB."</span>.<br/>Currently checking if the tape is mounted.</div><br/>";
+// 	$checkMountB = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/writeLTOs/checkMount.py ".$ltoB);
+// 	$outputB = shell_exec($checkMountB . " 2>&1");
+// 	echo $outputB;
+
 
 echo "<form method='post' action='writeLTO.php'>
 	<div>
@@ -63,23 +79,5 @@ echo "<form method='post' action='writeLTO.php'>
 
 }
 
-
-
-// $checkMountA = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/writeLTOs/checkMountA.py".$ltoA);
-// $outputA = shell_exec($checkMountA . " 2>&1");
-// echo $output;
-// if(!$outputA=="OK"){
-// 	echo $output;
-// }
-
-// $checkMountB = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/writeLTOs/checkMountB.py".$ltoB);
-// $outputB = shell_exec($checkMountB . " 2>&1");
-// if(!$outputA=="OK"){
-// 	echo $output;
-// }
-// echo "<form method='post' action='writeLTO.py'
-// 	<div>
-// 		<input type='submit' name='INGEST'/>
-// 	</div>";
 
 ?>

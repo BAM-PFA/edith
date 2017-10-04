@@ -1,22 +1,38 @@
+<!DOCTYPE html>
 <html>
 
 <head>TESTING INGESTION<br/><br/></head>
+<body>
 
-<form action="ingest.php" method="post" enctype="multipart/form-data">
-<div>
-   <label for="file[]">Choose file to upload</label>
-   <input type="file" id="file" name="file[]" multiple />
-   <br/> 
-</div>
+<script>
+window.onbeforeunload = function (e) {
+    e = e || window.event;
 
-<div>
-   <label for="user">Enter your name</label>
-   <input type="text" id="user" name="user"/><br/>
-</div>
- <div>
-   <input type="submit" name="submit" id="submit"/>
- </div>
-</form>
+    // For IE and Firefox prior to version 4
+    if (e) {
+        e.returnValue = 'Sure?';
+    }
+
+    // For Safari
+    return "don't close the window yet";
+};
+</script>
+	<form action="ingest.php" method="post" enctype="multipart/form-data">
+	<div>
+	   <label for="file[]">Choose file to upload</label>
+	   <input type="file" id="file" name="file[]" multiple />
+	   <br/> 
+	</div>
+
+	<div>
+	   <label for="user">Enter your name</label>
+	   <input type="text" id="user" name="user"/><br/>
+	</div>
+	 <div>
+	   <input type="submit" name="submit" id="submit"/>
+	 </div>
+	</form>
+</body>
 
 </body>
 </html> 

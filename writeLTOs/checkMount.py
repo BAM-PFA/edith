@@ -52,10 +52,10 @@ def mount(tape):
 			print(reinsert)
 			return reinsert
 		else:
-			print("It looks like <span style='font-weight:bold'>"+LTOid+"</span> is mounted! You can write to it.")
+			print("It looks like <span style='font-weight:bold'>"+LTOid+"</span> is mounted! You can write to it.<br/><br/>")
 			return 1	
 	else:
-		print("It looks like <span style='font-weight:bold'>"+LTOid+"</span> is mounted! You can write to it.")
+		print("It looks like <span style='font-weight:bold'>"+LTOid+"</span> is mounted! You can write to it.<br/><br/>")
 		return 1
 	client.close()
 
