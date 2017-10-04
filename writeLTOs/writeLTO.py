@@ -7,7 +7,7 @@ import os, subprocess#, paramiko
 import os.path
 import urllib.parse
 from postLTOid import postLTOid
-
+from cleanup import cleanup
 
 ltoA = sys.argv[1]
 ltoB = sys.argv[2]
@@ -48,3 +48,6 @@ for tape in ltoA,ltoB:
 		subprocess.run(["/usr/local/bin/python3","/Users/RLAS_Admin/Sites/ingest/writeLTOs/writeSub.py",tape])
 	except:
 		print("#"*100+"\nsomething failed in the subprocess")
+
+for directory in AIPStagingDir,AIPblueTarget:
+	cleanup(directory)

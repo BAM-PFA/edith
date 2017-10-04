@@ -73,12 +73,15 @@ for item in os.listdir(mmIngestFolder):
 for AIP in os.listdir(LTOstageDir):
 	dirPath = LTOstageDir+AIP
 	if os.path.isdir(dirPath):
-		print(AIP+" is an AIP! Let's Bag It!")
-		try:
-			subprocess.call([bagit,"--contact-name",user,dirPath])
-		except:
-			print("OS error: {0}".format(err))
-		
+		if "bagit.txt" not in os.listdir(dirPath)
+			print(AIP+" is an AIP! Let's Bag It!")
+			try:
+				subprocess.call([bagit,"--contact-name",user,dirPath])
+			except:
+				print("OS error: {0}".format(err))
+		else:
+			print(AIP+" was arlready bagged!")
+
 for resource in os.listdir(resourceTargetDir):
 	filePath = resourceTargetDir+resource
 	user = user
