@@ -2,20 +2,6 @@
 	
 	$itemPath = $argv[1];
 
-	// foreach(glob(dirname(__FILE__) .$itemPath . '/*') as $filename){
-	// 	echo $filename;
-	// 	$filename = basename($filename);
-	// 	echo "<option value='" . $filename . "'>".$filename."</option>";
-	// }
-
-	// echo "hello there" . $itemPath
-
-	// foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($itemPath)) as $filename)
-	// {
-	//         echo "<option value='" . $filename . "'>".$filename."</option>";
-	// 		// echo "hello there" . $itemPath;
-	// }
-
 if ( ! function_exists('glob_recursive'))
 {
 	function glob_recursive($itemPath, $flags = 0)
