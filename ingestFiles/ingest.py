@@ -16,9 +16,10 @@ LTOstageDir = "/Volumes/maxxraid1/LTO_STAGE/"
 bagit = "/Library/Frameworks/Python.framework/Versions/3.6/bin/bagit.py"
 
 user = sys.argv[1]
+print(user)
 
 def resourceSpaceAPIcall(user,metadata,filePath,RSfile):
-	# print(user)
+	print(user)
 	destination = user
 	user = login(destination)[0]
 	cred = login(destination)[1]
@@ -73,7 +74,7 @@ for item in os.listdir(mmIngestFolder):
 for AIP in os.listdir(LTOstageDir):
 	dirPath = LTOstageDir+AIP
 	if os.path.isdir(dirPath):
-		if "bagit.txt" not in os.listdir(dirPath)
+		if "bagit.txt" not in os.listdir(dirPath):
 			print(AIP+" is an AIP! Let's Bag It!")
 			try:
 				subprocess.call([bagit,"--contact-name",user,dirPath])

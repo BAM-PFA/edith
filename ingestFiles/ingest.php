@@ -1,5 +1,5 @@
 <?php
-echo "<html><body>"
+echo "<html><body>";
 // ############################################
 // -------- USER INPUT ------------------------
 $targetdir = '/Users/RLAS_Admin/Sites/ingest/uploads/';
@@ -73,6 +73,6 @@ echo '</pre>';
 // echo $output;
 // ############################################
 
-echo "<br><br>Goodbye!</body></html>"
+echo "<br><br>Goodbye!</body></html>";
 
 ?>
