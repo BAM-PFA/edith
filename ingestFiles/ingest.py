@@ -49,6 +49,7 @@ def ingestToResourceSpace(user,resource, basename):
 	idMatch = re.match(idRegex, basename)
 	if not idMatch == None: 
 		idNumber = idMatch.group(2)
+		idNumber = idNumber.lstrip("0")
 	else:
 		idNumber = "0"
 	

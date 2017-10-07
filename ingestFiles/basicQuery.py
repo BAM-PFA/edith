@@ -16,6 +16,7 @@ idRegex = re.compile(r'(.+\_)(\d{5})(\_.*)')
 idMatch = re.match(idRegex, basename)
 if not idMatch == None: 
 	idNumber = idMatch.group(2)
+	idNumber = idNumber.lstrip("0")
 else:
 	idNumber = "00000"
 
@@ -60,7 +61,7 @@ def query(idNumber):
 			"accItem" : resultList[4],
 			"projGroup" : resultList[5],
 			"country" : resultList[6],
-			"year" : resultList[7],
+			"year" : int(resultList[7]),
 			"directors" : resultList[8],
 			"credits" : resultList[9],
 			"notes" : resultList[10],

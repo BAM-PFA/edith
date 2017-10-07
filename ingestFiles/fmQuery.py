@@ -56,22 +56,21 @@ def query(idNumber,basename):
 			"accItem" : resultList[4],
 			"projGroup" : resultList[5],
 			"country" : resultList[6],
-			"year" : resultList[7],
+			"year" : resultList[7].rstrip(".0"),
 			"directors" : resultList[8],
 			"credits" : resultList[9],
 			"notes" : resultList[10],
 			"condition" : resultList[11]
 			}
-		# valueList = [title,altTitle,accPref,accDepos,accItem,projGroup,country,year,directors,credits,notes,condition]
-		# print(valueDict)
 		for key,value in list(valueDict.items()):
-			print(type(value))
 			if type(value) == str:
 				value.replace("\r"," ")
 				value.replace("\n"," ")
-
-			if value == None:
-				valueDict[key] = "--"
+			# elif type(value) == float:
+				# value = str(int(value))
+			else:
+				if value == None:
+					valueDict[key] = "--"
 
 		resultData[8] = valueDict["title"]
 		resultData[86] = valueDict["altTitle"]
