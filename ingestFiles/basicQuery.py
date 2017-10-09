@@ -26,7 +26,6 @@ def query(idNumber):
 	destination = "filemaker"
 	user = login(destination)[0]
 	cred = login(destination)[1]
-	# print("querying")
 	# OPEN CONNECTION TO FILEMAKER DATABASE WITH DESCRIPTIVE METADATA
 
 	c = pyodbc.connect("DRIVER={FileMaker ODBC};DSN=pfacollection;SERVER=bampfa-pfm13.ist.1918.berkeley.edu;UID="+user+";PWD="+cred)
@@ -45,11 +44,8 @@ def query(idNumber):
 		GeneralNotes, m_945z_GeneralConditionNotes
 		FROM CollectionItem WHERE AccessionNumberItemNumber = ?""",idNumber)	
 	rows = cursor.fetchall()
-	# for row in rows:
-	# 	print(row, chardet.detect(row[0].encode()))
 	resultData = {}	
 	resultList = [x for y in rows for x in y]
-	# print(resultList)
 	
 	# A NULL RESULT WILL YIELD AN EMPTY LIST, SO CHECK THAT SOMETHING WAS FOUND, OR SKIP THE FILE. 
 	# IF I SET UP LOGGING THIS SHOULD BE LOGGED FOR SURE.
@@ -73,25 +69,9 @@ def query(idNumber):
 			if value == None:
 				valueDict[key] = "--"
 
-		# resultData[8] = valueDict["title"]
-		# resultData[86] = valueDict["altTitle"]
-		# resultData[87] = valueDict["accPref"]
-		# resultData[88] = valueDict["accDepos"]
-		# resultData[89] = valueDict["accItem"]
-		# resultData[90] = valueDict["projGroup"]
-		# resultData[91] = valueDict["country"]
-		# resultData[92] = valueDict["year"]
-		# resultData[93] = valueDict["directors"]
-		# resultData[94] = valueDict["credits"]
-		# resultData[95] = valueDict["notes"]
-		# resultData[96] = valueDict["condition"]
-
-		# print(valueDict)
-		# return valueDict
 		resultJSON = json.dumps(valueDict)
-		# print(resultJSON)
 		return resultJSON
-		# return "FUCK YOU"
+
 
 	# IF THERE IS NOTHING IN THE DATABASE TRY PASSING THE FILE WITH NULL VALUES OTHER THAN THE FILENAME AS 'TITLE'
 	# 

@@ -23,14 +23,11 @@ def resourceSpaceAPIcall(user,metadata,filePath,RSfile):
 	destination = user
 	user = login(destination)[0]
 	cred = login(destination)[1]
-	# print("^"*100+"\n\n\n\n"+user+"\n\n\n\n"+"^"*100)
 
 	query = "user="+user+"&function=create_resource_from_local&param1=3&param2=0&param3="+filePath+"&param4=&param5=&param6=&param7="+metadata
-	# print(query)
 	sign = hashlib.sha256(cred.encode()+query.encode())
 	signDigest = sign.hexdigest()
 	completePOST = 'http://localhost/~RLAS_Admin/resourcespace/api/?'+query+"&sign="+signDigest
-	# print(completePOST)
 	
 	try:
 		resp = requests.post(completePOST)
@@ -44,7 +41,7 @@ def resourceSpaceAPIcall(user,metadata,filePath,RSfile):
 	if httpStatus == 200:
 			os.remove(RSfile)
 
-def ingestToResourceSpace(user,resource, basename):
+def ingestToResourceSpace(user,filePath, basename):
 	idRegex = re.compile(r'(.+\_)(\d{5})(\_.*)')
 	idMatch = re.match(idRegex, basename)
 	if not idMatch == None: 
@@ -54,15 +51,12 @@ def ingestToResourceSpace(user,resource, basename):
 		idNumber = "0"
 	
 	targetFile = resourceTargetDir+basename
-	# print(targetFile)
 	quotedPath = urllib.parse.quote(targetFile, safe='')
-	metadata = query(idNumber,basename)
-	# print(metadata)
+	metadata = query(idNumber,filePath,basename)
 
 	resourceSpaceAPIcall(user,metadata,quotedPath,targetFile)
 
 for item in os.listdir(mmIngestFolder):
-	# print(item)
 	if not item.startswith("."):
 		filePath = os.path.abspath(mmIngestFolder+"/"+item)
 		fileNameForMediaID = os.path.splitext(item)[0]
@@ -84,10 +78,9 @@ for AIP in os.listdir(LTOstageDir):
 		else:
 			print(AIP+" was arlready bagged!")
 
-for resource in os.listdir(resourceTargetDir):
-	filePath = resourceTargetDir+resource
+for basename in os.listdir(resourceTargetDir):
+	filePath = resourceTargetDir+basename
 	user = user
 	if os.path.isfile(filePath):
-		if not resource.startswith("."):
-			# print("@"*100+"\n\n\nINGESTING "+resource+" TO RESOURCESPACE\n\n\n"+"@"*100)
-			ingestToResourceSpace(user,filePath,resource)
+		if not basename.startswith("."):
+			ingestToResourceSpace(user,filePath,basename)
