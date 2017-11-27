@@ -5,9 +5,9 @@ I have been working on integrating this into ResourceSpace as a DAMS solution fo
 
 ## Usage
 
-* Select files to ingest. Analyzing the filename, the FMP database is queried and metadata returned, or not, as the case may be. 
-* AIP is prepared and stored on a local drive, awaiting LTO-ness. 
+* Select files to ingest. Analyzing the filename, the FMP database is queried and metadata returned, or not, as the case may be.
 * Access file is created and sent to RS along with metadata JSON. 
+* AIP (including master, derivatives, checksums, and metadata) is prepared and stored on a local drive, awaiting LTO-ness. 
 * Currently LTO write is done manually. Sounds like we want this as a `cron` job
 ### setup
 
