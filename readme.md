@@ -1,12 +1,14 @@
-# Ingest AIP 2 LTO & Send Proxy 2 ResourceSpace
-This is a Python script that takes a folder of video files (in our case, digitized analog video and films scanned on a LaserGraphics Scan Station), creates an Archival Information Package using [mediamicroservices](https://github.com/BAM-PFA/mm) forked from CUNY Television, and sends a derivative H.264 proxy to ResourceSpace along with a smattering of metadata from the BAMPFA film collection management database. Next up will be writing part of this to write the AIP to Linear Tape Open (LTO7) drives for storage.
+# ingestfiles
+This is the start of a web interface to create Archival Information Packages for audiovisual files using [mediamicroservices](https://github.com/BAM-PFA/mm) and send a derivative access file to ResourceSpace along with a smattering of metadata from the BAMPFA FilemakerPro film collection management database. The AIPs are then written to LTO, which is indexed using the MySQL database built into the `mm` suite. 
+
+I have been working on integrating this into ResourceSpace as a DAMS solution for BAMPFA's a/v assets, we'll see how it goes.
 
 ## Usage
 
-The Python script is run from the command line currently, and the user is expected to drag a directory of video files to the terminal and enter some identifying credentials. If the files are named correctly there shouldn't need to be any other user input.
-
-This is tested on Mac systems with Python 3 and FileMaker 12.
-
+* Select files to ingest. Analyzing the filename, the FMP database is queried and metadata returned, or not, as the case may be. 
+* AIP is prepared and stored on a local drive, awaiting LTO-ness. 
+* Access file is created and sent to RS along with metadata JSON. 
+* Currently LTO write is done manually. Sounds like we want this as a `cron` job
 ### setup
 
 mediamicroservices requires some configuration of input and output paths, database configuration (only need to do this once at setup). Installing via Homebrew gets all the dependencies installed too.
@@ -43,18 +45,18 @@ mediamicroservices uses `ffmpeg` to transcode the derivative files, and I modifi
 
 > `MIDDLEOPTIONS+=(-b:v 8000k -maxrate 10000k -bufsize 9000k)`
 
-These options should probably be further constrained depending on whether the input is Standard Def or HD. This makes a *really* big file for a choppy video transfer.
+These options should probably be further constrained depending on whether the input is Standard Def or HD. This makes a *really* big file for a potentially poor, standard-def video transfer.
 
-## LTO (in progress)
+## LTO
 
-This will use [`ltopers`](https://github.com/amiaopensource/ltopers) to write the AIP created by `ingestfile` to LTO tape. We use a Quantum 2-drive unit that we will use to create a redundant backup, with tapes stored in separate locations.
+This uses [`ltopers`](https://github.com/amiaopensource/ltopers) to write the AIP created by `ingestfile` to LTO tape. We use an HP 2-drive unit that we use to create a redundant backup, with tapes stored in separate locations.
 
-This script requires a tapeID to be entered, which I may set globally at the start of running the python script... ideally the tapeID will be part of the metadata JSON that gets sent to ResourceSpace so that you can search by tape or by resource metadata.
+The interface asks for a tapeID to be entered, but it also shows you the last one used so you can just confirm that there isn't a new one in.
 
 
+## Some unknowns/Major to-dos
 
-## Some unknowns
-* At what point will the AIPs be written to tape? As a batch at the end of the ingest process? Per file? nightly via `cron` job?
-* Searching LTO tapes. `ltopers` includes a mechanism to search the LTO tape indexes which are also written to the same MySQL database used by mediamicroservices (I think that's how it works?). I want to have the tape ID available in RS as well so that you can use that existing interface for a simple search or to see what tape(s) holds the master file.
-* Searching the database created by mediamicroservices. Maybe make a separate front end? I have looked at [Xataface](http://xataface.com/) as an option.
-* I haven't been able (allowed) to access or test our LTO drive. :(
+* Searching the database created by mediamicroservices. Maybe make a separate front end? I have looked at [Xataface](http://xataface.com/) as an option. **UPDATE** Xataface is ok, but ugly.
+* Alert for an LTO tape that is getting full
+* Recognizing formats/files that won't be in FileMaker and acting accordingly
+* Metadata Schemas for non-film-collection resources.
