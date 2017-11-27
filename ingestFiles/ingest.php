@@ -54,6 +54,8 @@ foreach($_FILES['file']['tmp_name'] as $key => $tmp_name ){
 
 // ############################################
 // ---- RUN PYTHON INGEST SCRIPT --------------
+
+
 $command = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/ingestFiles/ingest.py " . $user . " 2>&1");
 
 // ---- AND DISPLAY THE RESULTS -----
@@ -69,6 +71,7 @@ while (!feof($proc))
 }
 echo '</pre>';
 // BUT THIS VERSION SHOWS EVERYTHING AFTER ALL PROCESSING IS DONE
+// NOTE TO SELF: USEFUL FOR DEBUGGING PYTHON ...
 // $output = shell_exec($command . " 2>&1");
 // echo $output;
 // ############################################

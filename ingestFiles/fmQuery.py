@@ -108,6 +108,6 @@ def query(idNumber,filePath,basename):
 
 		resultData[8] = basename
 		resultJSON = json.dumps(resultData)
- 		quotedJSON = urllib.parse.quote(resultJSON.encode())
+		quotedJSON = urllib.parse.quote(resultJSON.encode())
 
 		return quotedJSON

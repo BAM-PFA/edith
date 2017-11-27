@@ -16,10 +16,9 @@ LTOstageDir = "/Volumes/maxxraid1/LTO_STAGE/"
 bagit = "/Library/Frameworks/Python.framework/Versions/3.6/bin/bagit.py"
 
 user = sys.argv[1]
-print(user)
 
 def resourceSpaceAPIcall(user,metadata,filePath,RSfile):
-	print(user)
+	# print(user)
 	destination = user
 	user = login(destination)[0]
 	cred = login(destination)[1]
@@ -61,10 +60,11 @@ for item in os.listdir(mmIngestFolder):
 		filePath = os.path.abspath(mmIngestFolder+"/"+item)
 		fileNameForMediaID = os.path.splitext(item)[0]
 		try:
-			subprocess.call(['/usr/local/bin/ingestfile','-e','-u',user,'-I',filePath,'-m',fileNameForMediaID])
+			ingest = subprocess.Popen(['/usr/local/bin/ingestfile','-e','-u',user,'-I',filePath,'-m',fileNameForMediaID])
+			ingest.wait()
+			os.remove(filePath)
 		except IOError as err:
 			print("OS error: {0}".format(err))
-		os.remove(filePath)
 
 for AIP in os.listdir(LTOstageDir):
 	dirPath = LTOstageDir+AIP
