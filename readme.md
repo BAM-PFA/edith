@@ -7,9 +7,10 @@ Along the way, we query the BAMPFA film collection's FileMaker database (our col
 
 The AIPs are then written to [Linear Tape Open (LTO)](https://en.wikipedia.org/wiki/Linear_Tape-Open), which is also indexed in the mediamicroservices MySQL database. This portion uses [`ltopers`](https://github.com/amiaopensource/ltopers), a package maintained by members of the Association of Moving Image Archivists (AMIA).
 
-## Usage
+## Usage overview
 
-* Select files to ingest. Analyzing the filename, the FMP database is queried and metadata returned, or not, as the case may be.
+* Select files to ingest. Enter a user ID to record as 'OPERATOR.' 
+* Analyzing the filename, the FMP database is queried and metadata returned, or not, as the case may be.
 * Access file is created and sent to RS along with metadata JSON. 
 * AIP (including master, derivatives, checksums, and metadata) is prepared and stored on a local drive, awaiting LTO-ness. 
 * Currently LTO write is done manually. Sounds like we want this run as a (weekly?)  `cron` job
@@ -54,6 +55,10 @@ These options should probably be further constrained depending on whether the in
 This uses [`ltopers`](https://github.com/amiaopensource/ltopers) to write the AIP created by `ingestfile` to LTO tape. We use an HP 2-drive unit that we use to create a redundant backup, with tapes stored in separate locations.
 
 The interface asks for a tapeID to be entered, but it also shows you the last one used so you can just confirm that there isn't a new one in.
+
+When an AIP is written to LTO, there is an API call to ResourceSpace to grap the resource ID and push the LTO tape ID to that resource for searching in RS.
+
+The contents of the LTO tapes are also updated and indexed in the mediamicroservices database.
 
 
 ## Some major unknowns/ to-dos
