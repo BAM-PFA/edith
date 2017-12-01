@@ -3,7 +3,9 @@ import sys
 sys.path.insert(0, '/Users/RLAS_Admin/Sites/ingest/login')
 
 from login import login
-import os, subprocess, paramiko
+import os
+import subprocess
+import paramiko
 
 sourceDir = "/Users/BLAS2/Documents/AIP_Target/"
 AIPStagingDir = "/Volumes/maxxraid1/LTO_STAGE"

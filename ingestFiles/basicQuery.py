@@ -3,15 +3,21 @@
 import sys
 sys.path.insert(0, '/Users/RLAS_Admin/Sites/ingest/login')
 
-import json, hashlib, os, os.path, re, urllib.parse, chardet
+import json
+import hashlib
+import os
+import os.path
+import re
+import urllib.parse
+import chardet
 import pyodbc
 
 from login import login
 
+# THIS PERFORMS A BASIC QUERY TO DISPLAY FILEMAKER DATA FOR
+# A FILE THAT HAS BEEN INGESTED WHEN CALLED FROM metadatafetch.php
+
 basename = sys.argv[1]
-
-# print(basename)
-
 idRegex = re.compile(r'(.+\_)(\d{5})(\_.*)')
 idMatch = re.match(idRegex, basename)
 if not idMatch == None: 
@@ -22,7 +28,7 @@ else:
 
 print(idNumber+"<br/><br/>")
 
-def query(idNumber):
+def basicQuery(idNumber):
 	destination = "filemaker"
 	user = login(destination)[0]
 	cred = login(destination)[1]

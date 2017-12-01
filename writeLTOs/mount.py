@@ -4,7 +4,8 @@ sys.path.insert(0, '/Users/RLAS_Admin/Sites/ingest/login')
 
 from login import login
 
-import subprocess, paramiko
+import subprocess
+import paramiko
 
 tape = sys.argv[1]
 # print(tape)

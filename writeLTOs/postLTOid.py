@@ -3,7 +3,12 @@ import sys
 sys.path.insert(0, '/Users/RLAS_Admin/Sites/ingest/login')
 
 from login import login
-import os, subprocess, hashlib, json, paramiko, requests
+import os
+import subprocess
+import hashlib
+import json
+import paramiko
+import requests
 import urllib.parse
 
 # LTOid = sys.argv[1]

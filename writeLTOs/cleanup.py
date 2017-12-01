@@ -3,13 +3,14 @@ import sys
 sys.path.insert(0, '/Users/RLAS_Admin/Sites/ingest/login')
 
 from login import login
-import os, paramiko, shutil
+import os
+import paramiko
+import shutil
 
 # directory = sys.argv[1]
 
 def cleanup(directory):
 	if "BLAS2" in directory:
-		print("&D&D&D&D&&D&D&D&&&D&D&D&&D&D&D&D&D&&")
 		destination = "blue"
 		user = login(destination)[0]
 		cred = login(destination)[1]

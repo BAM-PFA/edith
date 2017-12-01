@@ -4,12 +4,19 @@ import sys
 sys.path.insert(0, '/Users/RLAS_Admin/Sites/ingest/login')
 
 import requests
-import json, hashlib, os, os.path, re, urllib.parse, subprocess, time
+import json
+import hashlib
+import os
+import os.path
+import re
+import urllib.parse
+import subprocess
+import time
 
 from login import login
 from fmQuery import query
 
-authorized_users = ['shibata@berkeley.edu','davetaylor@berkeley.edu','gibbscman@berkeley.edu','mcq@berkeley.edu']
+resourcespace_users = ['shibata@berkeley.edu','davetaylor@berkeley.edu','gibbscman@berkeley.edu','mcq@berkeley.edu']
 mmIngestFolder = '/Users/RLAS_Admin/Sites/ingest/uploads/'
 resourceTargetDir = "/Users/RLAS_Admin/Documents/Video-Ingests/mmOutDir/resourcespace_output/"
 LTOstageDir = "/Volumes/maxxraid1/LTO_STAGE/"
@@ -23,10 +30,10 @@ def resourceSpaceAPIcall(user,metadata,filePath,RSfile):
 	user = login(destination)[0]
 	cred = login(destination)[1]
 
-	query = "user="+user+"&function=create_resource_from_local&param1=3&param2=0&param3="+filePath+"&param4=&param5=&param6=&param7="+metadata
-	sign = hashlib.sha256(cred.encode()+query.encode())
+	RSquery = "user="+user+"&function=create_resource_from_local&param1=3&param2=0&param3="+filePath+"&param4=&param5=&param6=&param7="+metadata
+	sign = hashlib.sha256(cred.encode()+RSquery.encode())
 	signDigest = sign.hexdigest()
-	completePOST = 'http://localhost/~RLAS_Admin/resourcespace/api/?'+query+"&sign="+signDigest
+	completePOST = 'http://localhost/~RLAS_Admin/resourcespace/api/?'+RSquery+"&sign="+signDigest
 	
 	try:
 		resp = requests.post(completePOST)
@@ -55,6 +62,7 @@ def ingestToResourceSpace(user,filePath, basename):
 
 	resourceSpaceAPIcall(user,metadata,quotedPath,targetFile)
 
+# PROCESS INPUT FILES WITH mediamicroservices
 for item in os.listdir(mmIngestFolder):
 	if not item.startswith("."):
 		filePath = os.path.abspath(mmIngestFolder+"/"+item)
@@ -66,6 +74,7 @@ for item in os.listdir(mmIngestFolder):
 		except IOError as err:
 			print("OS error: {0}".format(err))
 
+# SEND AIP THAT HAS BEEN CREATED TO THE LTO STAGING AREA
 for AIP in os.listdir(LTOstageDir):
 	dirPath = LTOstageDir+AIP
 	if os.path.isdir(dirPath):
@@ -78,6 +87,7 @@ for AIP in os.listdir(LTOstageDir):
 		else:
 			print(AIP+" was arlready bagged!")
 
+# INGEST THE PROXY FILE AND METADATA INTO RESOURCESPACE
 for basename in os.listdir(resourceTargetDir):
 	filePath = resourceTargetDir+basename
 	user = user

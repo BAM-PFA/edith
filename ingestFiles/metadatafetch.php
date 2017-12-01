@@ -87,8 +87,6 @@ echo "</table>";
 
 
 
-
-
 // if (count($data->title)) {
 //         // Open the table
 //         echo "<table>";

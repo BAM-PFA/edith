@@ -40,13 +40,11 @@ foreach($_FILES['file']['tmp_name'] as $key => $tmp_name ){
     include 'metadatafetch.php';
     if (move_uploaded_file($file_tmp, $uploadedfile)) {
 	    // file uploaded succeeded
-		// echo "success";
-
+		echo "success";
 
 	} else { 
     // file upload failed
 		echo "FILE UPLOAD FOR ".$basename." FAILED";
-
 	}
 }
 
@@ -54,7 +52,6 @@ foreach($_FILES['file']['tmp_name'] as $key => $tmp_name ){
 
 // ############################################
 // ---- RUN PYTHON INGEST SCRIPT --------------
-
 
 $command = escapeshellcmd("/usr/local/bin/python3 /Users/RLAS_Admin/Sites/ingest/ingestFiles/ingest.py " . $user . " 2>&1");
 

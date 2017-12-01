@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import os, shutil
+import os
+import shutil
 
 directory = "/Users/BLAS2/Documents/AIP_TARGET/"
 print("Hello this is Blue. I am going to try cleaning "+directory)

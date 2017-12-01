@@ -3,7 +3,13 @@
 import sys
 sys.path.insert(0, '/Users/RLAS_Admin/Sites/ingest/login')
 
-import json, hashlib, os, os.path, re, urllib.parse, subprocess
+import json
+import hashlib
+import os
+import os.path
+import re
+import urllib.parse
+import subprocess
 import pyodbc
 from login import login
 
