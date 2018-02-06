@@ -10,14 +10,14 @@ All ingests will work basically the same, except that depending on the type of f
 3) [`mediamicroservices`](https://github.com/mediamicroservices/mm) or [`pymm`](https://github.com/BAM-PFA/pymm) does this stuff:
  i) transcodes derivatives
  ii) gets technical metadata & fixity data (checksums) on the source and derivs
- iii) packages all of this into a folder structure like so (a "SUBMISSION INFORMATION PACKAGE"/SIP):
- **UUID**/
-&nbsp;&nbsp;&nbsp;&nbsp;objects/
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;files.mov
-&nbsp;&nbsp;&nbsp;&nbsp;metadata/ 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metadata-example.xml
-&nbsp;&nbsp;&nbsp;&nbsp;logs/ 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;log.txt
+ iii) packages all of this into a folder structure like so (a "SUBMISSION INFORMATION PACKAGE"/SIP):<br>
+ **UUID**/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;objects/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;files.mov<br>
+&nbsp;&nbsp;&nbsp;&nbsp;metadata/ <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metadata-example.xml<br>
+&nbsp;&nbsp;&nbsp;&nbsp;logs/ <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;log.txt<br>
 
 4) If required, `mm` can send a ProRes copy back to the QNAP for Dave to pick up and do post-processing on.
 4) [`ltopers`](https://github.com/amiaopensource/ltopers) writes SIPs to LTO on a regular basis. Think this is where you call a SIP an AIP
