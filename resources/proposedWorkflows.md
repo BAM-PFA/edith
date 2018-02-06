@@ -11,13 +11,13 @@ All ingests will work basically the same, except that depending on the type of f
  i) transcodes derivatives
  ii) gets technical metadata & fixity data (checksums) on the source and derivs
  iii) packages all of this into a folder structure like so (a "SUBMISSION INFORMATION PACKAGE"/SIP):
- > UUID/
- > ____objects/
- > _________files.mov
- > ____metadata/ 
- > ________metadata-example.xml
- > ____logs/ 
- > ________log.txt
+ **UUID**/
+&nbsp;&nbsp;&nbsp;&nbsp;objects/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;files.mov
+&nbsp;&nbsp;&nbsp;&nbsp;metadata/ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metadata-example.xml
+&nbsp;&nbsp;&nbsp;&nbsp;logs/ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;log.txt
 
 4) If required, `mm` can send a ProRes copy back to the QNAP for Dave to pick up and do post-processing on.
 4) [`ltopers`](https://github.com/amiaopensource/ltopers) writes SIPs to LTO on a regular basis. Think this is where you call a SIP an AIP
@@ -107,4 +107,4 @@ Questions:
 * Staff ingests the file 
 * Still have to figure out how to reduce data entry load for descriptive metadata  
   * idea: have a form similar to [piction-metadoodler](https://github.com/BAM-PFA/piction-metadoodler) that produces JSON for RS and a csv for Piction use.
-* mp3 to RS and to Piction.
+* mp3 to RS and to Piction.    
