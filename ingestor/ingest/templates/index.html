@@ -1,0 +1,9 @@
+<!DOCTYPE HTML>
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Here are files to ingest:</h1>
+    {% for object in objects %}
+    <div><p>{{object}}</p></div>
+    {% endfor %}
+{% endblock %}
