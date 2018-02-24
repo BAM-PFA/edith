@@ -1,4 +1,4 @@
-from ingest import ingest, listObjects
+from ingest import ingest, listObjects, forms
 from flask import render_template
 
 @ingest.route('/')
@@ -7,6 +7,6 @@ from flask import render_template
 def index():
     DIR = ingest.config["SHARED_DIR"] 
     objects = listObjects.list_objects()
-
-    return render_template('index.html',title='Ingest',objects=objects)
+    form = forms.ingestForm()
+    return render_template('index.html',title='Ingest',objects=objects,form=form)
 
