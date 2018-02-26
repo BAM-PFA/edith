@@ -67,5 +67,5 @@ The contents of the LTO tapes are also updated and indexed in the mediamicroserv
 * Alert for an LTO tape that is getting full
 * Recognizing formats/files that won't be in FileMaker and acting accordingly, e.g. audio files, videos made for event documentation
 * Metadata Schemas for non-film-collection resources.
-    * do we want to investigate PBCore as a blanket schema that can/could absorb everything?
+	* do we want to investigate PBCore as a blanket schema that can/could absorb everything?
 * Explore a plugin to re-query Filemaker if the database record has changed

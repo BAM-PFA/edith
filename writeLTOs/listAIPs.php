@@ -49,8 +49,8 @@ foreach ($ltos as $key => $value) {
 	// echo '<pre>';
 	while (!feof($proc))
 	{
-	    echo fread($proc, 4096);
-	    @ flush();
+		echo fread($proc, 4096);
+		@ flush();
 	}
 	// echo '</pre>';
 

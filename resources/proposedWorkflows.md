@@ -37,14 +37,14 @@ All ingests will work basically the same, except that depending on the type of f
 
 * `ingestfiles.py` does the following:
   * call `mm`: 
-    * create UUID for ingest process (THIS DOES NOT EXIST YET!!)
-    * create UUID-named parent folder for SIP creation, with subfolders for file objects, metadata, and logs 
-    * `rsync` the source file to the Linux jalopy machine for transcoding.
-    * [on jalopy] create low res proxy H264, create ProRes proxy if needed
-    * `rsync` the proxy/proxies back to the host machine in the right folder
-    * create technical metadata for all the file objects
-    * create manifest for package
-    * `rsync` to AIP staging area
+	* create UUID for ingest process (THIS DOES NOT EXIST YET!!)
+	* create UUID-named parent folder for SIP creation, with subfolders for file objects, metadata, and logs 
+	* `rsync` the source file to the Linux jalopy machine for transcoding.
+	* [on jalopy] create low res proxy H264, create ProRes proxy if needed
+	* `rsync` the proxy/proxies back to the host machine in the right folder
+	* create technical metadata for all the file objects
+	* create manifest for package
+	* `rsync` to AIP staging area
   * call to FileMaker based on accession number/barcode, if a match is found, post the low res proxy and descriptive metadata JSON to ResourceSpace
   * send ingest UUID along w descriptive metadata (THIS DOES NOT EXIST YET!!)
 * later that week `writeLTO.py` uses `ltopers` to write to LTO and sends the LTO tape ID to the relevant RS record 
@@ -60,11 +60,11 @@ All ingests will work basically the same, except that depending on the type of f
 * hit _**INGEST**_
 * `ingestfile.py` does this:
   * call `mm`:
-    * concatenate reels, verify losslessness
-    * other steps as above
-    * a single _lrp is created per directory, so there's just one RS record for the group of reels.
+	* concatenate reels, verify losslessness
+	* other steps as above
+	* a single _lrp is created per directory, so there's just one RS record for the group of reels.
   * grab metadata from Filemaker
-    * if the accession number portion of the filename is `00000` then grab the barcode off the first file in the folder
+	* if the accession number portion of the filename is `00000` then grab the barcode off the first file in the folder
 * write to LTO on schedule
 
 ## (2) Film scan (DPX master)
@@ -107,4 +107,4 @@ Questions:
 * Staff ingests the file 
 * Still have to figure out how to reduce data entry load for descriptive metadata  
   * idea: have a form similar to [piction-metadoodler](https://github.com/BAM-PFA/piction-metadoodler) that produces JSON for RS and a csv for Piction use.
-* mp3 to RS and to Piction.    
+* mp3 to RS and to Piction.	

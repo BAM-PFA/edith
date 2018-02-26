@@ -1,9 +1,9 @@
 import os
 
-from ingest import ingest
+from app import app
 
 def list_objects():
-	source = ingest.config["SHARED_DIR"]
+	source = app.config["SHARED_DIR"]
 	objects = {}
 	for _object in os.listdir(source):
 		if not _object.startswith('.'):

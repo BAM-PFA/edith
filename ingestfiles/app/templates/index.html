@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h1>Here are files to ingest:</h1>
+	<form action="" method='post'>
+	<!-- <form action="{{url_for('status')}}" method='post'> -->
+		{{ form.csrf_token }}
+		{% for path,object in objects.items() %}
+		{{form.targetObject.targetPath(value=path)}}
+		{{form.targetObject.targetBase(value=object)}}
+		<div>
+			<p>
+				<p>{{form.targetObject.runIngest}} {{object}}</p>
+				<p>
+					Options:<br>
+					{{form.targetObject.doProres.label}}{{form.targetObject.doProres}}
+					{{form.targetObject.proresToDave.label}}{{form.targetObject.proresToDave}}
+					{{form.targetObject.doConcat.label}}{{form.targetObject.doConcat}}
+				</p>
+			</p>
+		</div>
+		{% endfor %}
+		{{form.submit()}}
+	</form>
+{% endblock %}
