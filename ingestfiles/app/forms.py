@@ -18,12 +18,13 @@ class ObjectForm(FlaskForm):
 	doProres = wtforms.BooleanField("make prores?")
 	proresToDave = wtforms.BooleanField("deliver prores to dave?")
 	doConcat = wtforms.BooleanField("concatenate reels?")
-	uuid = wtforms.HiddenField(str(uuid.uuid4()))
 
 class IngestForm(FlaskForm):
 	'''
 	General input form
 	'''
-	choicesDict = {}
-	targetObject = wtforms.FormField(ObjectForm)
+	def set_choices(dict):
+		choicesDict = {}
+	suchChoices = wtforms.HiddenField('default')
+	# targetObject = wtforms.FormField(ObjectForm)
 	submit = wtforms.SubmitField('Submit')

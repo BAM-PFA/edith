@@ -2,18 +2,20 @@
 
 {% block content %}
 	<h1>Here are files to ingest:</h1>
-	<form action="{{url_for('status')}}" method='POST'>
-	<div>
+	<form  method='POST'>
+		{{form.hidden_tag()}}
+		{{form.csrf_token}}
 		{% for item,vals in form.choicesDict.items() %}
+		{{item}}
+		{{vals.hidden_tag()}}
+		{{vals.csrf_token}}
 		<p>{{vals.targetBase.data}}</p>
 		<p>{{vals.runIngest()}}</p>
 		<p>{{vals.doProres.label}}{{vals.doProres()}}</p>
 		<p>{{vals.doConcat.label}} {{vals.doConcat()}}</p>
 		<p>{{vals.proresToDave.label}}{{vals.proresToDave()}}</p>
 		<p>-----------------</p>
-		{%endfor%}	
-		
-	</div>
+		{%endfor%}
 
 	{{form.submit()}}
 	</form>

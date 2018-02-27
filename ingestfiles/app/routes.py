@@ -3,8 +3,8 @@ from flask import render_template, url_for, request, redirect
 import wtforms,uuid
 from werkzeug import MultiDict
 
-@app.route('/')#,methods=['GET','POST'])
-@app.route('/index')#,methods=['GET','POST'])
+@app.route('/',methods=['GET','POST'])
+@app.route('/index',methods=['GET','POST'])
 def index():
 	DIR = app.config["SHARED_DIR"] 
 	objects = listObjects.list_objects()
@@ -18,27 +18,36 @@ def index():
 		choices[path] = OneObject(targetPath=path,targetBase=_object)
 
 	# print(choices)
-	for item,val in choices.items():
-		# set uuid to make sure each instance is unique... for testing only
-		setattr(val,'uuid',str(uuid.uuid4()))
-		# print(val.uuid)
-		# print(val)
+	# for item,val in choices.items():
+	# 	print(val)
 
 	# setattr(forms.IngestForm,'choicesDict',choices)
-	form = forms.IngestForm()
-	form.choicesDict = choices
+	# setattr(forms.IngestForm(),'suchChoices',choices)
 
-	# print(form.choicesDict)
+	form = forms.IngestForm()
+	form.suchChoices = choices
+	form.choicesDict = choices
+	for path,_object in objects.items():
+		setattr(form,_object,'')
+		form._object = wtforms.FormField(forms.ObjectForm(targetPath=path,targetBase=_object))
+		# print(form._object.ata)
+	# print(form.data)
 
 	if form.is_submitted():
 		print("HEY")
-		result = form.data
-		print(result)
-		# for key, value in result.items():
-		# 	print(key)
-		# 	print(value.data)
+		# setattr(form,'suchChoices',choices)
+	if request.method == 'POST':
+		print('POSTed')
+		if form.validate_on_submit():
+			result = form.suchChoices
+			print("HOOO")
+			for k,v in result.items():
+				print(k)
+				print(v.data)
 
-		return redirect(url_for('status'))
+			return redirect(url_for('status'))
+		else:
+			print(form.errors)
 	return render_template('index.html',title='Index',objects=objects,form=form)
 
 @app.route('/status',methods=['GET','POST'])
@@ -49,7 +58,7 @@ def status():
 		items = 'stuff'
 		# data = request.form.to_dict(flat=False)
 		# extra = form.targetObject.data
-		data = request.args
+		data = request
 		extra = 'LKWELKLN'
 		# print(data)
 	except:
