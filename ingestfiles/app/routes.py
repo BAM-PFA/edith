@@ -1,6 +1,6 @@
 from app import app, listObjects, forms
 from flask import render_template, url_for, request, redirect
-import wtforms,uuid
+import wtforms,uuid,json
 from werkzeug import MultiDict
 
 @app.route('/',methods=['GET','POST'])
@@ -17,48 +17,64 @@ def index():
 	for path,_object in objects.items():
 		choices[path] = OneObject(targetPath=path,targetBase=_object)
 
-	# print(choices)
-	# for item,val in choices.items():
-	# 	print(val)
-
-	# setattr(forms.IngestForm,'choicesDict',choices)
-	# setattr(forms.IngestForm(),'suchChoices',choices)
-
 	form = forms.IngestForm()
 	form.suchChoices = choices
-	form.choicesDict = choices
-	for path,_object in objects.items():
-		setattr(form,_object,'')
-		form._object = wtforms.FormField(forms.ObjectForm(targetPath=path,targetBase=_object))
-		# print(form._object.ata)
-	# print(form.data)
+	# for path,_object in objects.items():
+	# 	setattr(form,_object,'')
+	# 	form._object = wtforms.FormField(forms.ObjectForm(targetPath=path,targetBase=_object))
+
+	result = form.suchChoices
+	suchDict = {}
+	for k,v in result.items():
+		subDict = {}
+		for a,b in v.data.items():
+			subDict[a] = json.dumps(b)
+		suchDict[k] = subDict
+
+	# print(suchDict)
+	form.jsonResult = json.dumps(suchDict)
+	# print(form.jsonResult)
 
 	if form.is_submitted():
-		print("HEY")
-		# setattr(form,'suchChoices',choices)
-	if request.method == 'POST':
-		print('POSTed')
-		if form.validate_on_submit():
-			result = form.suchChoices
-			print("HOOO")
-			for k,v in result.items():
-				print(k)
-				print(v.data)
+		# print("HEY")
+		# result = form.suchChoices
+		# suchDict = {}
+		# for k,v in result.items():
+		# 	subDict = {}
+		# 	for a,b in v.data.items():
+		# 		subDict[a] = json.dumps(b)
+		# 	suchDict[k] = subDict
 
-			return redirect(url_for('status'))
-		else:
-			print(form.errors)
+		# # print(suchDict)
+		# form.jsonResult = json.dumps(suchDict)
+		# print(form.jsonResult)
+		if request.method == 'POST':
+			print('POSTed')
+			if form.validate_on_submit():
+				print("HOOO")
+				print(form.jsonResult)
+				return redirect(url_for('status'), code=307)
+
+			else:
+				print(form.errors)
+
 	return render_template('index.html',title='Index',objects=objects,form=form)
 
 @app.route('/status',methods=['GET','POST'])
 def status():
 	status = 'OK'
 	print(status)
+	# print(request.values)
+	# print(request.values.to_dict(flat=False))
+	# for k,v in request.values.items():
+	# 	print(k)
+	# 	print(v)
 	try:
 		items = 'stuff'
-		# data = request.form.to_dict(flat=False)
-		# extra = form.targetObject.data
-		data = request
+		# data = request.values
+		data = request.args.get('jsonResult')
+		print(items)
+		print(data)
 		extra = 'LKWELKLN'
 		# print(data)
 	except:

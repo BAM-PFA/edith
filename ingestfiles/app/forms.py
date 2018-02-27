@@ -23,8 +23,7 @@ class IngestForm(FlaskForm):
 	'''
 	General input form
 	'''
-	def set_choices(dict):
-		choicesDict = {}
-	suchChoices = wtforms.HiddenField('default')
+	suchChoices = wtforms.HiddenField(default='default choices')
+	jsonResult = wtforms.HiddenField(default='default json')
 	# targetObject = wtforms.FormField(ObjectForm)
 	submit = wtforms.SubmitField('Submit')
