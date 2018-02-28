@@ -14,10 +14,10 @@ class ObjectForm(FlaskForm):
 	"""
 	targetPath = wtforms.HiddenField('objectPath')
 	targetBase = wtforms.HiddenField('objectBase')
-	runIngest = wtforms.BooleanField('Ingest?')
-	doProres = wtforms.BooleanField("make prores?")
-	proresToDave = wtforms.BooleanField("deliver prores to dave?")
-	doConcat = wtforms.BooleanField("concatenate reels?")
+	runIngest = wtforms.BooleanField('Ingest?',default='')
+	doProres = wtforms.BooleanField("make prores?",default='')
+	proresToDave = wtforms.BooleanField("deliver prores to dave?",default='')
+	doConcat = wtforms.BooleanField("concatenate reels?",default='')
 
 class IngestForm(FlaskForm):
 	'''

@@ -1,6 +1,6 @@
 from app import app, listObjects, forms
-from flask import render_template, url_for, request, redirect
-import wtforms,uuid,json
+from flask import render_template, url_for, request, redirect, jsonify
+import wtforms,uuid,json, urllib
 from werkzeug import MultiDict
 
 @app.route('/',methods=['GET','POST'])
@@ -17,70 +17,71 @@ def index():
 	for path,_object in objects.items():
 		choices[path] = OneObject(targetPath=path,targetBase=_object)
 
+	# for k,v in choices.items():
+	# 	print(k)
+	# 	for value in v.data.items():
+	# 		print(value)
+
 	form = forms.IngestForm()
 	form.suchChoices = choices
-	# for path,_object in objects.items():
-	# 	setattr(form,_object,'')
-	# 	form._object = wtforms.FormField(forms.ObjectForm(targetPath=path,targetBase=_object))
-
-	result = form.suchChoices
-	suchDict = {}
-	for k,v in result.items():
-		subDict = {}
-		for a,b in v.data.items():
-			subDict[a] = json.dumps(b)
-		suchDict[k] = subDict
-
-	# print(suchDict)
-	form.jsonResult = json.dumps(suchDict)
-	# print(form.jsonResult)
 
 	if form.is_submitted():
-		# print("HEY")
-		# result = form.suchChoices
-		# suchDict = {}
-		# for k,v in result.items():
-		# 	subDict = {}
-		# 	for a,b in v.data.items():
-		# 		subDict[a] = json.dumps(b)
-		# 	suchDict[k] = subDict
+		print("HEY")
+		result = form.suchChoices
+		# print(result)
+		suchDict = {}
+		for inputObject,_objectForm in result.items():
+			subDict = {}
+			for fieldname,value in _objectForm.data.items():
+				subDict[fieldname] = value
+			for fieldname,value in subDict.items():
+				iterID = subDict['targetBase']
+				uniqueField = fieldname+'-'+iterID
+				form.uniqueField = value
+			suchDict[inputObject] = subDict
 
-		# # print(suchDict)
-		# form.jsonResult = json.dumps(suchDict)
-		# print(form.jsonResult)
+		for k,v in suchDict.items():
+			print(k)
+			print(v)
+
+		form.jsonResult = json.dumps(suchDict)
+
+		##########################################################
+		# OK I THINK THIS IS ANOTHER ROUTE TO EXPLORE:
+		# PASS THE VALUES DICT AS A QUERY STRING.
+		# NOT WORKING IN THIS VERSION, BUT... MAYBE USEFUL?
+		query = urllib.parse.quote_plus(json.dumps(suchDict))
+		# # print(query)
+
 		if request.method == 'POST':
 			print('POSTed')
-			if form.validate_on_submit():
-				print("HOOO")
-				print(form.jsonResult)
-				return redirect(url_for('status'), code=307)
-
-			else:
-				print(form.errors)
+			return redirect(url_for('moar', query_string=query))
 
 	return render_template('index.html',title='Index',objects=objects,form=form)
+
+@app.route('/moar/<string:query_string>',methods=['GET','POST'])
+def moar(query_string):
+	print('MOAR')
+	# print(query_string)
+	stuff = urllib.parse.unquote_plus(query_string)
+
+	return render_template('moar.html',title='Moar',info=stuff)
 
 @app.route('/status',methods=['GET','POST'])
 def status():
 	status = 'OK'
 	print(status)
-	# print(request.values)
-	# print(request.values.to_dict(flat=False))
-	# for k,v in request.values.items():
-	# 	print(k)
-	# 	print(v)
+	print(request.form.to_dict(flat=False))
+
 	try:
 		items = 'stuff'
-		# data = request.values
-		data = request.args.get('jsonResult')
-		print(items)
-		print(data)
-		extra = 'LKWELKLN'
+		data = request.form.data
 		# print(data)
+		extra = 'bla bla bla'
 	except:
 		data = "no data"
 		extra = ":("
-		items = "POPOP"
+		items = "bloop bloop"
 		# print(data)
 	return render_template('status.html',title='Ingest',data=data,extra=extra)
 

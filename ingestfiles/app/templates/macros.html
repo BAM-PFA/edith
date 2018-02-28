@@ -1,0 +1,8 @@
+{% macro render_field(field, uniqueName) %}
+
+<p>
+<label for="{{ field.id }}-{{ uniqueName }}">{{ field.label.text }}</label>
+<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="checkbox" default=""></input>
+</p>
+
+{% endmacro %}

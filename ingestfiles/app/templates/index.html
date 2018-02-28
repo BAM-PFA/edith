@@ -1,21 +1,29 @@
+{% import "macros.html" as macros %}
+
 {% extends "base.html" %}
 
 {% block content %}
 	<h1>Here are files to ingest:</h1>
-	<form "{{url_for('status')}}" method='POST'>
-		{{form.hidden_tag()}}
-		{{form.csrf_token}}
-		{{form.jsonResult}}
+	<form  method='POST'>
+		{{ form.hidden_tag() }}
+		{{ form.csrf_token }}
+		{{ form.jsonResult }}
+		
 		{% for item,vals in form.suchChoices.items() %}
-		{{item}}
-		{{vals.hidden_tag()}}
-		{{vals.csrf_token}}
-		<p>{{vals.targetBase.data}}</p>
-		<p>{{vals.runIngest()}}</p>
-		<p>{{vals.doProres.label}}{{vals.doProres()}}</p>
-		<p>{{vals.doConcat.label}} {{vals.doConcat()}}</p>
-		<p>{{vals.proresToDave.label}}{{vals.proresToDave()}}</p>
-		<p>-----------------</p>
+		<div>
+		
+		{{ vals.targetBase.data }}
+		{{ vals.hidden_tag() }}
+		{{ vals.csrf_token }}
+
+		{{ macros.render_field(vals.runIngest,vals.targetBase.data) }}
+		{{ macros.render_field(vals.doProres,vals.targetBase.data) }}
+		{{ macros.render_field(vals.doConcat,vals.targetBase.data) }}
+		{{ macros.render_field(vals.proresToDave,vals.targetBase.data) }}
+		
+		****************************************************
+		
+		</div>
 		{%endfor%}
 
 	{{form.submit()}}
