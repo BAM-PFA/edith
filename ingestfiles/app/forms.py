@@ -24,6 +24,4 @@ class IngestForm(FlaskForm):
 	General input form
 	'''
 	suchChoices = wtforms.HiddenField(default='default choices')
-	jsonResult = wtforms.HiddenField(default='default json')
-	# targetObject = wtforms.FormField(ObjectForm)
 	submit = wtforms.SubmitField('Submit')

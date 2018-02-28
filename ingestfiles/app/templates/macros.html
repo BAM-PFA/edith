@@ -1,8 +1,17 @@
 {% macro render_field(field, uniqueName) %}
+{# http://bear-z.com/python/render-bootstrap-3-forms-with-wtforms-and-jinja/ #}
 
 <p>
-<label for="{{ field.id }}-{{ uniqueName }}">{{ field.label.text }}</label>
-<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="checkbox" default=""></input>
-</p>
 
+{% if field.type == 'BooleanField' %}
+	<label for="{{ field.id }}-{{ uniqueName }}">{{ field.label.text }}</label>
+	<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="checkbox" default=""></input>
+{% elif field.name == 'targetPath' %}
+	<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="hidden" value="{{ field.data }}"/>
+{% elif field.name == 'targetBase' %}
+	<label for="{{ field.id }}-{{ uniqueName }}">{{ uniqueName }}</label>
+	<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="hidden" value="{{ field.data }}"/>
+{% endif %}
+
+</p>
 {% endmacro %}
