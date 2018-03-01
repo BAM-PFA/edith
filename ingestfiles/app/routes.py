@@ -29,14 +29,47 @@ def status():
 
 	try:
 		data = request.form.to_dict(flat=False)
-		toIngest = []
+		results = {}
+		toIngest =[]
+		targetPaths = []
+		doProresYES = []
+		proresToDaveYES = []
+		doConcatYES =[]
 		for key, value in data.items():
+			# get names/paths of files we actually want to process
 			if 'runIngest' in key:
 				toIngest.append(key.replace('runIngest-',''))
-		# print(data)
+			elif 'targetPath' in key:
+				targetPaths.append(value[0])
+			elif 'doProres' in key:
+				doProresYES.append(key.replace('doProres-',''))
+			elif 'proresToDave' in key:
+				proresToDaveYES.append(key.replace('proresToDave-',''))
+			elif 'doConcat' in key:
+				doConcatYES.append(key.replace('doConcat-',''))
+
+		for _object in toIngest:
+			# build a dict of files:options
+			for path in targetPaths:
+				if _object in path:
+					results[path] = {'basename' : _object}
+		# add boolean options to dict
+		for path,sub in results.items():
+			if results[path]['basename'] in doProresYES:
+				results[path]['prores'] = 'True'
+			if results[path]['basename'] in proresToDaveYES:
+				results[path]['mezzanine to Dave'] = 'True'
+			if results[path]['basename'] in doConcatYES:
+				results[path]['concat reels'] = 'True'
+
 	except:
 		data = "no data"
+		toIngest = []
+		results = {}
 
-	return render_template('status.html',title='Ingest',data=data,toIngest=toIngest)
-
-	
+	return render_template(
+		'status.html',title='Ingest',
+		data=data,
+		toIngest=toIngest,
+		results=results
+		)
