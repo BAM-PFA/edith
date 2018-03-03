@@ -10,7 +10,9 @@ All ingests will work basically the same, except that depending on the type of f
 5) [`mediamicroservices`](https://github.com/mediamicroservices/mm) or [`pymm`](https://github.com/BAM-PFA/pymm) does this stuff:
 
  i) transcodes derivatives
+
  ii) gets technical metadata & fixity data (checksums) on the source and derivs
+ 
  iii) packages all of this into a folder structure like so (a "SUBMISSION INFORMATION PACKAGE"/SIP):<br>
  **UUID**/<br>
 &nbsp;&nbsp;&nbsp;&nbsp;objects/<br>
@@ -102,7 +104,7 @@ Questions:
 * 
 
 ## (6) Digitized audio recording (WAV source file)
-* Student captures audio (using `audiorecorder2` at some point soon? We are changing our capture procedure as of 2/2018)
+* Student captures audio with `audiorecorder` (or using `audiorecorder2` at some point soon? We are changing our capture procedure as of 2/2018)
 * Student transfers file to QNAP
 * BAMPFA `<BEXT>` info and MD5 checksum are already present in the file
 * Staff ingests the file 
