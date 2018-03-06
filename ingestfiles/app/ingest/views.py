@@ -8,6 +8,7 @@ from werkzeug import MultiDict
 
 from . import ingest
 from . import forms
+import app
 from .. import listObjects
 
 
@@ -36,14 +37,19 @@ def status():
 	print(status)
 
 	try:
-		data = request.form.to_dict(flat=False)
+		_data = request.form.to_dict(flat=False)
+		user = request.form['user']
+
+		if not user in app.app_config['KNOWN_USERS']:
+			return render_template('RSerror.html',user=user)
+
 		results = {}
 		toIngest =[]
 		targetPaths = []
 		doProresYES = []
 		proresToDaveYES = []
 		doConcatYES =[]
-		for key, value in data.items():
+		for key, value in _data.items():
 			# get names/paths of files we actually want to process
 			if 'runIngest' in key:
 				toIngest.append(key.replace('runIngest-',''))
@@ -71,13 +77,15 @@ def status():
 				results[path]['concat reels'] = 'True'
 
 	except:
-		data = "no data"
+		_data = "no data"
+		user = "no user"
 		toIngest = []
 		results = {}
 
 	return render_template(
 		'status.html',title='Ingest',
-		data=data,
+		data=_data,
+		user=user,
 		toIngest=toIngest,
 		results=results
 		)

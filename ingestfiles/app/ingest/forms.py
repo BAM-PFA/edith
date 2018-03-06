@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 import wtforms
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Email
 
 class ObjectForm(FlaskForm):
 	"""
@@ -18,5 +18,5 @@ class IngestForm(FlaskForm):
 	General input form
 	'''
 	suchChoices = wtforms.HiddenField(default='default choices')
-	user = wtforms.StringField('Please enter your email address:')
+	user = wtforms.StringField('Please enter your email address:',validators=[DataRequired(), Email()])
 	submit = wtforms.SubmitField('Submit')
