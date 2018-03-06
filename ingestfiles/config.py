@@ -8,22 +8,22 @@ class Config(object):
 
 
 class DevelopmentConfig(Config):
-    """
-    Development configurations
-    """
+	"""
+	Development configurations
+	"""
 
-    DEBUG = True
-    SQLALCHEMY_ECHO = True
+	DEBUG = True
+	SQLALCHEMY_ECHO = True
 
 class ProductionConfig(Config):
-    """
-    Production configurations
-    """
+	"""
+	Production configurations
+	"""
 
-    DEBUG = False
+	DEBUG = False
 
 app_config = {
-    'development': DevelopmentConfig,
-    'production': ProductionConfig,
-    'SHARED_DIR': SHARED_DIR
+	'development': DevelopmentConfig,
+	'production': ProductionConfig,
+	'SHARED_DIR': SHARED_DIR
 }

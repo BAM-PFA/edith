@@ -78,3 +78,5 @@ Tested on Ubuntu 16.04 and Mac (El Capitan and Sierra)
 * Dependencies: 
   * Flask (pip3 install Flask)
   * flask_wff (pip3 install flask_wtf)
+  * SQLAlchemy (pip3 install flask-sqlalchemy)
+  * flask-login
