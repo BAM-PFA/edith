@@ -1,0 +1,25 @@
+{% import "macros.html" as macros %}
+
+{% extends "base.html" %}
+
+{% block content %}
+	<h1>Here are files to ingest:</h1>
+	<form action="{{ url_for('status') }}" method='POST'>
+		{{ form.hidden_tag() }}
+		{{ form.csrf_token }}
+		
+		{% for item,vals in form.suchChoices.items() %}
+		<div>
+		
+			{% for field in vals %}
+				{{macros.render_field(field,vals.targetBase.data)}}
+			{% endfor %}
+		
+		</div>
+		<p>****************************************************</p>
+
+		{%endfor%}
+
+	{{form.submit()}}
+	</form>
+{% endblock %}

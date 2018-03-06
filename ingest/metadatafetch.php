@@ -88,22 +88,22 @@ echo "</table>";
 
 
 // if (count($data->title)) {
-//         // Open the table
-//         echo "<table>";
+//		 // Open the table
+//		 echo "<table>";
 
-//         // Cycle through the array
-//         foreach ($data->title as $index => $title) {
+//		 // Cycle through the array
+//		 foreach ($data->title as $index => $title) {
 
-//             // Output a row
-//             echo "<tr>";
-//             // echo "<td>$basename</td>";
-//             echo "<td>$title->title</td>";
-//             echo "</tr>";
-//         }
+//			 // Output a row
+//			 echo "<tr>";
+//			 // echo "<td>$basename</td>";
+//			 echo "<td>$title->title</td>";
+//			 echo "</tr>";
+//		 }
 
-//         // Close the table
-//         echo "</table>";
-//     }
+//		 // Close the table
+//		 echo "</table>";
+//	 }
 
 
 ?>
