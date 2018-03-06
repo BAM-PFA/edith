@@ -1,12 +1,23 @@
-from app import app, listObjects, forms
+import json
+import urllib
+import uuid
+
+import wtforms
 from flask import render_template, url_for, request, redirect, jsonify
-import wtforms,uuid,json, urllib
 from werkzeug import MultiDict
 
-@app.route('/',methods=['GET','POST'])
-@app.route('/index',methods=['GET','POST'])
+# import app
+from . import ingest
+
+from .. import listObjects, forms
+
+
+@ingest.route('/',methods=['GET','POST'])
+@ingest.route('/index',methods=['GET','POST'])
 def index():
-	DIR = app.config["SHARED_DIR"] 
+	# from flask import current_app as app
+	print('hooo')
+	# DIR = app.config["SHARED_DIR"] 
 	objects = listObjects.list_objects()
 	
 	class OneObject(forms.ObjectForm):
@@ -22,7 +33,7 @@ def index():
 
 	return render_template('index.html',title='Index',objects=objects,form=form)
 
-@app.route('/status',methods=['GET','POST'])
+@ingest.route('/status',methods=['GET','POST'])
 def status():
 	status = 'form submitted ok'
 	print(status)

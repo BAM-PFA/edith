@@ -4,7 +4,7 @@
 
 {% block content %}
 	<h1>Here are files to ingest:</h1>
-	<form action="{{ url_for('status') }}" method='POST'>
+	<form action="{{ url_for('ingest.status') }}" method='POST'>
 		{{ form.hidden_tag() }}
 		{{ form.csrf_token }}
 		
