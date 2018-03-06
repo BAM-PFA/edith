@@ -2,6 +2,7 @@ import os
 from instance import config as instance
 
 SHARED_DIR = instance.SHARED_DIR
+KNOWN_USERS = instance.KNOWN_USERS
 
 class Config(object):
 	HELLO = True
@@ -25,5 +26,6 @@ class ProductionConfig(Config):
 app_config = {
 	'development': DevelopmentConfig,
 	'production': ProductionConfig,
-	'SHARED_DIR': SHARED_DIR
+	'SHARED_DIR': SHARED_DIR,
+	'KNOWN_USERS': KNOWN_USERS
 }

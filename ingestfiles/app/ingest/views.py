@@ -14,9 +14,7 @@ from .. import listObjects
 @ingest.route('/',methods=['GET','POST'])
 @ingest.route('/index',methods=['GET','POST'])
 def index():
-	# from flask import current_app as app
 	print('hooo')
-	# DIR = app.config["SHARED_DIR"] 
 	objects = listObjects.list_objects()
 	
 	class OneObject(forms.ObjectForm):

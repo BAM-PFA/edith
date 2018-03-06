@@ -18,4 +18,5 @@ class IngestForm(FlaskForm):
 	General input form
 	'''
 	suchChoices = wtforms.HiddenField(default='default choices')
+	user = wtforms.StringField('Please enter your email address:')
 	submit = wtforms.SubmitField('Submit')

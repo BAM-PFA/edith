@@ -1,5 +1,5 @@
 from flask import Blueprint
 
-ingest = Blueprint('ingest', __name__)
+lto = Blueprint('lto', __name__)
 
 from . import views
