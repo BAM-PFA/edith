@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-sys.path.insert(0, '/Users/RLAS_Admin/Sites/ingest/login')
+# sys.path.insert(0, '/Users/RLAS_Admin/Sites/ingest/login')
 
 import json
 import hashlib
@@ -29,9 +29,15 @@ def xml_query(idNumber):
 		"&AccessionNumberItemNumber={3}"
 		"&-find".format(server, dsn, layout,idNumber)
 		)
-	print(requestURL)
-	xml = requests.get(requestURL, auth=(user,password))
-	print(xml.text)
+	xml = requests.get(requestURL,auth=(user,password))
+	root = ET.fromstring(xml.text)
+	resultset = root.find('./{http://www.filemaker.com/xml/fmresultset}resultset')
+	records = list(resultset.iter('{http://www.filemaker.com/xml/fmresultset}record'))
+	for record in records:
+	        fields = list(record.iter('{http://www.filemaker.com/xml/fmresultset}field'))
+	        for field in fields:
+	                print(field.get('name'))
+	                print(field[0].text)
 	return xml.text
 
 # def odbc_query(idNumber,filePath,basename):
