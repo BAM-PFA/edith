@@ -11,7 +11,7 @@ from . import forms
 import app
 from .. import listObjects
 from . import fmQuery
-from . import ingest
+from . import ingestProcesses
 
 
 @ingest.route('/',methods=['GET','POST'])
@@ -79,9 +79,18 @@ def status():
 				results[path]['concat reels'] = 'True'
 
 		for thing, opts in results.items():
-			idNumber = ingest.get_acc_from_filename(thing['basename'])
-			xml = fmQuery.xml_query(idNumber)
-			print(xml)
+			metadataDict = {
+				''
+				}
+			basename = opts['basename']
+			idNumber = ingestProcesses.get_acc_from_filename(basename)
+			# print(idNumber)
+			if idNumber != '0':
+				metadataDict = fmQuery.xml_query(idNumber)
+			else:
+				metadataDict = {'title':basename}
+			# print(metadataDict)
+			opts['metadata'] = metadataDict
 
 
 	except:

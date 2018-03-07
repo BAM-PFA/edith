@@ -12,33 +12,77 @@ import urllib.parse
 import requests
 import subprocess
 import pyodbc
+import xml.etree.ElementTree as ET
 
 import app
 
 
 def xml_query(idNumber):
-	print("HEEEEEEEYYYYYYY")
+	namespace = {'filemaker':'http://www.filemaker.com/xml/fmresultset'}
 	dsn = app.app_config['DB_CONNECTIONS']['filemaker']['dsn']
 	layout = app.app_config['DB_CONNECTIONS']['filemaker']['layout']
 	server = app.app_config['DB_CONNECTIONS']['filemaker']['server']
 	user = app.app_config['DB_CONNECTIONS']['filemaker']['accountName']
 	password = app.app_config['DB_CONNECTIONS']['filemaker']['password']
+
 	requestURL = (
 		"http://{0}/fmi/xml/fmresultset.xml?"
 		"-db={1}&-lay={2}"
 		"&AccessionNumberItemNumber={3}"
 		"&-find".format(server, dsn, layout,idNumber)
 		)
+	print(requestURL)
 	xml = requests.get(requestURL,auth=(user,password))
+	recordDict = {}
+	
 	root = ET.fromstring(xml.text)
-	resultset = root.find('./{http://www.filemaker.com/xml/fmresultset}resultset')
-	records = list(resultset.iter('{http://www.filemaker.com/xml/fmresultset}record'))
-	for record in records:
-	        fields = list(record.iter('{http://www.filemaker.com/xml/fmresultset}field'))
-	        for field in fields:
-	                print(field.get('name'))
-	                print(field[0].text)
-	return xml.text
+	# THERE SHOULD ONLY EVER BE ONE RECORD IN A RESULTSET SINCE ITEM NUMBERS SHOULD BE UNIQUE
+	recordElement = root.find('./filemaker:resultset/filemaker:record',namespace)
+	recordString = ET.tostring(recordElement)
+	recordRoot = ET.fromstring(recordString)
+
+	# BUILD OUT THE DICT WITH VALUES FROM THE FILEMAKER RESULT
+	titleField = recordRoot.find('./filemaker:field[@name="m_245a_CompleteTitle"]',namespace)
+	recordDict['title'] = titleField[0].text
+
+	altTitleField = recordRoot.find('./filemaker:field[@name="AlternativeTitle"]',namespace)
+	recordDict['altTitle'] = altTitleField[0].text
+	
+	accPrefField = recordRoot.find('./filemaker:field[@name="AccessionNumberPrefix"]',namespace)
+	recordDict['accPref'] = accPrefField[0].text
+	accDeposField = recordRoot.find('./filemaker:field[@name="AccessionNumberDepositorNumber"]',namespace)
+	recordDict['accDepos'] = accDeposField[0].text
+	accItemField = recordRoot.find('./filemaker:field[@name="AccessionNumberItemNumber"]',namespace)
+	recordDict['accItem'] = accItemField[0].text
+	recordDict['accFull'] = "{}-{}-{}".format(recordDict['accPref'],recordDict['accDepos'],recordDict['accItem'])
+	
+	projGrpField = recordRoot.find('./filemaker:field[@name="ProjectGroupTitle"]',namespace)
+	recordDict['projGrp'] = projGrpField[0].text
+	
+	countryField = recordRoot.find('./filemaker:field[@name="m_257a_Country"]',namespace)
+	recordDict['country'] = countryField[0].text
+	
+	releaseYearField = recordRoot.find('./filemaker:field[@name="m_260c_ReleaseYear"]',namespace)
+	recordDict['releaseYear'] = releaseYearField[0].text
+	
+	directorsNamesField = recordRoot.find('./filemaker:field[@name="ct_DirectorsNames"]',namespace)
+	recordDict['directorsNames'] = directorsNamesField[0].text
+	
+	creditsField = recordRoot.find('./filemaker:field[@name="Credits"]',namespace)
+	recordDict['credits'] = creditsField[0].text
+	
+	generalNotesField = recordRoot.find('./filemaker:field[@name="GeneralNotes"]',namespace)
+	recordDict['generalNotes'] = generalNotesField[0].text
+	
+	conditionNoteField = recordRoot.find('./filemaker:field[@name="m_945z_GeneralConditionNotes"]',namespace)
+	recordDict['conditionNote'] = conditionNoteField[0].text
+
+	for key,value in recordDict.items():
+		if value == None:
+			recordDict[key] = ''
+
+	# print(recordDict)
+	return recordDict
 
 # def odbc_query(idNumber,filePath,basename):
 # 	'''
