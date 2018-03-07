@@ -47,14 +47,19 @@ def resourceSpaceAPIcall(user,metadata,filePath,RSfile):
 	if httpStatus == 200:
 			os.remove(RSfile)
 
-def ingestToResourceSpace(user,filePath, basename):
+def get_acc_from_filename(basename):
 	idRegex = re.compile(r'(.+\_)(\d{5})(\_.*)')
 	idMatch = re.match(idRegex, basename)
 	if not idMatch == None: 
 		idNumber = idMatch.group(2)
 		idNumber = idNumber.lstrip("0")
 	else:
-		idNumber = "0"
+		idNumber = "0"	
+
+	return idNumber
+
+def ingestToResourceSpace(user,filePath, basename):
+	idNumber = get_acc_from_filename(basename)
 	
 	targetFile = resourceTargetDir+basename
 	quotedPath = urllib.parse.quote(targetFile, safe='')

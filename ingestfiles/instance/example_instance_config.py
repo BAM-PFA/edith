@@ -6,6 +6,16 @@ SHARED_DIR = 'blop'
 KNOWN_USERS = {
 	'defaultUser':{
 		'fullname':'Default P. User',
+		'RSuserName':'Default',
 		'resourcespaceKey':'123456789'
+		}
+	}
+
+DB_CONNECTIONS = {
+	'my_database':{
+		'dsn':'my_db_dsn',
+		'server':'my_db_server',
+		'accountName':'my_ingest_user',
+		'password':'my_ingest_user_pass'
 		}
 	}

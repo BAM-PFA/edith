@@ -3,6 +3,7 @@ from instance import config as instance
 
 SHARED_DIR = instance.SHARED_DIR
 KNOWN_USERS = instance.KNOWN_USERS
+DB_CONNECTIONS = instance.DB_CONNECTIONS
 
 class Config(object):
 	HELLO = True
@@ -27,5 +28,6 @@ app_config = {
 	'development': DevelopmentConfig,
 	'production': ProductionConfig,
 	'SHARED_DIR': SHARED_DIR,
-	'KNOWN_USERS': KNOWN_USERS
+	'KNOWN_USERS': KNOWN_USERS,
+	'DB_CONNECTIONS': DB_CONNECTIONS
 }

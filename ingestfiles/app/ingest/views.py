@@ -10,6 +10,8 @@ from . import ingest
 from . import forms
 import app
 from .. import listObjects
+from . import fmQuery
+from . import ingest
 
 
 @ingest.route('/',methods=['GET','POST'])
@@ -75,6 +77,12 @@ def status():
 				results[path]['mezzanine to Dave'] = 'True'
 			if results[path]['basename'] in doConcatYES:
 				results[path]['concat reels'] = 'True'
+
+		for thing, opts in results.items():
+			idNumber = ingest.get_acc_from_filename(thing['basename'])
+			xml = fmQuery.xml_query(idNumber)
+			print(xml)
+
 
 	except:
 		_data = "no data"
