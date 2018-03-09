@@ -78,20 +78,10 @@ def status():
 			if results[path]['basename'] in doConcatYES:
 				results[path]['concat reels'] = 'True'
 
-		for thing, opts in results.items():
-			metadataDict = {
-				''
-				}
-			basename = opts['basename']
-			idNumber = ingestProcesses.get_acc_from_filename(basename)
-			# print(idNumber)
-			if idNumber != '0':
-				metadataDict = fmQuery.xml_query(idNumber)
-			else:
-				metadataDict = {'title':basename}
-			# print(metadataDict)
-			opts['metadata'] = metadataDict
-
+		# print(results)
+		# pass dict of files:options to ingestProcesses and get back
+		# a dict that includes metadata
+		results = ingestProcesses.main(results)
 
 	except:
 		_data = "no data"

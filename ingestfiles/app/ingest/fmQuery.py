@@ -1,21 +1,17 @@
 #!/usr/bin/env python3
-
-import sys
-# sys.path.insert(0, '/Users/RLAS_Admin/Sites/ingest/login')
-
-import json
+# standard libraries
 import hashlib
+import json
 import os
-import os.path
+import pyodbc
 import re
-import urllib.parse
 import requests
 import subprocess
-import pyodbc
+import sys
+import urllib.parse
 import xml.etree.ElementTree as ET
-
+# local imports
 import app
-
 
 def xml_query(idNumber):
 	namespace = {'filemaker':'http://www.filemaker.com/xml/fmresultset'}
