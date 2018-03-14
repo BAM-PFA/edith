@@ -13,13 +13,16 @@ import urllib
 from . import fmQuery
 
 def get_acc_from_filename(basename):
-	idRegex = re.compile(r'(.+\_)(\d{5})(\_.*)')
+	idRegex = re.compile(r'(.+\_)(\d{5})((\_.*)|($))')
 	idMatch = re.match(idRegex, basename)
 	if not idMatch == None: 
 		idNumber = idMatch.group(2)
-		idNumber = idNumber.lstrip("0")
+		if not idNumber == "00000":
+			idNumber = idNumber.lstrip("0")
 	else:
-		idNumber = "0"	
+		idNumber = "--"	
+
+	print("THIS IS THE ID NUMBER: "+idNumber)
 
 	return idNumber
 
@@ -33,20 +36,36 @@ def ingestToResourceSpace(user,filePath, basename):
 	resourceSpaceAPIcall(user,metadata,quotedPath,targetFile)
 
 
+def get_metadata(idNumber,basename):
+	if idNumber == '--':
+		metadataDict = {'title':basename}
+	elif idNumber == '00000':
+		metadataDict = {'title':'THIS IS AN UNACCESSIONED PFA ITEM'}
+	else:
+		try:
+			metadataDict = fmQuery.xml_query(idNumber)
+		except:
+			idNumber = "{0:0>5}".format(idNumber)
+			try:
+				metadataDict = fmQuery.xml_query(idNumber)
+			except:
+				metadataDict = {'title':basename}
+	# print(metadataDict)
+	return(metadataDict)
+
+
 def main(ingestDict):
+	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
+	print(ingestDict)
 	for objectPath, options in ingestDict.items():
-		metadataDict = {}
 		basename = options['basename']
 		idNumber = get_acc_from_filename(basename)
-		# print(idNumber)
-		if idNumber != '0':
-			metadataDict = fmQuery.xml_query(idNumber)
-		else:
-			metadataDict = {'title':basename}
-		# print(metadataDict)
-		options['metadata'] = metadataDict
-		print(ingestDict)
+		metadata = get_metadata(idNumber,basename)
+		options['metadata'] = metadata
+
+	print(ingestDict)
 	return(ingestDict)
+
 
 ### LEGACY STUFF: TO BE ADAPTED OR DELETED ###
 
