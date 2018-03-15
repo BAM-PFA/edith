@@ -50,6 +50,7 @@ def xml_query(idNumber):
 	recordRoot = ET.fromstring(recordString)
 
 	# BUILD OUT THE DICT WITH VALUES FROM THE FILEMAKER RESULT
+	# uh, redo this with an iterator... 
 	titleField = recordRoot.find('./filemaker:field[@name="m_245a_CompleteTitle"]',namespace)
 	recordDict['title'] = titleField[0].text
 
