@@ -26,6 +26,15 @@ def get_acc_from_filename(basename):
 
 	return idNumber
 
+def get_barcode_from_filename(basename):
+	barcodeRegex = re.compile(r"(.+\_\d{5}\_)(pm\d{7})(.+)",re.IGNORECASE)
+	barcodeMatch = re.match(barcodeRegex,basename)
+	if not barcodeMatch == None:
+		barcode = barcodeMatch.group(2)
+	else:
+		barcode = "000000000"
+	return barcode
+
 def ingestToResourceSpace(user,filePath, basename):
 	idNumber = get_acc_from_filename(basename)
 	
@@ -40,15 +49,27 @@ def get_metadata(idNumber,basename):
 	if idNumber == '--':
 		metadataDict = {'title':basename}
 	elif idNumber == '00000':
-		metadataDict = {'title':'THIS IS AN UNACCESSIONED PFA ITEM'}
+		# if the acc item number is zeroed out,
+		# try looking for a barcode to search on
+		try:
+			barcode = get_barcode_from_filename(basename)
+			# print(barcode)
+			if barcode == "000000000":
+				metadataDict = {'title':'THIS IS AN UNACCESSIONED PFA ITEM WITH NO BARCODE...'}
+			else:
+				metadataDict = fmQuery.xml_query(barcode)
+		except:
+			metadataDict = {'title':'THIS IS AN UNACCESSIONED PFA ITEM WITH NO FILEMAKER MATCH...'}
 	else:
 		try:
 			metadataDict = fmQuery.xml_query(idNumber)
 		except:
+			# if no results, try padding with zeros
 			idNumber = "{0:0>5}".format(idNumber)
 			try:
 				metadataDict = fmQuery.xml_query(idNumber)
 			except:
+				# give up
 				metadataDict = {'title':basename}
 	# print(metadataDict)
 	return(metadataDict)
