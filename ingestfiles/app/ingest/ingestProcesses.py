@@ -78,6 +78,8 @@ def get_metadata(idNumber,basename):
 
 def main(ingestDict):
 	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
+	pymmconfig = pymmFunctions.read_config()
+	print(pymmconfig['paths']['outdir_ingestfile'])
 	for objectPath, options in ingestDict.items():
 		basename = options['basename']
 		idNumber = get_acc_from_filename(basename)
