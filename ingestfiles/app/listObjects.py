@@ -10,13 +10,9 @@ from . import sshStuff
 config = app.app_config
 
 dirName = list(config["SHARED_DIR"].keys())[0]
-print(dirName)
 hostName = config["SHARED_DIR"][dirName]['host name']
-print(hostName)
 source_dir = config["SHARED_DIR"][dirName]['directory full path']
-print(source_dir)
 remoteDetails = config["REMOTE_CONNECTIONS"][hostName]
-print(remoteDetails)
 
 def list_objects():
 	objects = {}
@@ -30,8 +26,7 @@ def list_objects():
 
 			theStuff = []
 			connection = sshStuff.connect(remoteAddress,remoteUser,sshKeyfile)
-			_list = connection.sendCommand("ls /share/Multimedia")
-			print(_list)
+			_list = connection.sendCommand("ls {}".format(source_dir))
 			for item in _list.readlines():
 				theStuff.append(item.rstrip())
 

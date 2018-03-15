@@ -2,11 +2,22 @@
 
 {% block content %}
 	<div>
-		<!-- <p>{{ data }}</p> -->
-		<!-- <p>{{ toIngest }}</p> -->
-		<p>{{ results }}</p>
+		<table>
+		{% for path, details in results.items() %}
+			<tr>
+				<th>FILE</th>
+				<th>METADATA</th>
+			</tr>
+			<tr>
+				<td>{{ details['basename'] }}</td>
+				<td>
+					{% for key, value in details['metadata'].items() %}
+						{{ key }} : {{ value }} <br>
+					{% endfor %}
+				</td>
+			</tr>
+		{% endfor %}
+		</table>
 		<p>{{ user }}</p>
 	</div>
 {% endblock %}
-
-

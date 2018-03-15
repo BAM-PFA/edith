@@ -73,6 +73,9 @@ def xml_query(idNumber):
 	conditionNoteField = recordRoot.find('./filemaker:field[@name="m_945z_GeneralConditionNotes"]',namespace)
 	recordDict['conditionNote'] = conditionNoteField[0].text
 
+	barcodeField = recordRoot.find('./filemaker:field[@name="Barcode"]',namespace)
+	recordDict['Barcode'] = barcodeField[0].text
+
 	for key,value in recordDict.items():
 		if value == None:
 			recordDict[key] = ''

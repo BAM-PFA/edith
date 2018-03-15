@@ -17,7 +17,6 @@ from . import ingestProcesses
 @ingest.route('/',methods=['GET','POST'])
 @ingest.route('/index',methods=['GET','POST'])
 def index():
-	print('hooo')
 	objects = listObjects.list_objects()
 	
 	class OneObject(forms.ObjectForm):

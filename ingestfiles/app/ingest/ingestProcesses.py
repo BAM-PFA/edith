@@ -56,14 +56,13 @@ def get_metadata(idNumber,basename):
 
 def main(ingestDict):
 	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
-	print(ingestDict)
 	for objectPath, options in ingestDict.items():
 		basename = options['basename']
 		idNumber = get_acc_from_filename(basename)
 		metadata = get_metadata(idNumber,basename)
 		options['metadata'] = metadata
 
-	print(ingestDict)
+	# print(ingestDict)
 	return(ingestDict)
 
 
