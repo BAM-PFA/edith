@@ -31,3 +31,11 @@ def get_temp_dir():
 	scriptDir = os.path.dirname(os.path.realpath(__file__))
 	tempDir = os.path.join(scriptDir,'tmp')
 	return tempDir
+
+def get_pymm_path():
+	pymmPath = config["PYMM_PATH"]
+	return pymmPath
+
+def get_python_path():
+	pythonPath = config['PYTHON3_BINARY_PATH']
+	return pythonPath

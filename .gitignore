@@ -5,3 +5,4 @@ __py*
 bundle.js
 css/*
 config.ini
+pymm_log*

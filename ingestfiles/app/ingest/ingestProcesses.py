@@ -13,8 +13,9 @@ import urllib
 from . import fmQuery
 from .. import sshStuff
 from .. import utils
-from .. import pymm
-from ..pymm import ingestSip as PIS
+# from .. import pymm
+# from ..pymm.ingestSip import main
+# from ..pymm import ingestSip as PIS
 
 
 def get_acc_from_filename(basename):
@@ -144,7 +145,7 @@ def main(ingestDict,user):
 			print(_object)
 			print('HOOOOOO')
 			# and continue doing stuff
-			kwargs = {'inputPath':_object,'operator':user}
+			# kwargs = {'inputPath':_object,'operator':user}
 			# print(kwargs)
 			# sys.argv = [
 			# None,
@@ -152,8 +153,12 @@ def main(ingestDict,user):
 			# '-u {}'.format(user)
 			# ]
 			# print(sys.argv)
-			PIS.main(**kwargs)
+			# PIS.main(**kwargs)
 			# PIS.main()
+			pythonBinary = utils.get_python_path()
+			pymmPath = utils.get_pymm_path()
+			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
+			subprocess.call([pythonBinary,ingestSipPath,'-i',_object,'-u',user])
 			print('hey')
 	# print(ingestDict)
 	return(ingestDict)

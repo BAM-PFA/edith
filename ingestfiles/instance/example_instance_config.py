@@ -1,5 +1,7 @@
 SECRET_KEY = 'bloop'
 WTF_CSRF_SECRET_KEY= "bleep"
+PYMM_PATH = '/path/to/pymm'
+PYTHON3_BINARY_PATH = '/usr/bin/python3'
 
 # there can only be one entry for shared directory. 
 # 'my host' should either be localhost or 
@@ -12,6 +14,7 @@ SHARED_DIR = {
 		'directory full path':'/full/path/to/my/dir'
 		}
 }
+
 
 # SETTING SECRET STUFF HERE IN CONFIG DICTS 
 # SINCE WE ONLY HAVE A FEW USERS AND IT'S NOT
