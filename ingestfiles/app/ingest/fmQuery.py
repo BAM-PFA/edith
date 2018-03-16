@@ -3,7 +3,7 @@
 import hashlib
 import json
 import os
-import pyodbc
+# import pyodbc
 import re
 import requests
 import subprocess

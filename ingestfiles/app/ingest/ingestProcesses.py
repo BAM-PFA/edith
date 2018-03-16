@@ -14,6 +14,7 @@ from . import fmQuery
 from .. import sshStuff
 from .. import utils
 from .. import pymm
+from ..pymm import ingestSip as PIS
 
 
 def get_acc_from_filename(basename):
@@ -141,17 +142,19 @@ def main(ingestDict,user):
 	else:
 		for _object in ingestDict.keys():
 			print(_object)
+			print('HOOOOOO')
 			# and continue doing stuff
-			#this doesn't work
-			sys.argv = [
-				'',
-				'-i',_object,
-				'-u',+user
-				]
-
-			print(sys.argv)
-			pymm.ingestSip.main()
-
+			kwargs = {'inputPath':_object,'operator':user}
+			# print(kwargs)
+			# sys.argv = [
+			# None,
+			# "-i {}".format(_object),
+			# '-u {}'.format(user)
+			# ]
+			# print(sys.argv)
+			PIS.main(**kwargs)
+			# PIS.main()
+			print('hey')
 	# print(ingestDict)
 	return(ingestDict)
 
