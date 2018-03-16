@@ -11,7 +11,10 @@ import time
 import urllib
 
 from . import fmQuery
-from ..pymm import pymmFunctions
+from .. import sshStuff
+from .. import utils
+from .. import pymm
+
 
 def get_acc_from_filename(basename):
 	idRegex = re.compile(r'(.+\_)(\d{5})((\_.*)|($))')
@@ -75,16 +78,79 @@ def get_metadata(idNumber,basename):
 	# print(metadataDict)
 	return(metadataDict)
 
+def grab_remote_files(targetFilepath):
+	# prep credentials to grab stuff from remote shared dir
+	hostName, sourceDir, remoteAddress, remoteUser, remotePassword, sshKeyfile = utils.get_remote_credentials()
+	processingDir = utils.get_temp_dir()
+	print(processingDir)
+	# double check that it's not on the current filesystem
+	if not os.path.isfile(targetFilepath):
+		if not os.path.isdir(targetFilepath):
+			# connection = sshStuff.connect(remoteAddress,remoteUser,sshKeyfile)
+			# command = "rsync -rtvPih {} {}".format(targetFilepath,processingDir)
+			
+			try:
+				subprocess.call([
+				'rsync','-rtvPihe','ssh',
+				'{0}@{1}:{2}'.format(remoteUser,remoteAddress,targetFilepath),
+				processingDir
+				])
+				# connection.sendCommand(command)
+			except:
+				print("Couldn't rsync the file...")
 
-def main(ingestDict):
+	else:
+		print(
+			"Your files are already on the current filesystem, "
+			"so don't need to rsync anything."
+			)
+
+
+def main(ingestDict,user):
 	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
-	pymmconfig = pymmFunctions.read_config()
-	print(pymmconfig['paths']['outdir_ingestfile'])
+	# pymmconfig = pymmFunctions.read_config()
+	# print(pymmconfig['paths']['outdir_ingestfile'])
+
+	dirName, hostName, sourceDir = utils.get_shared_dir_stuff()
+
 	for objectPath, options in ingestDict.items():
 		basename = options['basename']
 		idNumber = get_acc_from_filename(basename)
 		metadata = get_metadata(idNumber,basename)
 		options['metadata'] = metadata
+
+	if not hostName == 'localhost':
+		for objectPath in ingestDict.keys():
+			try:
+				grab_remote_files(objectPath)
+			except:
+				print("no dice.")
+		for _object in os.listdir(utils.get_temp_dir()):
+			objectPath = os.path.join(utils.get_temp_dir(),_object)
+			print(objectPath)
+			# something breaks here
+			sys.argv = [
+				'',
+				'-i'+objectPath,
+				'-u'+user
+				]
+
+			print('HOOOOOO')
+			pymm.ingestSip.main()
+
+	else:
+		for _object in ingestDict.keys():
+			print(_object)
+			# and continue doing stuff
+			#this doesn't work
+			sys.argv = [
+				'',
+				'-i',_object,
+				'-u',+user
+				]
+
+			print(sys.argv)
+			pymm.ingestSip.main()
 
 	# print(ingestDict)
 	return(ingestDict)

@@ -48,7 +48,7 @@ Files that are digitized/born digital works from the BAMPFA film collection incl
 ### ResourceSpace
 [ResourceSpace](https://www.resourcespace.com/) is an open-source digital asset management system that uses a PHP/MySQL web interface. It's very intuitive and responsive, and it allows for in-browser playback of videos using [VideoJS](http://videojs.com/). Metadata fields are totally customizable and accessible via the API.
 
-The ResourceSpace API call post assets and metadata metadata at the same time. I have previously used SFTP to move files from a processing computer to the RS server and used a direct attached RAID as the RS filestore, but (fingers crossed) we will be using a large capacity internal RAID on our server and won't need to do a bunch of file transfers. 
+The ResourceSpace API call post assets and metadata metadata at the same time. I have previously used SFTP to move files from a processing computer to the RS server and used a direct attached RAID as the RS filestore, but (fingers crossed) we will be using a large capacity internal RAID on our server and won't need to do a bunch of file transfers. Here's a cool RAID setup [tutorial](https://www.digitalocean.com/community/tutorials/how-to-create-raid-arrays-with-mdadm-on-ubuntu-16-04) for Ubuntu...
 
 ### Proxies
 `pymm` uses `ffmpeg` to transcode the derivative access files, currently set to:

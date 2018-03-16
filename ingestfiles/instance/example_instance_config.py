@@ -1,5 +1,3 @@
-# SQLALCHEMY_DATABASE_URI = 'mysql://admin:pass@localhost/db_name'
-
 SECRET_KEY = 'bloop'
 WTF_CSRF_SECRET_KEY= "bleep"
 
@@ -35,8 +33,6 @@ DB_CONNECTIONS = {
 		}
 	}
 
-# MUST MATCH A KEY IN REMOTE_CONNECTIONS
-DEFAULT_REMOTE_NAME = 'my server'
 REMOTE_CONNECTIONS = {
 	'my server':{
 		'address':'1.2.3.4',
