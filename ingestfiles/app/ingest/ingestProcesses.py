@@ -13,10 +13,6 @@ import urllib
 from . import fmQuery
 from .. import sshStuff
 from .. import utils
-# from .. import pymm
-# from ..pymm.ingestSip import main
-# from ..pymm import ingestSip as PIS
-
 
 def get_acc_from_filename(basename):
 	idRegex = re.compile(r'(.+\_)(\d{5})((\_.*)|($))')
@@ -52,6 +48,7 @@ def ingestToResourceSpace(user,filePath, basename):
 
 
 def get_metadata(idNumber,basename):
+	
 	if idNumber == '--':
 		metadataDict = {'title':basename}
 	elif idNumber == '00000':
@@ -68,7 +65,10 @@ def get_metadata(idNumber,basename):
 			metadataDict = {'title':'THIS IS AN UNACCESSIONED PFA ITEM WITH NO FILEMAKER MATCH...'}
 	else:
 		try:
+			print('searching on '+idNumber)
+			
 			metadataDict = fmQuery.xml_query(idNumber)
+			print('metadataDict')
 		except:
 			# if no results, try padding with zeros
 			idNumber = "{0:0>5}".format(idNumber)
@@ -129,38 +129,19 @@ def main(ingestDict,user):
 				print("no dice.")
 		for _object in os.listdir(utils.get_temp_dir()):
 			objectPath = os.path.join(utils.get_temp_dir(),_object)
-			print(objectPath)
-			# something breaks here
-			sys.argv = [
-				'',
-				'-i'+objectPath,
-				'-u'+user
-				]
-
-			print('HOOOOOO')
-			pymm.ingestSip.main()
+			pythonBinary = utils.get_python_path()
+			pymmPath = utils.get_pymm_path()
+			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
+			subprocess.call([pythonBinary,ingestSipPath,'-i',_object,'-u',user])
 
 	else:
 		for _object in ingestDict.keys():
-			print(_object)
-			print('HOOOOOO')
-			# and continue doing stuff
-			# kwargs = {'inputPath':_object,'operator':user}
-			# print(kwargs)
-			# sys.argv = [
-			# None,
-			# "-i {}".format(_object),
-			# '-u {}'.format(user)
-			# ]
-			# print(sys.argv)
-			# PIS.main(**kwargs)
-			# PIS.main()
 			pythonBinary = utils.get_python_path()
 			pymmPath = utils.get_pymm_path()
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 			subprocess.call([pythonBinary,ingestSipPath,'-i',_object,'-u',user])
 			print('hey')
-	# print(ingestDict)
+	print(nigestDict)
 	return(ingestDict)
 
 

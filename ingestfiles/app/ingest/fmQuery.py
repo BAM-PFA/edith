@@ -21,7 +21,7 @@ def xml_query(idNumber):
 	user = app.app_config['DB_CONNECTIONS']['filemaker']['accountName']
 	password = app.app_config['DB_CONNECTIONS']['filemaker']['password']
 
-	if len(idNumber) == 5:
+	if len(idNumber) <= 5:
 		requestURL = (
 		"http://{0}/fmi/xml/fmresultset.xml?"
 		"-db={1}&-lay={2}"
@@ -37,7 +37,6 @@ def xml_query(idNumber):
 		)
 	else:
 		pass
-	
 
 	print(requestURL)
 	xml = requests.get(requestURL,auth=(user,password))
