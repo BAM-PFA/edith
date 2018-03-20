@@ -47,6 +47,8 @@ class PBCoreDocument:
 				)
 			self.descriptionDoc = ET.ElementTree(self.descriptionRoot)
 
+		self._string = ET.tostring(self.descriptionRoot, pretty_print=True)
+
 	def add_instantiation(self, pbcoreInstantiationPath):
 		self.pbcoreInstantiationPath = pbcoreInstantiationPath
 		try:
@@ -60,8 +62,14 @@ class PBCoreDocument:
 			# print(element.tag)
 			self.instantiation.append(deepcopy(element))
 
-		# self._string = ET.tostring(self.pbcoreInstantiation, pretty_print=True)
-		# print(ET.tostring(self.descriptionRoot, pretty_print=True))
+
+	def add_SubElement(PARENT=None,TAG=None,attrib={},TEXT=None,nsmap=None,**_extra):
+		
+		# keeps giving this error:
+		# TypeError: Argument '_parent' has incorrect type (expected lxml.etree._Element, got PBCoreDocument)
+		result = ET.SubElement(PARENT,TAG,attrib,nsmap)
+		result.text = _text
+		print(result)
 
 	def add_description_elements(self,descriptiveJSONpath):
 		'''
@@ -77,7 +85,7 @@ class PBCoreDocument:
 
 		# NEXT: ITERATE OVER LIST OF PBCORE TAGS AND INSERT AT INDEX 
 		# INSTEAD OF ADDING SUBELEMENTS
-		# MAKE  ANOTHER FUNCTION TO CREATE SUBELEMENTS WITH TEXT:
+		# ... OR MAKE  ANOTHER FUNCTION TO CREATE SUBELEMENTS WITH TEXT:
 		# https://stackoverflow.com/questions/33386943/python-lxml-subelement-with-text-value
 		# ET.SubElement(self.descriptionRoot,'pbcoreAssetDate').text = self.metadata['releaseYear']
 		self.descriptionRoot.insert(0,ET.Element('pbcoreAssetDate',dateType='Released'))
