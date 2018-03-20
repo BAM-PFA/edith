@@ -28,6 +28,7 @@ def xml_query(idNumber):
 		"&AccessionNumberItemNumber={3}"
 		"&-find".format(server, dsn, layout,idNumber)
 		)
+		print(requestURL)
 	elif len(idNumber) == 9:
 		requestURL = (
 		"http://{0}/fmi/xml/fmresultset.xml?"

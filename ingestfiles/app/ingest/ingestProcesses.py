@@ -141,7 +141,7 @@ def main(ingestDict,user):
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 			subprocess.call([pythonBinary,ingestSipPath,'-i',_object,'-u',user])
 			print('hey')
-	print(nigestDict)
+	print(ingestDict)
 	return(ingestDict)
 
 

@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <pbcoreDescriptionDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xsi:schemaLocation="http://www.pbcore.org/PBCore/PBCoreNamespace.html https://raw.githubusercontent.com/WGBH/PBCore_2.1/master/pbcore-2.1.xsd">
-	<pbcoreInstantiation>
-		<instantiationIdentifier source="File Name">despegue-a-las-1800_04432_PM0011522_R01of03_lrp.mov</instantiationIdentifier>
+  <pbcoreInstantiation><instantiationIdentifier source="File Name">despegue-a-las-1800_04432_PM0011522_R01of03_lrp.mov</instantiationIdentifier>
 	<instantiationDate dateType="file modification">2017-11-03T13:25:02Z</instantiationDate>
 	<instantiationDigital>video/mp4</instantiationDigital>
 	<instantiationLocation>despegue-a-las-1800_04432_PM0011522_R01of03_lrp.mov</instantiationLocation>
@@ -89,4 +88,6 @@
 	<instantiationAnnotation annotationType="FooterSize">0</instantiationAnnotation>
 	<instantiationAnnotation annotationType="IsStreamable">Yes</instantiationAnnotation>
 	<instantiationAnnotation annotationType="Encoded_Application">Lavf57.38.102</instantiationAnnotation>
-</pbcoreInstantiation></pbcoreDescriptionDocument>
+</pbcoreInstantiation>
+  <pbcoreAssetDate>1967</pbcoreAssetDate>
+</pbcoreDescriptionDocument>

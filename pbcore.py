@@ -2,6 +2,7 @@
 
 import os
 import sys
+import json
 from copy import deepcopy
 import lxml.etree as ET
 
@@ -59,11 +60,31 @@ class PBCoreDocument:
 			# print(element.tag)
 			self.instantiation.append(deepcopy(element))
 
-		self._string = ET.tostring(self.pbcoreInstantiation, pretty_print=True)
+		# self._string = ET.tostring(self.pbcoreInstantiation, pretty_print=True)
+		# print(ET.tostring(self.descriptionRoot, pretty_print=True))
+
+	def add_description_elements(self,descriptiveJSONpath):
+		'''
+		load metata json file in specific format:
+		{asset:{metadata:{field:value,field1:value1}}}
+		only add stuff that is applicable to all instantiations
+		'''
+		self.descriptiveJSONpath = descriptiveJSONpath
+		self.descriptiveJSON = json.load(open(self.descriptiveJSONpath))
+		# there should be only one asset
+		self.asset = list(self.descriptiveJSON.keys())[0]
+		self.metadata = self.descriptiveJSON[self.asset]['metadata']
+
+		# NEXT: ITERATE OVER LIST OF PBCORE TAGS AND INSERT AT INDEX 
+		# INSTEAD OF ADDING SUBELEMENTS
+		# MAKE  ANOTHER FUNCTION TO CREATE SUBELEMENTS WITH TEXT:
+		# https://stackoverflow.com/questions/33386943/python-lxml-subelement-with-text-value
+		# ET.SubElement(self.descriptionRoot,'pbcoreAssetDate').text = self.metadata['releaseYear']
+		self.descriptionRoot.insert(0,ET.Element('pbcoreAssetDate',dateType='Released'))
 		print(ET.tostring(self.descriptionRoot, pretty_print=True))
 
 	def xml_to_file(self,outputPath):
 		with open(outputPath,'wb') as outXML:
 			# self.output = ET.ElementTree(self.descriptionRoot)
-			self.descriptionDoc.write(outXML, encoding='utf-8', xml_declaration=True)
+			self.descriptionDoc.write(outXML, encoding='utf-8', xml_declaration=True,pretty_print=True)
 
