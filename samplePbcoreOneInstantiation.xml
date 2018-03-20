@@ -1,0 +1,90 @@
+<pbcoreInstantiationDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xsi:schemaLocation="http://www.pbcore.org/PBCore/PBCoreNamespace.html http://pbcore.org/xsd/pbcore-2.0.xsd">
+	<instantiationIdentifier source="File Name">despegue-a-las-1800_04432_PM0011522_R01of03_lrp.mov</instantiationIdentifier>
+	<instantiationDate dateType="file modification">2017-11-03T13:25:02Z</instantiationDate>
+	<instantiationDigital>video/mp4</instantiationDigital>
+	<instantiationLocation>despegue-a-las-1800_04432_PM0011522_R01of03_lrp.mov</instantiationLocation>
+	<instantiationMediaType>Moving Image</instantiationMediaType>
+	<instantiationFileSize unitsOfMeasure="bytes">526531585</instantiationFileSize>
+	<instantiationTimeStart>01:00:20.000</instantiationTimeStart>
+	<instantiationDuration>00:22:44.730</instantiationDuration>
+	<instantiationDataRate unitsOfMeasure="bits/second">3086510</instantiationDataRate>
+	<instantiationTracks>2</instantiationTracks>
+	<instantiationEssenceTrack>
+		<essenceTrackType>Video</essenceTrackType>
+		<essenceTrackIdentifier source="ID (Mediainfo)">1</essenceTrackIdentifier>
+		<essenceTrackIdentifier source="StreamKindID (Mediainfo)">0</essenceTrackIdentifier>
+		<essenceTrackIdentifier source="StreamOrder (Mediainfo)">0</essenceTrackIdentifier>
+		<essenceTrackEncoding source="codecid" ref="avc1" annotation="profile:High@L4">AVC</essenceTrackEncoding>
+		<essenceTrackDataRate unitsOfMeasure="bits/second">2953439</essenceTrackDataRate>
+		<essenceTrackFrameRate annotation="CFR">24.000</essenceTrackFrameRate>
+		<essenceTrackBitDepth>8</essenceTrackBitDepth>
+		<essenceTrackFrameSize>1920x1080</essenceTrackFrameSize>
+		<essenceTrackAspectRatio>1.778</essenceTrackAspectRatio>
+		<essenceTrackDuration>00:22:44.709</essenceTrackDuration>
+		<essenceTrackLanguage>eng</essenceTrackLanguage>
+		<essenceTrackAnnotation annotationType="Format_Settings">CABAC / 4 Ref Frames</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Format_Settings_CABAC">Yes</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Format_Settings_RefFrames">4</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Stored_Height">1088</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Sampled_Width">1920</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Sampled_Height">1080</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="PixelAspectRatio">1.000</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Rotation">0.000</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="FrameRate_Mode_Original">VFR</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="FrameCount">32753</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="ColorSpace">YUV</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="ChromaSubsampling">4:2:0</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="ScanType">Progressive</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Interlacement">PPF</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Delay">3620000</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Delay_Settings">DropFrame=No / 24HourMax=No / IsVisual=No</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Delay_DropFrame">No</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Delay_Source">Container</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="StreamSize">503822793</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Encoded_Library_Name">x264</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Encoded_Library_Version">core 148 r2694 3b70645</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Encoded_Library_Settings">cabac=1 / ref=3 / deblock=1:0:0 / analyse=0x3:0x113 / me=hex / subme=7 / psy=1 / psy_rd=1.00:0.00 / mixed_ref=1 / me_range=16 / chroma_me=1 / trellis=1 / 8x8dct=1 / cqm=0 / deadzone=21,11 / fast_pskip=1 / chroma_qp_offset=-2 / threads=18 / lookahead_threads=3 / sliced_threads=0 / nr=0 / decimate=1 / interlaced=0 / bluray_compat=0 / constrained_intra=0 / bframes=3 / b_pyramid=2 / b_adapt=1 / b_bias=0 / direct=1 / weightb=1 / open_gop=0 / weightp=2 / keyint=30 / keyint_min=3 / scenecut=40 / intra_refresh=0 / rc_lookahead=30 / rc=crf / mbtree=1 / crf=35.0 / qcomp=0.60 / qpmin=15 / qpmax=30 / qpstep=4 / ip_ratio=1.41 / aq=1:1.00</essenceTrackAnnotation>
+	</instantiationEssenceTrack>
+	<instantiationEssenceTrack>
+		<essenceTrackType>Audio</essenceTrackType>
+		<essenceTrackIdentifier source="ID (Mediainfo)">2</essenceTrackIdentifier>
+		<essenceTrackIdentifier source="StreamKindID (Mediainfo)">0</essenceTrackIdentifier>
+		<essenceTrackIdentifier source="StreamOrder (Mediainfo)">1</essenceTrackIdentifier>
+		<essenceTrackEncoding source="codecid" ref="mp4a-40-2" annotation="profile:LC">AAC</essenceTrackEncoding>
+		<essenceTrackDataRate unitsOfMeasure="bits/second" annotation="CBR">128212</essenceTrackDataRate>
+		<essenceTrackSamplingRate unitsOfMeasure="Hz">48000</essenceTrackSamplingRate>
+		<essenceTrackDuration>00:22:44.730</essenceTrackDuration>
+		<essenceTrackLanguage>eng</essenceTrackLanguage>
+		<essenceTrackAnnotation annotationType="Format_Settings_SBR">No (Explicit)</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Duration_LastFrame">-6</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Channel(s)">2</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="ChannelLayout">L R</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="SamplesPerFrame">1024</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="SamplingCount">65507040</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="FrameCount">63972</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Compression_Mode">Lossy</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Delay">3620000</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Delay_DropFrame">No</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Delay_Source">Container</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Video_Delay">0</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Video0_Delay">0</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="StreamSize">21871968</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="Default">Yes</essenceTrackAnnotation>
+		<essenceTrackAnnotation annotationType="AlternateGroup">1</essenceTrackAnnotation>
+	</instantiationEssenceTrack>
+	<instantiationAnnotation annotationType="OtherCount">1</instantiationAnnotation>
+	<instantiationAnnotation annotationType="Other_Format_List">QuickTime TC</instantiationAnnotation>
+	<instantiationAnnotation annotationType="Other_Format_WithHint_List">QuickTime TC</instantiationAnnotation>
+	<instantiationAnnotation annotationType="Other_Language_List">English</instantiationAnnotation>
+	<instantiationAnnotation annotationType="Format">MPEG-4</instantiationAnnotation>
+	<instantiationAnnotation annotationType="Format_Profile">QuickTime</instantiationAnnotation>
+	<instantiationAnnotation annotationType="CodecID_Version">0000.02</instantiationAnnotation>
+	<instantiationAnnotation annotationType="CodecID_Compatible">qt  </instantiationAnnotation>
+	<instantiationAnnotation annotationType="FrameRate">24.000</instantiationAnnotation>
+	<instantiationAnnotation annotationType="FrameCount">32753</instantiationAnnotation>
+	<instantiationAnnotation annotationType="HeaderSize">836812</instantiationAnnotation>
+	<instantiationAnnotation annotationType="DataSize">525694773</instantiationAnnotation>
+	<instantiationAnnotation annotationType="FooterSize">0</instantiationAnnotation>
+	<instantiationAnnotation annotationType="IsStreamable">Yes</instantiationAnnotation>
+	<instantiationAnnotation annotationType="Encoded_Application">Lavf57.38.102</instantiationAnnotation>
+</pbcoreInstantiationDocument>
