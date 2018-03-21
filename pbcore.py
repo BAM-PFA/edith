@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-
+# standard library modules
 import os
 import sys
 import json
 from copy import deepcopy
+# nonstandard libraries
 import lxml.etree as ET
+# local modules
+import pbcore_elements
 
 class PBCoreDocument:
 	'''
@@ -64,7 +67,7 @@ class PBCoreDocument:
 
 
 	def add_SubElement(self,_parent,_tag,attrib={},_text=None,nsmap=None,**_extra):
-		# e.g. sample.add_SubElement(
+		# e.g. >> sample.add_SubElement(
 		#							sample.descriptionRoot,
 		#							'pbcoreSub',{},'HELLO',
 		#							sample.NS_MAP)
@@ -82,6 +85,9 @@ class PBCoreDocument:
 		# there should be only one asset
 		self.asset = list(self.descriptiveJSON.keys())[0]
 		self.metadata = self.descriptiveJSON[self.asset]['metadata']
+
+		intellectualElements = list(pbcore_elements.INTELLECTUAL_CONTENT_ELEMENTS.keys())
+		for element
 
 		# NEXT: ITERATE OVER LIST OF PBCORE TAGS AND INSERT AT INDEX 
 		# INSTEAD OF ADDING SUBELEMENTS
