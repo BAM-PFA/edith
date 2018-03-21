@@ -37,7 +37,7 @@ PBCORE_MAP = {
 		}
 	},
 	"conditionNote":{
-		"essenceTrackAnnotation":{
+		"instantiationAnnotation":{
 			"LEVEL":"INSTANTIATION",
 			"annotationType":"Condition note",
 			"TEXT":"value"
@@ -82,7 +82,7 @@ PBCORE_MAP = {
 		}
 	},
 	"generalNotes":{
-		"essenceTrackAnnotation":{
+		"instantiationAnnotation":{
 			"LEVEL":"INSTANTIATION",
 			"annotationType":"General note",
 			"TEXT":"value"
@@ -101,97 +101,137 @@ PBCORE_MAP = {
 		}
 	},
 	"projGrp":{
-		"pbcoreRelation":{
+		"instantiationExtension":{
 			"LEVEL":"INSTANTIATION",
-			"ATTRIBUTE":"DEFAULT_VALUE",
-			"TEXT":"Null",
+			"TEXT":"",
 			"SUBELEMENT":{
-				"PBCORE_FIELD":{
-					"ATTRIBUTE":"DEFAULT_VALUE",
-					"TEXT":"Null"
-				}
-			},
-			"SIBLING_FIELD":{
-				"PBCORE_FIELD":{
-					"ATTRIBUTE":"DEFAULT_VALUE"
+				"extensionWrap":{
+					"TEXT":"",
+					"SUBELEMENT":{
+						"extensionElement":{
+							"TEXT":"isPartOf"
+						}
+					},
+					"SUBELEMENT":{
+						"extensionValue":{
+							"TEXT":"value"
+						}
+					},
+					"SUBELEMENT":{
+						"extensionAuthorityUsed":{
+							"TEXT":"DCMI Metadata Terms"
+						}
+					}
 				}
 			}
 		}
 	},
-	"BAMPFA_FIELD":{
-		"PBCORE_FIELD":{
-			"LEVEL":"WORK_OR_INSTANTIATION",
-			"ATTRIBUTE":"DEFAULT_VALUE",
-			"TEXT":"Null",
-			"SUBELEMENT":{
-				"PBCORE_FIELD":{
-					"ATTRIBUTE":"DEFAULT_VALUE",
-					"TEXT":"Null"
-				}
-			},
-			"SIBLING_FIELD":{
-				"PBCORE_FIELD":{
-					"ATTRIBUTE":"DEFAULT_VALUE"
-				}
-			}
+	"ingestUUID":{
+		"instantiationAnnotation":{
+			"LEVEL":"INSTANTIATION",
+			"annotationType":"PFA ingest process unique identifier",
+			"TEXT":"value"
+		}
+	},
+	"BAMPFAlocation":{
+		"instantiationLocation":{
+			"LEVEL":"INSTANTIATION",
+			"annotation":"may either be 'BAMPFA Digital Repository or LTO Tape ID",
+			"TEXT":"value"
+		}
+	},
+	"eventTitle":{
+		"pbcoreTitle":{
+			"LEVEL":"WORK",
+			"titleType":"Event",
+			"titleTypeAnnotation":"BAMPFA metadata definition",
+			"TEXT":"value"
+		}
+	},
+	"eventYear":{
+		"pbcoreAssetDate":{
+			"LEVEL":"WORK",
+			"dateType":"Event",
+			"annotation":"Year of a recorded event. Describes BAMPFA non-collection assets.",
+			"TEXT":"value"
+		}
+	},
+	"eventFullDate":{
+		"pbcoreAssetDate":{
+			"LEVEL":"WORK",
+			"dateType":"Event",
+			"annotation":"Full date of a recorded event. Describes BAMPFA non-collection assets.",
+			"TEXT":"value"
+		}
+	},
+	"generation":{
+		"instantiationGenerations":{
+			"LEVEL":"INSTANTIATION",
+			"source":"BAMPFA controlled vocabulary",
+			"TEXT":"value"
+		}
+	},
+	"language":{
+		"instantiationLanguage":{
+			"LEVEL":"INSTANTIATION",
+			"source":"IS0 639.2",
+			"ref":"",
+			"TEXT":"value"
+		}
+	},
+	"soundCharacteristics":{
+		"instantiationAnnotation":{
+			"LEVEL":"INSTANTIATION",
+			"annotation":"Sound or silent",
+			"TEXT":"value"
+		}
+	},
+	"colorCharacteristics":{
+		"instantiationColors":{
+			"LEVEL":"INSTANTIATION",
+			"source":"BAMPFA controlled vocabulary",
+			"TEXT":"value"
+		}
+	},
+	"runningTime":{
+		"instantiationDuration":{
+			"LEVEL":"INSTANTIATION",
+			"annotation":"May be specific to BAMPFA projectors, scan rates, etc.",
+			"TEXT":"value"
+		}
+	},
+	"medium":{
+		"instantiationMediaType":{
+			"LEVEL":"INSTANTIATION",
+			"source":"BAMPFA controlled vocabulary",
+			"annotation":"BAMPFA source material medium.",
+			"TEXT":"value"
+		}
+	},
+	"dimensions":{
+		"instantiationDimensions":{
+			"LEVEL":"INSTANTIATION",
+			"source":"BAMPFA controlled vocabulary",
+			"TEXT":"value"
+		}
+	},
+	"videoFormat":{
+		"instantiationPhysical":{
+			"LEVEL":"INSTANTIATION",
+			"source":"BAMPFA controlled vocabulary",
+			"TEXT":"Null"
+		}
+	},
+	"videoStandard":{
+		"instantiationStandard":{
+			"LEVEL":"INSTANTIATION",
+			"source":"PBCore instantiationStandard/video",
+			"ref":"http://pbcore.org/vocabularies/instantiationStandard/video%23ntsc",
+			"TEXT":"vale"
 		}
 	},
 	"BAMPFA_FIELD":{
-		"PBCORE_FIELD":{
-			"LEVEL":"WORK_OR_INSTANTIATION",
-			"ATTRIBUTE":"DEFAULT_VALUE",
-			"TEXT":"Null",
-			"SUBELEMENT":{
-				"PBCORE_FIELD":{
-					"ATTRIBUTE":"DEFAULT_VALUE",
-					"TEXT":"Null"
-				}
-			},
-			"SIBLING_FIELD":{
-				"PBCORE_FIELD":{
-					"ATTRIBUTE":"DEFAULT_VALUE"
-				}
-			}
-		}
-	},
-	"BAMPFA_FIELD":{
-		"PBCORE_FIELD":{
-			"LEVEL":"WORK_OR_INSTANTIATION",
-			"ATTRIBUTE":"DEFAULT_VALUE",
-			"TEXT":"Null",
-			"SUBELEMENT":{
-				"PBCORE_FIELD":{
-					"ATTRIBUTE":"DEFAULT_VALUE",
-					"TEXT":"Null"
-				}
-			},
-			"SIBLING_FIELD":{
-				"PBCORE_FIELD":{
-					"ATTRIBUTE":"DEFAULT_VALUE"
-				}
-			}
-		}
-	},
-	"BAMPFA_FIELD":{
-		"PBCORE_FIELD":{
-			"LEVEL":"WORK_OR_INSTANTIATION",
-			"ATTRIBUTE":"DEFAULT_VALUE",
-			"TEXT":"Null",
-			"SUBELEMENT":{
-				"PBCORE_FIELD":{
-					"ATTRIBUTE":"DEFAULT_VALUE",
-					"TEXT":"Null"
-				}
-			},
-			"SIBLING_FIELD":{
-				"PBCORE_FIELD":{
-					"ATTRIBUTE":"DEFAULT_VALUE"
-				}
-			}
-		}
-	},
-	"BAMPFA_FIELD":{
-		"PBCORE_FIELD":{
+		"PBCORE_ELEMENT":{
 			"LEVEL":"WORK_OR_INSTANTIATION",
 			"ATTRIBUTE":"DEFAULT_VALUE",
 			"TEXT":"Null",
@@ -209,3 +249,5 @@ PBCORE_MAP = {
 		}
 	}
 }
+
+BAMPFA_FIELDS = list(PBCORE_MAP.keys())

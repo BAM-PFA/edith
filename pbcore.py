@@ -8,6 +8,7 @@ from copy import deepcopy
 import lxml.etree as ET
 # local modules
 import pbcore_elements
+import pbcore_map
 
 class PBCoreDocument:
 	'''
@@ -85,9 +86,15 @@ class PBCoreDocument:
 		# there should be only one asset
 		self.asset = list(self.descriptiveJSON.keys())[0]
 		self.metadata = self.descriptiveJSON[self.asset]['metadata']
+		self.descMetadataFields = []
+		for key,value in self.metadata.items():
+			if value != "":
+				self.descMetadataFields.append(key)
 
-		intellectualElements = list(pbcore_elements.INTELLECTUAL_CONTENT_ELEMENTS.keys())
-		for element
+		for field in pbcore_map.BAMPFA_FIELDS:
+			if field in descMetadataFields:
+				mapping = pbcore_map.PBCORE_MAP[field]
+				# self.add_SubElement()
 
 		# NEXT: ITERATE OVER LIST OF PBCORE TAGS AND INSERT AT INDEX 
 		# INSTEAD OF ADDING SUBELEMENTS
