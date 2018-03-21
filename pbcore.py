@@ -47,7 +47,7 @@ class PBCoreDocument:
 				)
 			self.descriptionDoc = ET.ElementTree(self.descriptionRoot)
 
-		self._string = ET.tostring(self.descriptionRoot, pretty_print=True)
+		
 
 	def add_instantiation(self, pbcoreInstantiationPath):
 		self.pbcoreInstantiationPath = pbcoreInstantiationPath
@@ -63,13 +63,13 @@ class PBCoreDocument:
 			self.instantiation.append(deepcopy(element))
 
 
-	def add_SubElement(PARENT=None,TAG=None,attrib={},TEXT=None,nsmap=None,**_extra):
-		
-		# keeps giving this error:
-		# TypeError: Argument '_parent' has incorrect type (expected lxml.etree._Element, got PBCoreDocument)
-		result = ET.SubElement(PARENT,TAG,attrib,nsmap)
+	def add_SubElement(self,_parent,_tag,attrib={},_text=None,nsmap=None,**_extra):
+		# e.g. sample.add_SubElement(
+		#							sample.descriptionRoot,
+		#							'pbcoreSub',{},'HELLO',
+		#							sample.NS_MAP)
+		result = ET.SubElement(_parent,_tag,attrib,nsmap)
 		result.text = _text
-		print(result)
 
 	def add_description_elements(self,descriptiveJSONpath):
 		'''
@@ -89,7 +89,10 @@ class PBCoreDocument:
 		# https://stackoverflow.com/questions/33386943/python-lxml-subelement-with-text-value
 		# ET.SubElement(self.descriptionRoot,'pbcoreAssetDate').text = self.metadata['releaseYear']
 		self.descriptionRoot.insert(0,ET.Element('pbcoreAssetDate',dateType='Released'))
-		print(ET.tostring(self.descriptionRoot, pretty_print=True))
+
+	def to_string(self):
+		self._string = ET.tostring(self.descriptionRoot, pretty_print=True)
+		print(self._string.decode())
 
 	def xml_to_file(self,outputPath):
 		with open(outputPath,'wb') as outXML:

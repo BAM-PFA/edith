@@ -379,12 +379,11 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			},
 			"subelements":{
 				None
-				}
 			},
 			"documentation":"http://pbcore.org/pbcoreidentifier/"
 		},
 		"pbcoreTitle":{
-			"definition":("pbcoreTitle is a name or label relevant to the asset.")
+			"definition":("pbcoreTitle is a name or label relevant to the asset."),
 			"attributes":{
 				"titleType":{
 					"required":False,
@@ -423,17 +422,17 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 					"usage note":("Use attribute ref to supply a source’s URI for the value of the element. Attribute ref can be used to point to a term in a controlled vocabulary, or a URI associated with a source.")
 				},
 				"source":{
-						"required":True,
-						"usage note":("Attribute source provides the name of the authority used to declare the value of the element. Different elements will use the source attribute slightly differently.  For example, identifier source (required) should be the name of the organization, institution, system or namespace that the identifier came from, such as \'PBS NOLA Code\' or an institutional database identifier.  For other elements, this might be the name of a controlled vocabulary, namespace or authority list, such as Library of Congress Subject Headings.  We recommend a consistent and human readable use.")
-					},
+					"required":True,
+					"usage note":("Attribute source provides the name of the authority used to declare the value of the element. Different elements will use the source attribute slightly differently.  For example, identifier source (required) should be the name of the organization, institution, system or namespace that the identifier came from, such as \'PBS NOLA Code\' or an institutional database identifier.  For other elements, this might be the name of a controlled vocabulary, namespace or authority list, such as Library of Congress Subject Headings.  We recommend a consistent and human readable use.")
+				},
 				"version":{
-						"required":False,
-						"usage note":(" Attribute version identifies any version information about the authority or convention used to express data of this element.")
-					},
+					"required":False,
+					"usage note":(" Attribute version identifies any version information about the authority or convention used to express data of this element.")
+				},
 				"annotation":{
-						"required":False,
-						"usage note":("Attribute annotation includes narrative information intended to clarify the nature of data used in the element. Can be used as a notes field to include any additional information about the element or associated attributes")
-					}
+					"required":False,
+					"usage note":("Attribute annotation includes narrative information intended to clarify the nature of data used in the element. Can be used as a notes field to include any additional information about the element or associated attributes")
+				}
 			},
 			"best practice":("There may be many types of titles an asset may have, such as a series title, episode title, segment title, or project title, therefore the element is repeatable."),
 			"usage":{
@@ -447,7 +446,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":"http://pbcore.org/pbcoretitle/"
 		},
 		"pbcoreSubject":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -469,7 +468,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"pbcoreDescription":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -491,7 +490,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"pbcoreGenre":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -513,7 +512,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"pbcoreRelation":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -535,7 +534,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"pbcoreRelationType":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -557,7 +556,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"pbcoreRelationIdentifier":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -579,7 +578,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"pbcoreCoverage":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -601,7 +600,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"coverage":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -623,7 +622,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"coverageType":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -645,7 +644,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"pbcoreAudienceLevel":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -667,7 +666,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"pbcoreAudienceRating":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -689,29 +688,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"pbcoreAnnotation":{
-			"definition":("")
-			"attributes":{
-				"attribute":{
-					"required":False,
-					"usage note":("")
-				}
-			},
-			"best practice":(""),
-			"usage":{
-				"required":False,
-				"repeatable":False,
-				"usage note":("")
-			},
-			"subelements":{
-				"element":{
-					"required":False,
-					"description":("")
-				}
-			},
-			"documentation":""
-		},
-		"element":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -735,7 +712,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 	},
 	"INTELLECTUAL_PROPERTY":{
 		"pbcoreCreator":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -757,7 +734,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"creator":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -779,7 +756,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"creatorRole":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -801,7 +778,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"pbcoreContributor":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -823,7 +800,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"contributor":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -845,7 +822,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"contributorRole":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -867,7 +844,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"pbcorePublisher":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -889,7 +866,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"publisher":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -911,7 +888,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"publisherRole":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -933,7 +910,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"pbcoreRightsSummary":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -955,7 +932,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"rightsSummary":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -977,7 +954,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"rightsLink":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
@@ -999,7 +976,7 @@ PBCORE_VERSION_2_1_ELEMENTS = {
 			"documentation":""
 		},
 		"rightsEmbedded":{
-			"definition":("")
+			"definition":(""),
 			"attributes":{
 				"attribute":{
 					"required":False,
