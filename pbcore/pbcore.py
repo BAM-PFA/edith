@@ -27,7 +27,8 @@ class PBCoreDocument:
 		self.pbcoreDescriptionDocumentPath = pbcoreDescriptionDocumentPath
 
 
-		self.PBCORE_NAMESPACE = "http://www.pbcore.org/PBCore/PBCoreNamespace.html" 
+		self.PBCORE_NAMESPACE = "http://www.pbcore.org/PBCore/PBCoreNamespace.html"
+		self._PBCORE = "{{}}".format(self.PBCORE_NAMESPACE)
 		self.XSI_NS = "http://www.w3.org/2001/XMLSchema-instance" 
 		self.SCHEMA_LOCATION = "http://www.pbcore.org/PBCore/PBCoreNamespace.html https://raw.githubusercontent.com/WGBH/PBCore_2.1/master/pbcore-2.1.xsd"
 		# reference for namespace inclusion: 
@@ -45,7 +46,7 @@ class PBCoreDocument:
 
 		if not pbcoreDescriptionDocumentPath:
 			self.descriptionRoot = ET.Element(
-				'pbcoreDescriptionDocument',
+				self._PBCORE+'pbcoreDescriptionDocument',
 				{self.attr_qname:"http://www.pbcore.org/PBCore/PBCoreNamespace.html https://raw.githubusercontent.com/WGBH/PBCore_2.1/master/pbcore-2.1.xsd"},
 				nsmap=self.NS_MAP
 				)
@@ -63,11 +64,12 @@ class PBCoreDocument:
 		except:
 			print('not a valid xml input ... probably?')
 			sys.exit()
-		self.instantiation = ET.SubElement(self.descriptionRoot,'pbcoreInstantiation')
-
+		# self.instantiation = ET.SubElement(self.descriptionRoot,'pbcoreInstantiation')
+		self.instantiation = self.add_SubElement(self.descriptionRoot,'pbcoreInstantiation',nsmap=self.NS_MAP)
+		# print(self.pbcoreInstantiation.xpath('/p:pbcoreInstantiationDocument/*',namespaces=self.XPATH_NS_MAP))
 		for element in self.pbcoreInstantiation.xpath('/p:pbcoreInstantiationDocument/*',namespaces=self.XPATH_NS_MAP):
 			# print(element.tag)
-			self.instantiation.append(deepcopy(element))
+			self.instantiation.insert(0,deepcopy(element))
 
 	def add_SubElement(self,_parent,_tag,attrib={},_text=None,nsmap=None,**_extra):
 		# e.g. >> sample.add_SubElement(
@@ -97,6 +99,10 @@ class PBCoreDocument:
 				self.descMetadataFields.append(key)
 
 		for field in pbcore_map.BAMPFA_FIELDS:
+			'''
+			Im so sorry for writing such ugly code. :(
+			'''
+
 			if field in self.descMetadataFields:
 				mapping = pbcore_map.PBCORE_MAP[field]
 				# print(mapping)
@@ -113,8 +119,12 @@ class PBCoreDocument:
 					if level == "WORK":
 						self.add_SubElement(self.descriptionRoot,mappingTarget,attrib=mappingAttribs,_text=value,nsmap=self.NS_MAP)
 					else:
-						self.targetInstantiation = self.descriptionRoot.xpath("/p:pbcoreDescriptionDocument/p:pbcoreInstantiation[p:instantiationIdentifier[contains(text(),{})]]".format(self.assetBasename),namespaces=self.XPATH_NS_MAP)
-						# print(self.targetInstantiation)
+						print("INSTANTIATION")
+						print(field)
+						xpathExpression = "/pbcoreDescriptionDocument/pbcoreInstantiation[contains(./p:instantiationIdentifier,'{}')]".format(self.assetBasename)
+						print(xpathExpression)
+						self.targetInstantiation = self.descriptionRoot.xpath(xpathExpression,namespaces=self.XPATH_NS_MAP)
+						print(self.targetInstantiation)
 						if not self.targetInstantiation == []:
 							self.add_SubElement(self.targetInstantiation[0],mappingTarget,attrib=mappingAttribs,_text=value,nsmap=self.NS_MAP)
 				else:
