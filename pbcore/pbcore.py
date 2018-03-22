@@ -51,21 +51,23 @@ class PBCoreDocument:
 				)
 			self.descriptionDoc = ET.ElementTree(self.descriptionRoot)
 
-		
+	def tidy(self):
+		pass
 
 	def add_instantiation(self, pbcoreInstantiationPath):
 		self.pbcoreInstantiationPath = pbcoreInstantiationPath
 		try:
 			self.pbcoreInstantiation = ET.parse(self.pbcoreInstantiationPath)
+			print(self.pbcoreInstantiation)
+
 		except:
 			print('not a valid xml input ... probably?')
 			sys.exit()
 		self.instantiation = ET.SubElement(self.descriptionRoot,'pbcoreInstantiation')
 
-		for element in (element for element in self.pbcoreInstantiation.xpath('/p:pbcoreInstantiationDocument/*',namespaces=self.XPATH_NS_MAP) if not element.tag == '{http://www.pbcore.org/PBCore/PBCoreNamespace.html}pbcoreInstantiationDocument'):
+		for element in self.pbcoreInstantiation.xpath('/p:pbcoreInstantiationDocument/*',namespaces=self.XPATH_NS_MAP):
 			# print(element.tag)
 			self.instantiation.append(deepcopy(element))
-
 
 	def add_SubElement(self,_parent,_tag,attrib={},_text=None,nsmap=None,**_extra):
 		# e.g. >> sample.add_SubElement(
@@ -74,6 +76,7 @@ class PBCoreDocument:
 		#							sample.NS_MAP)
 		result = ET.SubElement(_parent,_tag,attrib,nsmap)
 		result.text = _text
+		return result
 
 	def add_description_elements(self,descriptiveJSONpath):
 		'''
@@ -86,6 +89,7 @@ class PBCoreDocument:
 		# there should be only one asset
 		self.asset = list(self.descriptiveJSON.keys())[0]
 		self.assetBasename = self.descriptiveJSON[self.asset]['basename']
+		print(self.assetBasename)
 		self.metadata = self.descriptiveJSON[self.asset]['metadata']
 		self.descMetadataFields = []
 		for key,value in self.metadata.items():
@@ -103,10 +107,33 @@ class PBCoreDocument:
 					mappingAttribs = mapping[mappingTarget]["ATTRIBUTES"]
 				else:
 					mappingAttribs = {}
+				
 				if mapping[mappingTarget]["TEXT"] == "value":
 					value = self.metadata[field]
-				if level == "WORK":
-					self.add_SubElement(self.descriptionRoot,mappingTarget,attrib=mappingAttribs,_text=value,nsmap=self.NS_MAP)
+					if level == "WORK":
+						self.add_SubElement(self.descriptionRoot,mappingTarget,attrib=mappingAttribs,_text=value,nsmap=self.NS_MAP)
+					else:
+						self.targetInstantiation = self.descriptionRoot.xpath("/p:pbcoreDescriptionDocument/p:pbcoreInstantiation[p:instantiationIdentifier[contains(text(),{})]]".format(self.assetBasename),namespaces=self.XPATH_NS_MAP)
+						# print(self.targetInstantiation)
+						if not self.targetInstantiation == []:
+							self.add_SubElement(self.targetInstantiation[0],mappingTarget,attrib=mappingAttribs,_text=value,nsmap=self.NS_MAP)
+				else:
+					if level == "WORK":
+						self.top = self.add_SubElement(self.descriptionRoot,mappingTarget,attrib=mappingAttribs,nsmap=self.NS_MAP)
+						print(self.top)
+						for key,value in mapping[mappingTarget]["SUBELEMENTS"].items():
+							print(key)
+							if "ATTRIBUTES" in mapping[mappingTarget]["SUBELEMENTS"][key]:
+								attrib = mapping[mappingTarget]["SUBELEMENTS"][key]["ATTRIBUTES"]
+							else:
+								attrib = {}
+							subelement = self.add_SubElement(self.top,key,attrib=attrib,nsmap=self.NS_MAP)
+							print(subelement)
+							if mapping[mappingTarget]["SUBELEMENTS"][key]["TEXT"] == "value":
+								subelement.text = self.metadata[field]
+							else:
+								subelement.text = mapping[mappingTarget]["SUBELEMENTS"][key]["TEXT"]
+
 
 	def to_string(self):
 		self._string = ET.tostring(self.descriptionRoot, pretty_print=True)
