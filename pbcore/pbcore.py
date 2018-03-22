@@ -97,7 +97,7 @@ class PBCoreDocument:
 				mapping = pbcore_map.PBCORE_MAP[field]
 				# print(mapping)
 				mappingTarget = list(mapping.keys())[0]
-				print(mappingTarget)
+				# print(mappingTarget)
 				level = mapping[mappingTarget]["LEVEL"]
 				if "ATTRIBUTES" in mapping[mappingTarget]:
 					mappingAttribs = mapping[mappingTarget]["ATTRIBUTES"]

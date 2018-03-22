@@ -1,6 +1,5 @@
 import pbcore_elements
 
-
 pbCoreIntelContentAndProp = []
 for item in list(pbcore_elements.INTELLECTUAL_CONTENT_ELEMENTS.keys()):
 	pbCoreIntelContentAndProp.append(item)
@@ -71,12 +70,10 @@ PBCORE_MAP = {
 		"pbcoreCreator":{
 			"LEVEL":"WORK",
 			"TEXT":"",
-			"SUBELEMENT":{
+			"SUBELEMENTS":{
 				"creator":{
 					"TEXT":"value"
-				}
-			},
-			"SUBELEMENT":{
+				},
 				"creatorRole":{
 					"ATTRIBUTES":{
 						"source":"PBCore creatorRole",
@@ -85,7 +82,6 @@ PBCORE_MAP = {
 					"TEXT":"Director(s)"
 				}
 			}
-			
 		}
 	},
 	"Barcode":{
@@ -110,7 +106,7 @@ PBCORE_MAP = {
 		"pbcoreRightsSummary":{
 			"LEVEL":"WORK",
 			"TEXT":"",
-			"SUBELEMENT":{
+			"SUBELEMENTS":{
 				"rightsSummary":{
 					"ATTRIBUTES":{
 						"annotation":"Credits statement"
@@ -124,24 +120,20 @@ PBCORE_MAP = {
 		"instantiationExtension":{
 			"LEVEL":"INSTANTIATION",
 			"TEXT":"",
-			"SUBELEMENT":{
+			"SUBELEMENTS":{
 				"extensionWrap":{
 					"TEXT":"",
-					"SUBELEMENT":{
+					"SUBELEMENTS":{
 						"extensionElement":{
 							"TEXT":"isPartOf"
-						}
-					},
-					"SUBELEMENT":{
+						},
 						"extensionValue":{
 							"TEXT":"value"
-						}
-					},
-					"SUBELEMENT":{
+						},
 						"extensionAuthorityUsed":{
 							"TEXT":"DCMI Metadata Terms"
 						}
-					}
+					},
 				}
 			}
 		}
@@ -283,7 +275,7 @@ PBCORE_MAP = {
 			"LEVEL":"WORK_OR_INSTANTIATION",
 			"ATTRIBUTE":"DEFAULT_VALUE",
 			"TEXT":"Null",
-			"SUBELEMENT":{
+			"SUBELEMENTS":{
 				"PBCORE_FIELD":{
 					"ATTRIBUTE":"DEFAULT_VALUE",
 					"TEXT":"Null"
