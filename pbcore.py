@@ -85,6 +85,7 @@ class PBCoreDocument:
 		self.descriptiveJSON = json.load(open(self.descriptiveJSONpath))
 		# there should be only one asset
 		self.asset = list(self.descriptiveJSON.keys())[0]
+		self.assetBasename = self.descriptiveJSON[self.asset]['basename']
 		self.metadata = self.descriptiveJSON[self.asset]['metadata']
 		self.descMetadataFields = []
 		for key,value in self.metadata.items():
@@ -92,16 +93,20 @@ class PBCoreDocument:
 				self.descMetadataFields.append(key)
 
 		for field in pbcore_map.BAMPFA_FIELDS:
-			if field in descMetadataFields:
+			if field in self.descMetadataFields:
 				mapping = pbcore_map.PBCORE_MAP[field]
-				# self.add_SubElement()
-
-		# NEXT: ITERATE OVER LIST OF PBCORE TAGS AND INSERT AT INDEX 
-		# INSTEAD OF ADDING SUBELEMENTS
-		# ... OR MAKE  ANOTHER FUNCTION TO CREATE SUBELEMENTS WITH TEXT:
-		# https://stackoverflow.com/questions/33386943/python-lxml-subelement-with-text-value
-		# ET.SubElement(self.descriptionRoot,'pbcoreAssetDate').text = self.metadata['releaseYear']
-		self.descriptionRoot.insert(0,ET.Element('pbcoreAssetDate',dateType='Released'))
+				# print(mapping)
+				mappingTarget = list(mapping.keys())[0]
+				print(mappingTarget)
+				level = mapping[mappingTarget]["LEVEL"]
+				if "ATTRIBUTES" in mapping[mappingTarget]:
+					mappingAttribs = mapping[mappingTarget]["ATTRIBUTES"]
+				else:
+					mappingAttribs = {}
+				if mapping[mappingTarget]["TEXT"] == "value":
+					value = self.metadata[field]
+				if level == "WORK":
+					self.add_SubElement(self.descriptionRoot,mappingTarget,attrib=mappingAttribs,_text=value,nsmap=self.NS_MAP)
 
 	def to_string(self):
 		self._string = ET.tostring(self.descriptionRoot, pretty_print=True)
