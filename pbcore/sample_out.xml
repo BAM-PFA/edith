@@ -89,11 +89,14 @@
 	<instantiationDate dateType="file modification">2018-02-09T23:17:22Z</instantiationDate>
 	<instantiationIdentifier source="File Name">noise_05034_pm0003074_r02of05.mp4</instantiationIdentifier>
 	<instantiationAnnotation annotationType="Condition note">2014/04/24 gc; sound "is" crackly</instantiationAnnotation><instantiationIdentifier source="PFA accession number">1620-01-5034</instantiationIdentifier></pbcoreInstantiation>
-  <pbcoreTitle titleType="Main">Sons and daughters</pbcoreTitle>
   <pbcoreAssetDate dateType="Released">1967</pbcoreAssetDate>
+  <pbcoreCoverage>
+    <coverageType ref="http://metadataregistry.org/concept/show/id/2522.html">Spatial</coverageType>
+    <coverage>United States</coverage>
+  </pbcoreCoverage>
   <pbcoreCreator>
-    <creatorRole ref="http://metadataregistry.org/concept/show/id/1303.html" source="PBCore creatorRole">Director(s)</creatorRole>
     <creator>Jerry Stoll</creator>
+    <creatorRole ref="http://metadataregistry.org/concept/show/id/1303.html" source="PBCore creatorRole">Director(s)</creatorRole>
   </pbcoreCreator>
-  <coverage>United States</coverage>
+  <pbcoreTitle titleType="Main">Sons and daughters</pbcoreTitle>
 </pbcoreDescriptionDocument>

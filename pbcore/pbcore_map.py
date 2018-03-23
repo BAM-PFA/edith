@@ -53,10 +53,13 @@ PBCORE_MAP = {
 		}
 	},
 	"country":{
-		"coverage":{
+		"pbcoreCoverage":{
 			"LEVEL":"WORK",
-			"TEXT":"value",
-			"SIBLING_FIELD":{
+			"TEXT":"",
+			"SUBELEMENTS":{
+				"coverage":{
+					"TEXT":"value"
+				},
 				"coverageType":{
 					"ATTRIBUTES":{
 						"ref":"http://metadataregistry.org/concept/show/id/2522.html"
