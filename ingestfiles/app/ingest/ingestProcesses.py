@@ -10,6 +10,7 @@ import sys
 import time
 import urllib
 
+# import app
 from . import fmQuery
 from .. import sshStuff
 from .. import utils
@@ -107,6 +108,15 @@ def grab_remote_files(targetFilepath):
 			"so don't need to rsync anything."
 			)
 
+def write_metadata_json(metadata,basename):
+	tempDir = utils.get_temp_dir()
+	print(tempDir)
+	jsonPath = os.path.join(tempDir,basename+".json")
+	print(jsonPath)
+	with open(jsonPath,'w+') as jsonTemp:
+		json.dump(metadata,jsonTemp)
+
+	return jsonPath
 
 def main(ingestDict,user):
 	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
@@ -116,10 +126,19 @@ def main(ingestDict,user):
 	dirName, hostName, sourceDir = utils.get_shared_dir_stuff()
 
 	for objectPath, options in ingestDict.items():
+		metadataJson = {}
+		metadataJson[objectPath] = {}
 		basename = options['basename']
 		idNumber = get_acc_from_filename(basename)
 		metadata = get_metadata(idNumber,basename)
 		options['metadata'] = metadata
+		
+		metadataJson[objectPath]['metadata'] = metadata
+		metadataJson[objectPath]['basename'] = basename
+		print("HOOOOOO")
+		# print(json.load(metadataJson))
+		metadataFile = write_metadata_json(metadataJson,basename)
+		# print(metadataFile)
 
 	if not hostName == 'localhost':
 		for objectPath in ingestDict.keys():
@@ -141,7 +160,7 @@ def main(ingestDict,user):
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 			subprocess.call([pythonBinary,ingestSipPath,'-i',_object,'-u',user])
 			print('hey')
-	print(ingestDict)
+	# print(ingestDict)
 	return(ingestDict)
 
 

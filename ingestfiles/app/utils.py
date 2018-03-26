@@ -4,6 +4,7 @@ Useful utility stuff.
 '''
 # standard libraries
 import os
+import shutil
 # local modules
 import app
 
@@ -39,3 +40,16 @@ def get_pymm_path():
 def get_python_path():
 	pythonPath = config['PYTHON3_BINARY_PATH']
 	return pythonPath
+
+def clean_temp_dir():
+	for _object in os.listdir(get_temp_dir):
+		if not _object.startswith("."):
+			if os.path.isfile(_object):
+				os.remove(_object)
+			elif os.path.isdir(_object):
+				try:
+					shutil.rmtree(_object)
+				except:
+					pass
+			else:
+				print("cant remove "+_object)

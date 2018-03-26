@@ -63,8 +63,16 @@ class PBCoreDocument:
 		'''
 		pass
 
-	def add_instantiation(self, pbcoreInstantiationPath):
-		pbcoreInstantiationPath = pbcoreInstantiationPath
+	def add_instantiation(self, pbcoreInstantiationPath, descriptiveJSONpath=None, level=None):
+		'''
+		Add an instantiation via mediainfo output.
+		Add a json file of BAMPFA descriptive metadata
+		to relate the instantiation to the instantiation for
+		the physical asset.
+		`level` should refer to:
+		Preservation master, Access copy, Mezzanine
+		'''
+
 		try:
 			pbcoreInstantiation = ET.parse(pbcoreInstantiationPath)
 			print(pbcoreInstantiation)
@@ -72,24 +80,46 @@ class PBCoreDocument:
 		except:
 			print('not a valid xml input ... probably?')
 			sys.exit()
-		# self.instantiation = ET.SubElement(self.descriptionRoot,'pbcoreInstantiation')
+		
 		instantiation = self.add_SubElement(
 			self.descriptionRoot,
 			'pbcoreInstantiation',
 			nsmap=self.NS_MAP
 			)
-		# print(self.pbcoreInstantiation.xpath('/p:pbcoreInstantiationDocument/*',namespaces=self.XPATH_NS_MAP))
+
 		for element in pbcoreInstantiation.xpath(
 			'/p:pbcoreInstantiationDocument/*',
 			namespaces=self.XPATH_NS_MAP
 			):
-			# print(element.tag)
 			instantiation.insert(0,deepcopy(element))
+
+		self.add_related_physical(descriptiveJSONpath, instantiation)
+
+		if level != None:
+			comment = ET.Comment(level)
+			instantiation.insert(0,comment)
+
+		return instantiation
+
+	def add_related_physical(self, descriptiveJSONpath, instantiation):
+		descriptiveJSON = json.load(open(descriptiveJSONpath))
+		asset = list(descriptiveJSON.keys())[0]
+		assetBasename = descriptiveJSON[asset]['basename']
+
+		instantiationXpathExpression = (
+			"/pbcoreDescriptionDocument/pbcoreInstantiation/comment()"
+			"[contains(.,'Physical asset')]"
+			)
+		targetPhysical = self.descriptionRoot.xpath(
+			instantiationXpathExpression,
+			namespaces=self.XPATH_NS_MAP
+			)
 
 	def add_SubElement(
 		self,
 		_parent,
-		_tag,attrib={},
+		_tag,
+		attrib={},
 		_text=None,
 		nsmap=None,
 		**_extra
@@ -102,34 +132,52 @@ class PBCoreDocument:
 		result.text = _text
 		return result
 
-	def add_description_elements(self,descriptiveJSONpath):
+	def add_pbcore_subelements(self,top,mappedSubelements,mdValue):
+		for key,value in mappedSubelements.items():
+			# print(key)
+			if "ATTRIBUTES" in mappedSubelements[key]:
+				attrib = mappedSubelements[key]["ATTRIBUTES"]
+			else:
+				attrib = {}
+			subelement = self.add_SubElement(
+				top,
+				key,
+				attrib=attrib,
+				nsmap=self.NS_MAP
+				)
+			# print(subelement)
+			if mappedSubelements[key]["TEXT"] == "value":
+				subelement.text = mdValue
+			else:
+				subelement.text = mappedSubelements[key]["TEXT"]
+
+	def add_physical_elements(self,descriptiveJSONpath):
 		'''
-		load metata json file in specific format:
-		{asset:{metadata:{field:value,field1:value1}}}
-		only add stuff that is applicable to all instantiations
+		load metadata json file in specific format,
+		drawn from BAMPFA CMS:
+		{assetpath:{
+			metadata:{
+				field1:value1,
+				field2:value2
+			},
+			basename:assetBasename
+			}
+		}
 		'''
-		descriptiveJSONpath = descriptiveJSONpath
+		# add an empty instantiation for the physical asset
+		physicalInstantiation = self.add_SubElement(
+			self.descriptionRoot,
+			'pbcoreInstantiation',
+			nsmap=self.NS_MAP
+			)
+
+		comment = ET.Comment("Physical Asset")
+		physicalInstantiation.insert(0,comment)
 		descriptiveJSON = json.load(open(descriptiveJSONpath))
 		# there should be only one asset
 		asset = list(descriptiveJSON.keys())[0]
 		assetBasename = descriptiveJSON[asset]['basename']
-		# if a field applies to an instantiation, 
-		# search for the right pbcoreInstantiation
-		# by basename and insert the element.
-		# currently something is up with my namespace
-		# assignment. so no 'p:' for my elements, 
-		# but need to use 'p:' for mediainfo elements.
-		instantiationXpathExpression = (
-			"/pbcoreDescriptionDocument/pbcoreInstantiation["
-				"contains(./p:instantiationIdentifier,'{}')"
-					"]".format(
-						assetBasename)
-			)
-		targetInstantiation = self.descriptionRoot.xpath(
-			instantiationXpathExpression,
-			namespaces=self.XPATH_NS_MAP
-			)
-		# print(assetBasename)
+
 		# grab the metadata dict from the JSON file
 		metadata = descriptiveJSON[asset]['metadata']
 		descMetadataFields = []
@@ -139,11 +187,6 @@ class PBCoreDocument:
 				descMetadataFields.append(key)
 
 		for field in pbcore_map.BAMPFA_FIELDS:
-			'''
-			Im so sorry for writing such ugly code. :(
-			I promise I will refactor and clean up the logic...
-			'''
-			
 			# loop through the nonempty fields and 
 			# match them to the PBCore mapping
 			if field in descMetadataFields:
@@ -151,13 +194,13 @@ class PBCoreDocument:
 				# grab the md value and set it for this loop
 				mdValue = metadata[field]
 				mapping = pbcore_map.PBCORE_MAP[field]
-				# print(mapping)
 				mappingTarget = list(mapping.keys())[0]
 				mappedPbcore = mapping[mappingTarget]
-				# print(mappingTarget)
 				# check if the field applies to the 
 				# WORK or INSTANTIATION level
 				level = mappedPbcore["LEVEL"]
+				
+				# set any attributes if applicable
 				if "ATTRIBUTES" in mappedPbcore:
 					mappingAttribs = mappedPbcore["ATTRIBUTES"]
 				else:
@@ -177,35 +220,21 @@ class PBCoreDocument:
 							nsmap=self.NS_MAP
 							)
 					else:
-						if not targetInstantiation == []:
-							self.add_SubElement(
-								targetInstantiation[0],
-								mappingTarget,
-								attrib=mappingAttribs,
-								_text=mdValue,
-								nsmap=self.NS_MAP
-								)
-					if "SIBLING_FIELDS" in mappedPbcore:
-						# this might not really be needed...
-						for key, value in mappedPbcore["SIBLING_FIELDS"].items():
-							subSib = mappedPbcore["SIBLING_FIELDS"][key]
-							if "ATTRIBUTES" in subSib:
-								attrib = subSib["ATTRIBUTES"]
-							else:
-								attrib = {}
-							text = subSib["TEXT"]
-							self.add_SubElement(
-								self.descriptionRoot,
-								key,
-								attrib=attrib,
-								_text=text,
-								nsmap=self.NS_MAP
-								)
+						self.add_SubElement(
+							physicalInstantiation,
+							mappingTarget,
+							attrib=mappingAttribs,
+							_text=mdValue,
+							nsmap=self.NS_MAP
+							)
+
 				else:
 					'''
 					If the meat is in a SubElement
 					add the relevant subelement(s)
 					'''
+					mappedSubelements = mappedPbcore["SUBELEMENTS"]
+
 					if level == "WORK":
 						top = self.add_SubElement(
 							self.descriptionRoot,
@@ -213,50 +242,16 @@ class PBCoreDocument:
 							attrib=mappingAttribs,
 							nsmap=self.NS_MAP
 							)
-						# print(top)
-						for key,value in mappedPbcore["SUBELEMENTS"].items():
-							# print(key)
-							if "ATTRIBUTES" in mappedPbcore["SUBELEMENTS"][key]:
-								attrib = mappedPbcore["SUBELEMENTS"][key]["ATTRIBUTES"]
-							else:
-								attrib = {}
-							subelement = self.add_SubElement(
-								top,
-								key,
-								attrib=attrib,
-								nsmap=self.NS_MAP
-								)
-							# print(subelement)
-							if mappedPbcore["SUBELEMENTS"][key]["TEXT"] == "value":
-								subelement.text = mdValue
-							else:
-								subelement.text = mappedPbcore["SUBELEMENTS"][key]["TEXT"]
+						self.add_pbcore_subelements(top,mappedSubelements,mdValue)
 					else:
 						if not targetInstantiation == []:
 							top = self.add_SubElement(
-								targetInstantiation[0],
+								physicalInstantiation,
 								mappingTarget,
 								attrib=mappingAttribs,
 								nsmap=self.NS_MAP
 								)
-							for key,value in mappedPbcore["SUBELEMENTS"].items():
-								# print(key)
-								if "ATTRIBUTES" in mappedPbcore["SUBELEMENTS"][key]:
-									attrib = mappedPbcore["SUBELEMENTS"][key]["ATTRIBUTES"]
-								else:
-									attrib = {}
-								subelement = self.add_SubElement(
-									top,
-									key,
-									attrib=attrib,
-									nsmap=self.NS_MAP
-									)
-								# print(subelement)
-								if mappedPbcore["SUBELEMENTS"][key]["TEXT"] == "value":
-									subelement.text = mdValue
-								else:
-									subelement.text = mappedPbcore["SUBELEMENTS"][key]["TEXT"]
-
+							self.add_pbcore_subelements(top,mappedSubelements,mdValue)
 
 	def to_string(self):
 		self._string = ET.tostring(self.descriptionRoot, pretty_print=True)
@@ -270,4 +265,3 @@ class PBCoreDocument:
 				encoding='utf-8', 
 				xml_declaration=True,
 				pretty_print=True)
-
