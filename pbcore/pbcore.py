@@ -75,7 +75,7 @@ class PBCoreDocument:
 
 		try:
 			pbcoreInstantiation = ET.parse(pbcoreInstantiationPath)
-			print(pbcoreInstantiation)
+			# print(pbcoreInstantiation)
 
 		except:
 			print('not a valid xml input ... probably?')
@@ -93,7 +93,11 @@ class PBCoreDocument:
 			):
 			instantiation.insert(0,deepcopy(element))
 
-		self.add_related_physical(descriptiveJSONpath, instantiation)
+		if descriptiveJSONpath != None:
+			self.add_related_physical(
+				instantiation,
+				_id=self.get_related_physical_ID(descriptiveJSONpath)
+				)
 
 		if level != None:
 			comment = ET.Comment(level)
@@ -101,19 +105,77 @@ class PBCoreDocument:
 
 		return instantiation
 
-	def add_related_physical(self, descriptiveJSONpath, instantiation):
+	def add_related_physical(self,instantiation,_id=None):
+		if _id == None:
+			return None
+		else:
+			relation = self.add_SubElement(
+					instantiation,
+					'instantiationRelation',
+					nsmap=self.NS_MAP
+					)
+			self.add_SubElement(
+				relation,
+				'instantiationRelationType',
+				attrib={
+					'source':'PBCore relationType',
+					'ref':(
+						'http://metadataregistry.org/'
+						'concept/list/vocabulary_id/161.html'
+						)
+				},
+				_text='Derived from',
+				nsmap=self.NS_MAP
+				)
+			self.add_SubElement(
+				relation,
+				'instantiationRelationIdentifier',
+				_text=_id,
+				nsmap=self.NS_MAP
+			)
+
+	def get_related_physical_ID(self, descriptiveJSONpath):
+		'''
+		Look for a barcode or an accession number for the 
+		instantiationRelationIdentifier value. 
+		This relies on the FMP barcode output which concatenates
+		all reel barcodes into one string. I should redo this to look for a 
+		barcode in the filename a la the filename parsing in fmQuery.py
+		'''
 		descriptiveJSON = json.load(open(descriptiveJSONpath))
 		asset = list(descriptiveJSON.keys())[0]
-		assetBasename = descriptiveJSON[asset]['basename']
+		assetBarcode = descriptiveJSON[asset]['metadata']['Barcode']
+		assetAccNo = descriptiveJSON[asset]['metadata']['accFull']
 
-		instantiationXpathExpression = (
-			"/pbcoreDescriptionDocument/pbcoreInstantiation/comment()"
-			"[contains(.,'Physical asset')]"
-			)
-		targetPhysical = self.descriptionRoot.xpath(
-			instantiationXpathExpression,
-			namespaces=self.XPATH_NS_MAP
-			)
+		if assetAccNo != "":
+			physicalAccXpath = (
+				"/pbcoreDescriptionDocument/pbcoreInstantiation/"
+				"instantiationIdentifier[@source='PFA accession number']/text()"
+				)
+			physicalAccNo = self.descriptionRoot.xpath(
+				physicalAccXpath,
+				namespaces=self.XPATH_NS_MAP
+				)
+
+			_id = physicalAccNo[0]
+
+			return _id
+
+		elif assetAccNo == "" and assetBarcode != "":
+			physicalBarcodeXpath = (
+				"/pbcoreDescriptionDocument/pbcoreInstantiation/"
+				"instantiationIdentifier[@source='PFA barcode']/text()"
+				)
+			physicalBarcode = self.descriptionRoot.xpath(
+				physicalBarcodeXpath,
+				namespaces=self.XPATH_NS_MAP
+				)
+			_id = physicalBarcode[0]
+
+			return _id
+
+		else:
+			return None
 
 	def add_SubElement(
 		self,
@@ -190,7 +252,7 @@ class PBCoreDocument:
 			# loop through the nonempty fields and 
 			# match them to the PBCore mapping
 			if field in descMetadataFields:
-				print(field)
+				# print(field)
 				# grab the md value and set it for this loop
 				mdValue = metadata[field]
 				mapping = pbcore_map.PBCORE_MAP[field]
