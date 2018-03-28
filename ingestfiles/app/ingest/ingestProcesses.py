@@ -51,7 +51,7 @@ def ingestToResourceSpace(user,filePath, basename):
 def get_metadata(idNumber,basename):
 	
 	if idNumber == '--':
-		metadataDict = {'title':basename}
+		metadataDict = {'title':'No metadata'}
 	elif idNumber == '00000':
 		# if the acc item number is zeroed out,
 		# try looking for a barcode to search on
@@ -59,17 +59,17 @@ def get_metadata(idNumber,basename):
 			barcode = get_barcode_from_filename(basename)
 			# print(barcode)
 			if barcode == "000000000":
-				metadataDict = {'title':'THIS IS AN UNACCESSIONED PFA ITEM WITH NO BARCODE...'}
+				metadataDict = {'title':'No metadata'}
 			else:
 				metadataDict = fmQuery.xml_query(barcode)
 		except:
-			metadataDict = {'title':'THIS IS AN UNACCESSIONED PFA ITEM WITH NO FILEMAKER MATCH...'}
+			metadataDict = {'title':'No metadata'}
 	else:
 		try:
 			print('searching on '+idNumber)
 			
 			metadataDict = fmQuery.xml_query(idNumber)
-			print('metadataDict')
+			# print('metadataDict')
 		except:
 			# if no results, try padding with zeros
 			idNumber = "{0:0>5}".format(idNumber)
@@ -77,7 +77,7 @@ def get_metadata(idNumber,basename):
 				metadataDict = fmQuery.xml_query(idNumber)
 			except:
 				# give up
-				metadataDict = {'title':basename}
+				metadataDict = {'title':'No metadata'}
 	# print(metadataDict)
 	return(metadataDict)
 
@@ -110,7 +110,7 @@ def grab_remote_files(targetFilepath):
 
 def write_metadata_json(metadata,basename):
 	tempDir = utils.get_temp_dir()
-	print(tempDir)
+	# print(tempDir)
 	jsonPath = os.path.join(tempDir,basename+".json")
 	print(jsonPath)
 	with open(jsonPath,'w+') as jsonTemp:
@@ -125,6 +125,7 @@ def main(ingestDict,user):
 
 	dirName, hostName, sourceDir = utils.get_shared_dir_stuff()
 
+	# try to search filemaker for descriptive metadata
 	for objectPath, options in ingestDict.items():
 		metadataJson = {}
 		metadataJson[objectPath] = {}
@@ -132,13 +133,13 @@ def main(ingestDict,user):
 		idNumber = get_acc_from_filename(basename)
 		metadata = get_metadata(idNumber,basename)
 		options['metadata'] = metadata
-		
 		metadataJson[objectPath]['metadata'] = metadata
 		metadataJson[objectPath]['basename'] = basename
-		print("HOOOOOO")
-		# print(json.load(metadataJson))
-		metadataFile = write_metadata_json(metadataJson,basename)
-		# print(metadataFile)
+		if metadata['title'] != 'No metadata':
+			metadataFile = write_metadata_json(metadataJson,basename)
+			# print(metadataFile)
+		else:
+			metadataFile = None
 
 	if not hostName == 'localhost':
 		for objectPath in ingestDict.keys():
@@ -151,14 +152,24 @@ def main(ingestDict,user):
 			pythonBinary = utils.get_python_path()
 			pymmPath = utils.get_pymm_path()
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
-			subprocess.call([pythonBinary,ingestSipPath,'-i',_object,'-u',user])
+			pymmCommand = [pythonBinary,ingestSipPath,'-i',objectPath,'-u',user]
+			if metadataFile:
+				pymmCommand.extend(['-j',metadataFile])
+			else:
+				pass
+			subprocess.call(pymmCommand)
 
 	else:
 		for _object in ingestDict.keys():
 			pythonBinary = utils.get_python_path()
 			pymmPath = utils.get_pymm_path()
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
-			subprocess.call([pythonBinary,ingestSipPath,'-i',_object,'-u',user])
+			pymmCommand = [pythonBinary,ingestSipPath,'-i',_object,'-u',user]
+			if metadataFile:
+				pymmCommand.extend(['-j',metadataFile])
+			else:
+				pass
+			subprocess.call(pymmCommand)
 			print('hey')
 	# print(ingestDict)
 	return(ingestDict)

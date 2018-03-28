@@ -6,10 +6,15 @@
 	  {% else %}
 	  <title>INGESTOR</title>
 	  {% endif %}
+	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	</head>
 	<body>
-		<div>INGESTOR: <a href="/index">Ingest Stuff</a></div>
-		<hr>
-		{% block content %}{% endblock %}
+		<nav class="navbar navbar-light bg-light">
+		  <a class="navbar-brand">INGESTOR</a><a href="/index">Ingest Stuff</a>
+		</nav>
+		<div class="container">
+  			{% block content %}{% endblock %}
+		</div>
+		
 	</body>
 </html>
