@@ -169,7 +169,9 @@ def main(ingestDict,user):
 				pymmCommand.extend(['-j',metadataFile])
 			else:
 				pass
+			
 			subprocess.call(pymmCommand)
+			
 			print('hey')
 	# print(ingestDict)
 	return(ingestDict)
@@ -177,32 +179,6 @@ def main(ingestDict,user):
 
 ### LEGACY STUFF: TO BE ADAPTED OR DELETED ###
 
-# PROCESS INPUT FILES WITH mediamicroservices
-# def do_legacy_mm():
-# 	for item in os.listdir(mmIngestFolder):
-# 		if not item.startswith("."):
-# 			filePath = os.path.abspath(mmIngestFolder+"/"+item)
-# 			fileNameForMediaID = os.path.splitext(item)[0]
-# 			try:
-# 				ingest = subprocess.Popen(['/usr/local/bin/ingestfile','-e','-u',user,'-I',filePath,'-m',fileNameForMediaID])
-# 				ingest.wait()
-# 				os.remove(filePath)
-# 			except IOError as err:
-# 				print("OS error: {0}".format(err))
-
-# # SEND AIP THAT HAS BEEN CREATED TO THE LTO STAGING AREA
-# def do_legacy_AIP(LTOstageDir):
-# 	for AIP in os.listdir(LTOstageDir):
-# 		dirPath = LTOstageDir+AIP
-# 		if os.path.isdir(dirPath):
-# 			if "bagit.txt" not in os.listdir(dirPath):
-# 				print(AIP+" is an AIP! Let's Bag It!")
-# 				try:
-# 					subprocess.call([bagit,"--contact-name",user,dirPath])
-# 				except:
-# 					print("OS error: {0}".format(err))
-# 			else:
-# 				print(AIP+" was arlready bagged!")
 
 # # INGEST THE PROXY FILE AND METADATA INTO RESOURCESPACE
 # def do_legacy_rs(resourceTargetDir):
