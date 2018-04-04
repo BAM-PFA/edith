@@ -53,3 +53,7 @@ def clean_temp_dir():
 					pass
 			else:
 				print("cant remove "+_object)
+
+def get_rs_dir():
+	rs_dir = config['RESOURCESPACE_PROXY_DIR']
+	return rs_dir
