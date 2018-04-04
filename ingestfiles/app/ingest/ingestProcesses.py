@@ -104,14 +104,7 @@ def write_metadata_json(metadata,basename):
 
 	return jsonPath
 
-def main(ingestDict,user):
-	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
-	# pymmconfig = pymmFunctions.read_config()
-	# print(pymmconfig['paths']['outdir_ingestfile'])
-	print(ingestDict)
-	dirName, hostName, sourceDir = utils.get_shared_dir_stuff()
-
-	# try to search filemaker for descriptive metadata
+def add_metadata(ingestDict):
 	for objectPath, options in ingestDict.items():
 		metadataJson = {}
 		metadataJson[objectPath] = {}
@@ -121,11 +114,24 @@ def main(ingestDict,user):
 		options['metadata'] = metadata
 		metadataJson[objectPath]['metadata'] = metadata
 		metadataJson[objectPath]['basename'] = basename
+		# FIND A BETTER WAY TO DENOTE NO BAMPFA METADATA
 		if metadata['title'] != 'No metadata':
-			metadataFile = write_metadata_json(metadataJson,basename)
+			options['metadataFilepath'] = write_metadata_json(metadataJson,basename)
 			# print(metadataFile)
 		else:
-			metadataFile = None
+			options['metadataFilepath'] = ''
+
+	return ingestDict
+
+def main(ingestDict,user):
+	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
+	# pymmconfig = pymmFunctions.read_config()
+	# print(pymmconfig['paths']['outdir_ingestfile'])
+	print(ingestDict)
+	dirName, hostName, sourceDir = utils.get_shared_dir_stuff()
+
+	# try to search filemaker for descriptive metadata
+	ingestDict = add_metadata(ingestDict)
 
 	if not hostName == 'localhost':
 		for objectPath in ingestDict.keys():
@@ -139,10 +145,11 @@ def main(ingestDict,user):
 			pymmPath = utils.get_pymm_path()
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 			pymmCommand = [pythonBinary,ingestSipPath,'-i',objectPath,'-u',user]
-			if metadataFile:
-				pymmCommand.extend(['-j',metadataFile])
+			metadataFilepath = ingestDict[_object]['options']['metadataFilepath']
+			if metadataFilepath != '':
+				pymmCommand.extend(['-j',metadataFilepath])
 			else:
-				pass
+				passs
 			subprocess.call(pymmCommand)
 
 	else:
@@ -151,15 +158,34 @@ def main(ingestDict,user):
 			pymmPath = utils.get_pymm_path()
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 			pymmCommand = [pythonBinary,ingestSipPath,'-i',_object,'-u',user]
-			if metadataFile:
-				pymmCommand.extend(['-j',metadataFile])
+			metadataFilepath = ingestDict[_object]['options']['metadataFilepath']
+			if metadataFilepath != '':
+				pymmCommand.extend(['-j',metadataFilepath])
 			else:
 				pass
 			
-			subprocess.call(pymmCommand)
+			try:
+				pymmOut,pymmErr = subprocess.run(
+				pymmCommand,
+				stdout=subprocess.PIPE,
+				stderr=subprocess.PIPE
+				)
+				print(pymmOut)
+			except subprocess.CalledProcessError as e:
+				print(e)
 			
 			print('hey')
 
-	resourcespaceFunctions.do_resourcespace(user)
+			rsDir = utils.get_rs_dir()
+			basename = ingestDict[_object]['basename']
+			rsProxyPath = os.path.join(rsDir,basename)
+			if os.path.exists(rsProxyPath):
+				print("WOOOT")
+				# rsStatus = resourcespaceFunctions.do_resourcespace(
+				# 	user,
+				# 	rsProxyPath,
+				# 	metadataFilepath
+				# 	)
+
 	# print(ingestDict)
 	return(ingestDict)

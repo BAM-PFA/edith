@@ -14,28 +14,26 @@ import requests
 from . import ingestProcesses
 from .. import utils
 
-def do_resourcespace(user):
-	resourcespaceProxyDir = utils.get_rs_dir()
+def do_resourcespace(user,proxyPath,metadataFilepath=None):
+	'''
+	uh...
+	'''
 	success = False
-	for item in os.listdir(resourcespaceProxyDir):
-		idNumber = ingestProcesses.get_acc_from_filename(item)
-		metadata = ingestProcesses.get_metadata(idNumber,item)
-		if os.path.isfile(item):
-			itempath = os.path.abspath(item)
-			quotedPath = urllib.parse.quote(itempath, safe='')
-			result = resourcespace_API_call(
+	if metadataFilepath != None:
+		with open(metadataFilepath,'rb') as mf:
+			metadata = json.load(mf)
+			print(metadata)
+
+	if os.path.isfile(proxyPath):
+		quotedPath = urllib.parse.quote(itempath, safe='')	
+		result = resourcespace_API_call(
 				user,
 				metadata,
 				quotedPath,
-				itempath
+				proxyPath
 				)
-			if result:
-				success = True
-		elif os.path.isdir(item):
-			# if input is a dir of files get the first item,
-			# post it to RS as a 'primary' and add the rest
-			# as related files
-			items = os.listdir(item)
+	elif os.path.isdir(proxyPath):
+		items = os.listdir(proxyPath)
 			items.sort()
 			coolItems = [x for x in items if not x.startswith('.')]
 			primaryItem = coolItems[0]
@@ -54,7 +52,7 @@ def do_resourcespace(user):
 			if primaryRecord:
 				coolItems.pop(0)
 				for _file in coolItems:
-					itempath = os.path.abspath(item)
+					itempath = os.path.abspath(_file)
 					quotedPath = urllib.parse.quote(itempath, safe='')
 					result = rs_alt_file_API_call(
 						user,
@@ -68,8 +66,7 @@ def do_resourcespace(user):
 						)
 				if len(coolItems) == 0:
 					success = True
-	if success:
-		return True
+	return success
 
 def format_RS_POST(RSquery,APIkey):
 	rs_base_url = utils.get_rs_base_url()
@@ -141,3 +138,40 @@ def rs_alt_file_API_call(user,primaryRecord,quotedPath,filePath):
 		utils.delete_it(filePath)
 	return text
 
+def metadata_for_rs(metadataJSON):
+	'''
+	Map metadata to RS field IDs
+	Return URL-encoded JSON per RS API reqs.
+	'''
+
+	rsMetaDict = {}
+
+	rsMetaDict[8] = metadataJSON['title']
+	rsMetaDict[84] = metadataJSON['altTitle']
+	rsMetaDict[85] = metadataJSON['releaseYear']
+	rsMetaDict[86] = metadataJSON['accPref']
+	rsMetaDict[87] = metadataJSON['accDepos']
+	rsMetaDict[88] = metadataJSON['accItem']
+	rsMetaDict[89] = metadataJSON['accFull']
+	rsMetaDict[90] = metadataJSON['projGrp']
+	rsMetaDict[3] = metadataJSON['country']
+	rsMetaDict[91] = metadataJSON['directorsNames']
+	rsMetaDict[92] = metadataJSON['credits']
+	rsMetaDict[93] = metadataJSON['generalNotes']
+	rsMetaDict[94] = metadataJSON['conditionNote']
+	rsMetaDict[98] = metadataJSON['Barcode']
+	rsMetaDict[99] = metadataJSON['language']
+	rsMetaDict[100] = metadataJSON['soundCharacteristics']
+	rsMetaDict[101] = metadataJSON['color']
+	rsMetaDict[102] = metadataJSON['runningTime']
+	rsMetaDict[103] = metadataJSON['medium']
+	rsMetaDict[104] = metadataJSON['dimensions']
+	rsMetaDict[105] = metadataJSON['videoFormat']
+	rsMetaDict[106] = metadataJSON['videoStandard']
+	rsMetaDict[95] = metadataJSON['ingestUUID']
+	# rsMetaDict[] = metadataJSON['']
+	
+	rsMetaJSON = json.dumps(rsMetaDict)
+	quotedJSON = urllib.parse.quote(rsMetaJSON.encode())
+
+	return quotedJSON
