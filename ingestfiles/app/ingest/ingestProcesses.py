@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-
+# standard library modules
 import hashlib
 import json
 import os
 import re
-import requests
 import subprocess
 import sys
 import time
 import urllib
-
-# import app
+# local modules
 from . import fmQuery
+from . import resourcespaceFunctions
 from .. import sshStuff
 from .. import utils
 
@@ -38,82 +37,9 @@ def get_barcode_from_filename(basename):
 		barcode = "000000000"
 	return barcode
 
-# def ingestToResourceSpace(user,filePath, basename):
-# 	idNumber = get_acc_from_filename(basename)
-	
-# 	targetFile = resourceTargetDir+basename
-# 	quotedPath = urllib.parse.quote(targetFile, safe='')
-# 	metadata = query(idNumber,filePath,basename)
 
-# 	resourceSpaceAPIcall(user,metadata,quotedPath,targetFile)
-
-def do_resourcespace(user):
-	resourcespaceProxyDir = utils.get_rs_dir()
-	for item in os.listdir(resourcespaceProxyDir):
-		idNumber = get_acc_from_filename(item)
-		metadata = get_metadata(idNumber,item)
-		if os.path.isfile(item):
-			itempath = os.path.abspath(item)
-			quotedPath = urllib.parse.quote(itempath, safe='')
-			resourcespace_API_call(user,metadata,quotedPath,itempath)
-		elif os.path.isdir(item):
-			items = os.listdir(item)
-			items.sort()
-			coolItems = [x for x in items if not x.startswith('.')]
-			primaryItem = coolItems[0]
-			primaryPath = os.path.abspath(primaryItem)
-			quotedPath = urllib.parse.quote(
-				os.path.abspath(primaryPath),
-				safe=''
-				)
-			primaryRecord = resourcespace_API_call(
-				user,
-				metadata,
-				quotedPath,
-				primaryPath
-				)
-			coolItems.pop(0)
-			for _file in coolItems:
-				itempath = os.path.abspath(item)
-				quotedPath = urllib.parse.quote(itempath, safe='')
-				resourcespace_related_item_API_call(
-					user,
-					primaryRecord,
-					quotedPath,
-					itempath
-					)
-
-def resourcespace_API_call():
-	pass
-
-def resourcespace_related_item_API_call():
-	pass
-
-def do_legacy_resourceSpaceAPIcall(user,metadata,filePath,RSfile):
-	# print(user)
-	destination = user
-	# user = login(destination)[0]
-	cred = login(destination)[1]
-
-	RSquery = "user="+user+"&function=create_resource_from_local&param1=3&param2=0&param3="+filePath+"&param4=&param5=&param6=&param7="+metadata
-	sign = hashlib.sha256(cred.encode()+RSquery.encode())
-	signDigest = sign.hexdigest()
-	completePOST = 'http://localhost/~RLAS_Admin/resourcespace/api/?'+RSquery+"&sign="+signDigest
-	
-	try:
-		resp = requests.post(completePOST)
-		print(resp.text)
-	except ConnectionError as err:
-		print("OOPS "*100)
-		raise err
-
-	print(resp.status_code)
-	httpStatus = resp.status_code
-	if httpStatus == 200:
-			os.remove(RSfile)
 
 def get_metadata(idNumber,basename):
-	
 	if idNumber == '--':
 		metadataDict = {'title':'No metadata'}
 	elif idNumber == '00000':
@@ -131,7 +57,6 @@ def get_metadata(idNumber,basename):
 	else:
 		try:
 			print('searching on '+idNumber)
-			
 			metadataDict = fmQuery.xml_query(idNumber)
 			# print('metadataDict')
 		except:
@@ -235,42 +160,6 @@ def main(ingestDict,user):
 			
 			print('hey')
 
-	do_resourcespace(user)
+	resourcespaceFunctions.do_resourcespace(user)
 	# print(ingestDict)
 	return(ingestDict)
-
-
-### LEGACY STUFF: TO BE ADAPTED OR DELETED ###
-
-
-# # INGEST THE PROXY FILE AND METADATA INTO RESOURCESPACE
-# def do_legacy_rs(resourceTargetDir):
-# 	for basename in os.listdir(resourceTargetDir):
-# 		filePath = resourceTargetDir+basename
-# 		user = user
-# 		if os.path.isfile(filePath):
-# 			if not basename.startswith("."):
-# 				ingestToResourceSpace(user,filePath,basename)
-
-# def do_legacy_resourceSpaceAPIcall(user,metadata,filePath,RSfile):
-# 	# print(user)
-# 	destination = user
-# 	user = login(destination)[0]
-# 	cred = login(destination)[1]
-
-# 	RSquery = "user="+user+"&function=create_resource_from_local&param1=3&param2=0&param3="+filePath+"&param4=&param5=&param6=&param7="+metadata
-# 	sign = hashlib.sha256(cred.encode()+RSquery.encode())
-# 	signDigest = sign.hexdigest()
-# 	completePOST = 'http://localhost/~RLAS_Admin/resourcespace/api/?'+RSquery+"&sign="+signDigest
-	
-# 	try:
-# 		resp = requests.post(completePOST)
-# 		print(resp.text)
-# 	except ConnectionError as err:
-# 		print("OOPS "*100)
-# 		raise err
-
-# 	print(resp.status_code)
-# 	httpStatus = resp.status_code
-# 	if httpStatus == 200:
-# 			os.remove(RSfile)

@@ -82,6 +82,7 @@ Still deployed as dev, will be run on Apache in production.
 Tested on Ubuntu 16.04 and Mac El Capitan and Sierra.
 * Runs on Python 3
 * paramiko (on Ubuntu `pip3 install -U paramiko` for correct Cryptography build)
+* requests (`pip3 install requests`)
 * `pymm` dependencies:
    * mediainfo
    * ffmpeg

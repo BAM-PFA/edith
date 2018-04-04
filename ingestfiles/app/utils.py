@@ -41,19 +41,39 @@ def get_python_path():
 	pythonPath = config['PYTHON3_BINARY_PATH']
 	return pythonPath
 
+def delete_it(_object):
+	if os.path.isfile(_object):
+		try:
+			os.remove(_object)
+		except:
+			print("cant remove "+_object)
+	elif os.path.isdir(_object):
+		try:
+			shutil.rmtree(_object)
+		except:
+			pass
+	else:
+		print("cant remove "+_object)
+
 def clean_temp_dir():
 	for _object in os.listdir(get_temp_dir):
-		if not _object.startswith("."):
-			if os.path.isfile(_object):
-				os.remove(_object)
-			elif os.path.isdir(_object):
-				try:
-					shutil.rmtree(_object)
-				except:
-					pass
-			else:
-				print("cant remove "+_object)
+		if not _object.startswith('.'):
+			delete_it(_object)
 
 def get_rs_dir():
 	rs_dir = config['RESOURCESPACE_PROXY_DIR']
 	return rs_dir
+
+def get_rs_base_url():
+	rs_base_url = config["RS_BASE_URL"]
+	return rs_base_url
+
+def get_rs_credentials(user):
+	rsUserName = config["KNOWN_USERS"][user]["RSuserName"]
+	rsAPIkey = config["KNOWN_USERS"][user]["resourcespaceKey"]
+	return rsUserName,rsAPIkey
+
+def get_extension(basename):
+	split = os.path.splitext(basename)
+	ext = split[1]
+	return ext
