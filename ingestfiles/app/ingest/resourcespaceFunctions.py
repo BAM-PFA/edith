@@ -18,54 +18,57 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 	'''
 	uh...
 	'''
+	print("WYOKJLKJNLKJHLKJNLKVJNLK :OI H:OHFLIUHLIUHLIU")
 	success = False
 	if metadataFilepath != None:
-		with open(metadataFilepath,'rb') as mf:
+		with open(metadataFilepath,'r+') as mf:
 			metadata = json.load(mf)
 			print(metadata)
+
+	urlMetadata = metadata_for_rs(metadata)
 
 	if os.path.isfile(proxyPath):
 		quotedPath = urllib.parse.quote(itempath, safe='')	
 		result = resourcespace_API_call(
 				user,
-				metadata,
+				urlMetadata,
 				quotedPath,
 				proxyPath
 				)
 	elif os.path.isdir(proxyPath):
 		items = os.listdir(proxyPath)
-			items.sort()
-			coolItems = [x for x in items if not x.startswith('.')]
-			primaryItem = coolItems[0]
-			primaryPath = os.path.abspath(primaryItem)
-			quotedPath = urllib.parse.quote(
-				os.path.abspath(primaryPath),
-				safe=''
-				)
-			# post the first/primary to RS and get its record ID
-			primaryRecord = resourcespace_API_call(
-				user,
-				metadata,
-				quotedPath,
-				primaryPath
-				)
-			if primaryRecord:
-				coolItems.pop(0)
-				for _file in coolItems:
-					itempath = os.path.abspath(_file)
-					quotedPath = urllib.parse.quote(itempath, safe='')
-					result = rs_alt_file_API_call(
-						user,
-						primaryRecord,
-						quotedPath,
-						itempath
-						)
-					if result:
-						coolItems.pop(
-							coolItems.index(_file)
-						)
-				if len(coolItems) == 0:
-					success = True
+		items.sort()
+		coolItems = [x for x in items if not x.startswith('.')]
+		primaryItem = coolItems[0]
+		primaryPath = os.path.abspath(primaryItem)
+		quotedPath = urllib.parse.quote(
+			os.path.abspath(primaryPath),
+			safe=''
+			)
+		# post the first/primary to RS and get its record ID
+		primaryRecord = resourcespace_API_call(
+			user,
+			urlMetadata,
+			quotedPath,
+			primaryPath
+			)
+		if primaryRecord:
+			coolItems.pop(0)
+			for _file in coolItems:
+				itempath = os.path.abspath(_file)
+				quotedPath = urllib.parse.quote(itempath, safe='')
+				result = rs_alt_file_API_call(
+					user,
+					primaryRecord,
+					quotedPath,
+					itempath
+					)
+				if result:
+					coolItems.pop(
+						coolItems.index(_file)
+					)
+			if len(coolItems) == 0:
+				success = True
 	return success
 
 def format_RS_POST(RSquery,APIkey):
