@@ -178,7 +178,7 @@ def main(ingestDict,user):
 				pymmOut = pymmOut.decode().split('\n')
 				pymmResult = ast.literal_eval(pymmOut[-2])
 
-				# print(pymmOut)
+				print(pymmResult)
 
 			except subprocess.CalledProcessError as e:
 				print(e)
@@ -198,6 +198,8 @@ def main(ingestDict,user):
 			rsDir = utils.get_rs_dir()
 			basename = ingestDict[_object]['basename']
 			rsProxyPath = os.path.join(rsDir,basename)
+			print(rsProxyPath)
+			# faling here bc i need to use the pymm canonical name not the basename
 			if os.path.exists(rsProxyPath):
 				print("WOOOT")
 				rsStatus = resourcespaceFunctions.do_resourcespace(
