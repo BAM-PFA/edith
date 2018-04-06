@@ -202,6 +202,9 @@ def main(ingestDict,user):
 
 			rsDir = utils.get_rs_dir()
 			rsProxyPath = pymmResult['accessPath']
+			basename = ingestDict[_object]['basename']
+			rsProxyPath = os.path.join(rsDir,basename)
+			print(rsProxyPath)
 			if os.path.exists(rsProxyPath):
 				print("WOOOT")
 				rsStatus = resourcespaceFunctions.do_resourcespace(
