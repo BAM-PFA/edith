@@ -7,7 +7,7 @@ import re
 import subprocess
 import sys
 import time
-import urllib
+import urllib.parse
 # nonstandard libraries
 import requests
 # local modules
@@ -19,6 +19,7 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 	uh...
 	'''
 	print("WYOKJLKJNLKJHLKJNLKVJNLK :OI H:OHFLIUHLIUHLIU")
+	print(proxyPath)
 	success = False
 	if metadataFilepath != None:
 		with open(metadataFilepath,'r+') as mf:
@@ -28,7 +29,8 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 	urlMetadata = metadata_for_rs(metadata)
 
 	if os.path.isfile(proxyPath):
-		quotedPath = urllib.parse.quote(itempath, safe='')	
+		print("FFIILLEE")
+		quotedPath = urllib.parse.quote(proxyPath, safe='')	
 		result = resourcespace_API_call(
 				user,
 				urlMetadata,
@@ -36,32 +38,36 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 				proxyPath
 				)
 	elif os.path.isdir(proxyPath):
+		print("DDIIRR")
 		items = os.listdir(proxyPath)
 		items.sort()
-		coolItems = [x for x in items if not x.startswith('.')]
+		coolItems = [os.path.join(proxyPath,x) for x in items if not x.startswith('.')]
+		print(coolItems)
 		primaryItem = coolItems[0]
-		primaryPath = os.path.abspath(primaryItem)
 		quotedPath = urllib.parse.quote(
-			os.path.abspath(primaryPath),
+			primaryItem,
 			safe=''
 			)
+		print(quotedPath)
 		# post the first/primary to RS and get its record ID
 		primaryRecord = resourcespace_API_call(
 			user,
 			urlMetadata,
 			quotedPath,
-			primaryPath
+			primaryItem
 			)
-		if primaryRecord:
+		print('primaryRecord')
+		print(primaryRecord)
+		if primaryRecord not in (None,''):
 			coolItems.pop(0)
+			print(coolItems)
 			for _file in coolItems:
-				itempath = os.path.abspath(_file)
-				quotedPath = urllib.parse.quote(itempath, safe='')
+				quotedPath = urllib.parse.quote(_file, safe='')
 				result = rs_alt_file_API_call(
 					user,
 					primaryRecord,
 					quotedPath,
-					itempath
+					_file
 					)
 				if result:
 					coolItems.pop(
@@ -80,11 +86,12 @@ def format_RS_POST(RSquery,APIkey):
 		RSquery,
 		signDigest
 		)
+	return completePOST
 
 def make_RS_API_call(completePOST):
 	try:
 		resp = requests.post(completePOST)
-		print(resp.text)
+		# print(resp.text)
 	except ConnectionError as err:
 		print("BAD RS POST")
 		raise err
@@ -106,9 +113,12 @@ def resourcespace_API_call(user,metadata,quotedPath,filePath):
 		"&param4=&param5=&param6="
 		"&param7={}".format(rsUser,quotedPath,metadata)
 		)
+	# print(RSquery)
 	completePOST = format_RS_POST(RSquery,APIkey)
-
+	# print(completePOST)
 	status,text = make_RS_API_call(completePOST)
+	print(status)
+	print(text)
 	if status == 200:
 		utils.delete_it(filePath)
 	return text
@@ -134,8 +144,9 @@ def rs_alt_file_API_call(user,primaryRecord,quotedPath,filePath):
 			quotedPath
 			)
 		)
+	print(RSquery)
 	completePOST = format_RS_POST(RSquery,APIkey)
-
+	print(completePOST)
 	status,text = make_RS_API_call(completePOST)
 	if status == 200:
 		utils.delete_it(filePath)

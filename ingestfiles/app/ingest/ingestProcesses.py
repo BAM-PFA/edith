@@ -12,6 +12,7 @@ import urllib
 # local modules
 from . import fmQuery
 from . import resourcespaceFunctions
+from . import metadataMaster
 from .. import sshStuff
 from .. import utils
 
@@ -41,8 +42,10 @@ def get_barcode_from_filename(basename):
 
 
 def get_metadata(idNumber,basename):
+	metadataDict = metadataMaster.metadata
+
 	if idNumber == '--':
-		metadataDict = {'title':'No metadata'}
+		metadataDict['hasBAMPFAmetadata'] = False
 	elif idNumber == '00000':
 		# if the acc item number is zeroed out,
 		# try looking for a barcode to search on
@@ -50,24 +53,26 @@ def get_metadata(idNumber,basename):
 			barcode = get_barcode_from_filename(basename)
 			# print(barcode)
 			if barcode == "000000000":
-				metadataDict = {'title':'No metadata'}
+				metadataDict['hasBAMPFAmetadata'] = False
 			else:
 				metadataDict = fmQuery.xml_query(barcode)
 		except:
-			metadataDict = {'title':'No metadata'}
+			metadataDict['hasBAMPFAmetadata'] = False
 	else:
 		try:
 			print('searching on '+idNumber)
 			metadataDict = fmQuery.xml_query(idNumber)
+			metadataDict['hasBAMPFAmetadata'] = True
 			# print('metadataDict')
 		except:
 			# if no results, try padding with zeros
 			idNumber = "{0:0>5}".format(idNumber)
 			try:
 				metadataDict = fmQuery.xml_query(idNumber)
+				metadataDict['hasBAMPFAmetadata'] = True
 			except:
 				# give up
-				metadataDict = {'title':'No metadata'}
+				metadataDict['hasBAMPFAmetadata'] = False
 	# print(metadataDict)
 	return(metadataDict)
 
@@ -163,12 +168,12 @@ def main(ingestDict,user):
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 			pymmCommand = [pythonBinary,ingestSipPath,'-i',_object,'-u',user]
 			metadataFilepath = ingestDict[_object]['metadataFilepath']
-			print(metadataFilepath)
-			if ingestDict[_object]['metadata']['title'] != 'No metadata':
+			# print(metadataFilepath)
+			if ingestDict[_object]['metadata']['hasBAMPFAmetadata'] != False:
 				pymmCommand.extend(['-j',metadataFilepath])
 			else:
 				pass
-			print(pymmCommand)
+			# print(pymmCommand)
 			try:
 				pymmOut = subprocess.check_output(
 					pymmCommand
@@ -178,14 +183,14 @@ def main(ingestDict,user):
 				pymmOut = pymmOut.decode().split('\n')
 				pymmResult = ast.literal_eval(pymmOut[-2])
 
-				# print(pymmOut)
+				print(pymmResult)
 
 			except subprocess.CalledProcessError as e:
 				print(e)
 
 			print('hey')
 			# add the UUID to the metadata file
-			ingestUUID = pymmResult['UUID']
+			ingestUUID = pymmResult['ingestUUID']
 			with open(metadataFilepath,'r+') as mdread:
 				data = json.load(mdread)
 				key = list(data.keys())[0]
@@ -196,8 +201,7 @@ def main(ingestDict,user):
 				json.dump(theGoods,mdwrite)
 
 			rsDir = utils.get_rs_dir()
-			basename = ingestDict[_object]['basename']
-			rsProxyPath = os.path.join(rsDir,basename)
+			rsProxyPath = pymmResult['accessPath']
 			if os.path.exists(rsProxyPath):
 				print("WOOOT")
 				rsStatus = resourcespaceFunctions.do_resourcespace(

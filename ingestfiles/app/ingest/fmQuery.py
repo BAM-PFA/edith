@@ -10,6 +10,7 @@ import sys
 import urllib.parse
 import xml.etree.ElementTree as ET
 # local imports
+from . import metadataMaster
 import app
 
 def xml_query(idNumber):
@@ -40,7 +41,7 @@ def xml_query(idNumber):
 
 	# print(requestURL)
 	xml = requests.get(requestURL,auth=(user,password))
-	recordDict = {}
+	recordDict = metadataMaster.metadata
 	
 	root = ET.fromstring(xml.text)
 	# THERE SHOULD ONLY EVER BE ONE RECORD IN A RESULTSET SINCE ITEM NUMBERS SHOULD BE UNIQUE
