@@ -19,7 +19,7 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 	uh...
 	'''
 	print("WYOKJLKJNLKJHLKJNLKVJNLK :OI H:OHFLIUHLIUHLIU")
-	print(proxyPath)
+	# print(proxyPath)
 	success = False
 	if metadataFilepath != None:
 		with open(metadataFilepath,'r+') as mf:
@@ -98,9 +98,9 @@ def make_RS_API_call(completePOST):
 
 	httpStatus = resp.status_code
 	if httpStatus == 200:
-		return resp.status,resp.text
+		return httpStatus,resp.text
 	else:
-		return resp.status,None
+		return httpStatus,None
 
 def resourcespace_API_call(user,metadata,quotedPath,filePath):
 	rsUser,APIkey = utils.get_rs_credentials(user)
@@ -116,31 +116,34 @@ def resourcespace_API_call(user,metadata,quotedPath,filePath):
 	# print(RSquery)
 	completePOST = format_RS_POST(RSquery,APIkey)
 	# print(completePOST)
-	status,text = make_RS_API_call(completePOST)
-	print(status)
-	print(text)
-	if status == 200:
+	httpStatus,RSrecordID = make_RS_API_call(completePOST)
+	print(httpStatus)
+	print(RSrecordID)
+	if httpStatus == 200:
 		utils.delete_it(filePath)
-	return text
+	return RSrecordID
 
 def rs_alt_file_API_call(user,primaryRecord,quotedPath,filePath):
 	rsUser,APIkey = utils.get_rs_credentials(user)
 	basename = os.path.basename(filePath)
-	extension = utils.get_extension(basename)
+	extension = utils.get_extension(basename)#.strip('.')
+	size = str(os.stat(filePath).st_size)
 	RSquery = (
 		"user={0}"
 		"&function=add_alternative_file"
 		"&param1={1}"
 		"&param2={2}"
-		"&param3="
+		"&param3={2}"
 		"&param4={2}"
 		"&param5={3}"
-		"&param6=&param7="
-		"&param8={4}".format(
+		"&param6={4}"
+		"&param7=3"
+		"&param8={5}".format(
 			rsUser,
 			primaryRecord,
 			basename,
 			extension,
+			size,
 			quotedPath
 			)
 		)
@@ -148,6 +151,8 @@ def rs_alt_file_API_call(user,primaryRecord,quotedPath,filePath):
 	completePOST = format_RS_POST(RSquery,APIkey)
 	print(completePOST)
 	status,text = make_RS_API_call(completePOST)
+	print(status)
+	print(text)
 	if status == 200:
 		utils.delete_it(filePath)
 	return text

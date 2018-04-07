@@ -132,9 +132,8 @@ def add_metadata(ingestDict):
 
 def main(ingestDict,user):
 	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
-	# pymmconfig = pymmFunctions.read_config()
-	# print(pymmconfig['paths']['outdir_ingestfile'])
-	# print(ingestDict)
+	# run `pymm` on ingest objects
+	# post access copies to resourcespace
 	dirName, hostName, sourceDir = utils.get_shared_dir_stuff()
 
 	# try to search filemaker for descriptive metadata
@@ -213,5 +212,5 @@ def main(ingestDict,user):
 					metadataFilepath
 					)
 
-	# print(ingestDict)
+				print(rsStatus)
 	return(ingestDict)
