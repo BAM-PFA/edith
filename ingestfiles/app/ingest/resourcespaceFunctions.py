@@ -153,7 +153,7 @@ def rs_alt_file_API_call(user,primaryRecord,quotedPath,filePath):
 	status,text = make_RS_API_call(completePOST)
 	print(status)
 	print(text)
-	if status == 200:
+	if not text == 'false':
 		utils.delete_it(filePath)
 	return text
 
