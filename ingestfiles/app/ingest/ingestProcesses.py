@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # standard library modules
+import ast
 import hashlib
 import json
 import os
@@ -11,6 +12,7 @@ import urllib
 # local modules
 from . import fmQuery
 from . import resourcespaceFunctions
+from . import metadataMaster
 from .. import sshStuff
 from .. import utils
 
@@ -40,8 +42,10 @@ def get_barcode_from_filename(basename):
 
 
 def get_metadata(idNumber,basename):
+	metadataDict = metadataMaster.metadata
+
 	if idNumber == '--':
-		metadataDict = {'title':'No metadata'}
+		metadataDict['hasBAMPFAmetadata'] = False
 	elif idNumber == '00000':
 		# if the acc item number is zeroed out,
 		# try looking for a barcode to search on
@@ -49,24 +53,26 @@ def get_metadata(idNumber,basename):
 			barcode = get_barcode_from_filename(basename)
 			# print(barcode)
 			if barcode == "000000000":
-				metadataDict = {'title':'No metadata'}
+				metadataDict['hasBAMPFAmetadata'] = False
 			else:
 				metadataDict = fmQuery.xml_query(barcode)
 		except:
-			metadataDict = {'title':'No metadata'}
+			metadataDict['hasBAMPFAmetadata'] = False
 	else:
 		try:
 			print('searching on '+idNumber)
 			metadataDict = fmQuery.xml_query(idNumber)
+			metadataDict['hasBAMPFAmetadata'] = True
 			# print('metadataDict')
 		except:
 			# if no results, try padding with zeros
 			idNumber = "{0:0>5}".format(idNumber)
 			try:
 				metadataDict = fmQuery.xml_query(idNumber)
+				metadataDict['hasBAMPFAmetadata'] = True
 			except:
 				# give up
-				metadataDict = {'title':'No metadata'}
+				metadataDict['hasBAMPFAmetadata'] = False
 	# print(metadataDict)
 	return(metadataDict)
 
@@ -101,17 +107,11 @@ def write_metadata_json(metadata,basename):
 	print(jsonPath)
 	with open(jsonPath,'w+') as jsonTemp:
 		json.dump(metadata,jsonTemp)
+	# print(jsonPath)
 
 	return jsonPath
 
-def main(ingestDict,user):
-	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
-	# pymmconfig = pymmFunctions.read_config()
-	# print(pymmconfig['paths']['outdir_ingestfile'])
-	print(ingestDict)
-	dirName, hostName, sourceDir = utils.get_shared_dir_stuff()
-
-	# try to search filemaker for descriptive metadata
+def add_metadata(ingestDict):
 	for objectPath, options in ingestDict.items():
 		metadataJson = {}
 		metadataJson[objectPath] = {}
@@ -121,11 +121,24 @@ def main(ingestDict,user):
 		options['metadata'] = metadata
 		metadataJson[objectPath]['metadata'] = metadata
 		metadataJson[objectPath]['basename'] = basename
-		if metadata['title'] != 'No metadata':
-			metadataFile = write_metadata_json(metadataJson,basename)
+		# FIND A BETTER WAY TO DENOTE NO BAMPFA METADATA
+		# if metadata['title'] != 'No metadata':
+		options['metadataFilepath'] = write_metadata_json(metadataJson,basename)
 			# print(metadataFile)
-		else:
-			metadataFile = None
+		# else:
+			# options['metadataFilepath'] = ''
+
+	return ingestDict
+
+def main(ingestDict,user):
+	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
+	# run `pymm` on ingest objects
+	# post access copies to resourcespace
+	dirName, hostName, sourceDir = utils.get_shared_dir_stuff()
+
+	# try to search filemaker for descriptive metadata
+	ingestDict = add_metadata(ingestDict)
+	# print(ingestDict)
 
 	if not hostName == 'localhost':
 		for objectPath in ingestDict.keys():
@@ -139,10 +152,12 @@ def main(ingestDict,user):
 			pymmPath = utils.get_pymm_path()
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 			pymmCommand = [pythonBinary,ingestSipPath,'-i',objectPath,'-u',user]
-			if metadataFile:
-				pymmCommand.extend(['-j',metadataFile])
+			metadataFilepath = ingestDict[_object]['metadataFilepath']
+			if metadataFilepath != '':
+				pymmCommand.extend(['-j',metadataFilepath])
 			else:
 				pass
+			
 			subprocess.call(pymmCommand)
 
 	else:
@@ -151,15 +166,51 @@ def main(ingestDict,user):
 			pymmPath = utils.get_pymm_path()
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 			pymmCommand = [pythonBinary,ingestSipPath,'-i',_object,'-u',user]
-			if metadataFile:
-				pymmCommand.extend(['-j',metadataFile])
+			metadataFilepath = ingestDict[_object]['metadataFilepath']
+			# print(metadataFilepath)
+			if ingestDict[_object]['metadata']['hasBAMPFAmetadata'] != False:
+				pymmCommand.extend(['-j',metadataFilepath])
 			else:
 				pass
-			
-			subprocess.call(pymmCommand)
-			
-			print('hey')
+			# print(pymmCommand)
+			try:
+				pymmOut = subprocess.check_output(
+					pymmCommand
+				)
+				# the last thing printed is the status dict....
+				# get the pymm result dict via this highly hack-y method
+				pymmOut = pymmOut.decode().split('\n')
+				pymmResult = ast.literal_eval(pymmOut[-2])
 
-	resourcespaceFunctions.do_resourcespace(user)
-	# print(ingestDict)
+				print(pymmResult)
+
+			except subprocess.CalledProcessError as e:
+				print(e)
+
+			print('hey')
+			# add the UUID to the metadata file
+			ingestUUID = pymmResult['ingestUUID']
+			with open(metadataFilepath,'r+') as mdread:
+				data = json.load(mdread)
+				key = list(data.keys())[0]
+				data[key]['metadata']['ingestUUID'] = ingestUUID
+				theGoods = data[key]['metadata']
+				print(theGoods)
+			with open(metadataFilepath,'w+') as mdwrite:
+				json.dump(theGoods,mdwrite)
+
+			rsDir = utils.get_rs_dir()
+			rsProxyPath = pymmResult['accessPath']
+			basename = ingestDict[_object]['basename']
+			rsProxyPath = os.path.join(rsDir,basename)
+			print(rsProxyPath)
+			if os.path.exists(rsProxyPath):
+				print("WOOOT")
+				rsStatus = resourcespaceFunctions.do_resourcespace(
+					user,
+					rsProxyPath,
+					metadataFilepath
+					)
+
+				print(rsStatus)
 	return(ingestDict)
