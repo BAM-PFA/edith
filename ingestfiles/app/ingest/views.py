@@ -14,11 +14,11 @@ from . import fmQuery
 from . import ingestProcesses
 
 
-@ingest.route('/',methods=['GET','POST'])
-@ingest.route('/index',methods=['GET','POST'])
-def index():
+# @ingest.route('/',methods=['GET','POST'])
+@ingest.route('/ingestor',methods=['GET','POST'])
+def ingestor():
 	objects = listObjects.list_objects()
-	
+
 	class OneObject(forms.ObjectForm):
 		# http://wtforms.simplecodes.com/docs/1.0.1/specific_problems.html
 		pass
@@ -30,7 +30,7 @@ def index():
 	form = forms.IngestForm()
 	form.suchChoices = choices
 
-	return render_template('index.html',title='Index',objects=objects,form=form)
+	return render_template('ingestor.html',title='Ingestor',objects=objects,form=form)
 
 @ingest.route('/status',methods=['GET','POST'])
 def status():

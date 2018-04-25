@@ -12,7 +12,7 @@ RS_BASE_URL = instance.RS_BASE_URL
 
 class Config(object):
 	HELLO = True
-
+	DEBUG = False
 
 class DevelopmentConfig(Config):
 	"""

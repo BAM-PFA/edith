@@ -63,7 +63,7 @@ def get_metadata(idNumber,basename):
 			print('searching on '+idNumber)
 			metadataDict = fmQuery.xml_query(idNumber)
 			metadataDict['hasBAMPFAmetadata'] = True
-			# print('metadataDict')
+			print('metadataDict')
 		except:
 			# if no results, try padding with zeros
 			idNumber = "{0:0>5}".format(idNumber)
@@ -73,7 +73,7 @@ def get_metadata(idNumber,basename):
 			except:
 				# give up
 				metadataDict['hasBAMPFAmetadata'] = False
-	# print(metadataDict)
+	print(metadataDict)
 	return(metadataDict)
 
 def grab_remote_files(targetFilepath):
@@ -104,10 +104,10 @@ def write_metadata_json(metadata,basename):
 	tempDir = utils.get_temp_dir()
 	# print(tempDir)
 	jsonPath = os.path.join(tempDir,basename+".json")
-	print(jsonPath)
+	# print(jsonPath)
 	with open(jsonPath,'w+') as jsonTemp:
 		json.dump(metadata,jsonTemp)
-	# print(jsonPath)
+	print(jsonPath)
 
 	return jsonPath
 
@@ -127,7 +127,8 @@ def add_metadata(ingestDict):
 			# print(metadataFile)
 		# else:
 			# options['metadataFilepath'] = ''
-
+	print(ingestDict)
+	print("HELLO THERE")
 	return ingestDict
 
 def main(ingestDict,user):
