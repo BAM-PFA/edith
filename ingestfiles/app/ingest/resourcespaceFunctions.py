@@ -115,7 +115,7 @@ def resourcespace_API_call(user,metadata,quotedPath,filePath):
 		)
 	# print(RSquery)
 	completePOST = format_RS_POST(RSquery,APIkey)
-	# print(completePOST)
+	print(completePOST)
 	httpStatus,RSrecordID = make_RS_API_call(completePOST)
 	print(httpStatus)
 	print(RSrecordID)
@@ -126,7 +126,7 @@ def resourcespace_API_call(user,metadata,quotedPath,filePath):
 def rs_alt_file_API_call(user,primaryRecord,quotedPath,filePath):
 	rsUser,APIkey = utils.get_rs_credentials(user)
 	basename = os.path.basename(filePath)
-	extension = utils.get_extension(basename)#.strip('.')
+	extension = utils.get_extension(basename).strip('.')
 	size = str(os.stat(filePath).st_size)
 	RSquery = (
 		"user={0}"

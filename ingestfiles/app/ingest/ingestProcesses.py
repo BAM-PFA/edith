@@ -168,7 +168,8 @@ def main(ingestDict,user):
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 			pymmCommand = [pythonBinary,ingestSipPath,'-i',_object,'-u',user]
 			metadataFilepath = ingestDict[_object]['metadataFilepath']
-			# print(metadataFilepath)
+			print(metadataFilepath)
+			os.chmod(metadataFilepath,0o777)
 			if ingestDict[_object]['metadata']['hasBAMPFAmetadata'] != False:
 				pymmCommand.extend(['-j',metadataFilepath])
 			else:
@@ -191,20 +192,21 @@ def main(ingestDict,user):
 			print('hey')
 			# add the UUID to the metadata file
 			ingestUUID = pymmResult['ingestUUID']
+
 			with open(metadataFilepath,'r+') as mdread:
+				print('opened')
 				data = json.load(mdread)
 				key = list(data.keys())[0]
 				data[key]['metadata']['ingestUUID'] = ingestUUID
 				theGoods = data[key]['metadata']
-				print(theGoods)
+				#print(theGoods)
 			with open(metadataFilepath,'w+') as mdwrite:
 				json.dump(theGoods,mdwrite)
-
 			rsDir = utils.get_rs_dir()
 			rsProxyPath = pymmResult['accessPath']
 			basename = ingestDict[_object]['basename']
-			rsProxyPath = os.path.join(rsDir,basename)
 			print(rsProxyPath)
+			print(os.path.exists(rsProxyPath))
 			if os.path.exists(rsProxyPath):
 				print("WOOOT")
 				rsStatus = resourcespaceFunctions.do_resourcespace(
@@ -214,4 +216,6 @@ def main(ingestDict,user):
 					)
 
 				print(rsStatus)
+			else:
+				print("PATH PROBLEMO")
 	return(ingestDict)
