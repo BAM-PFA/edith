@@ -38,6 +38,12 @@ def format_lto():
 	newLTOid = forms.LTO_id_form()
 	formatLTO = forms.format_form()
 
+	import getpass
+	user = getpass.getuser()
+	print("THIS IS THE USER FOR THE APP")
+	print(user)
+	print(os.getegid())
+
 	return render_template(
 		'format_lto.html',
 		title="Format LTO",
@@ -45,6 +51,8 @@ def format_lto():
 		formatForm=formatLTO,
 		currentLTOid=currentLTOid
 		)
+
+
 
 @lto.route('/lto_id',methods=['GET','POST'])
 def lto_id():
@@ -82,7 +90,7 @@ def format_status():
 		}
 
 	statuses = {
-		"/dev/nst0":False
+		"/dev/nst0":False,
 		"/dev/nst1":False
 	}
 
@@ -100,9 +108,14 @@ def format_status():
 				stdout=subprocess.PIPE
 				).communicate()
 			statuses[device] = True
+			print(out)
+			if not "LTFS15047E" in out:
+				statuses[device] = True
+			else:
+				statuses[device] = "can't format tape, maybe it's already formatted"
 
 		except:
-			statuses[device] = "can't format tape, maybe it's already formatted"
+			statuses[device] = "there was an error in the LTFS command execution... meh?"
 
 
 	return render_template(
