@@ -13,13 +13,13 @@
 		{% for item,vals in form.suchChoices.items() %}
 		<div class="form-group">
 			{% for field in vals %}
-				{{macros.render_field(field,vals.targetBase.data)}}
+				{{ macros.render_field(field,vals.targetBase.data) }}
 			{% endfor %}
 		</div>
 
 		{%endfor%}
 
-	{{form.user.label}}{{form.user()}}<br>
-	{{form.submit()}}
+	{{ form.user.label }}{{ form.user() }}<br>
+	{{ form.submit() }}
 	</form>
 {% endblock %}
