@@ -18,7 +18,6 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 	'''
 	uh...
 	'''
-	print("WYOKJLKJNLKJHLKJNLKVJNLK :OI H:OHFLIUHLIUHLIU")
 	# print(proxyPath)
 	success = False
 	if metadataFilepath != None:
@@ -29,7 +28,7 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 	urlMetadata = metadata_for_rs(metadata)
 
 	if os.path.isfile(proxyPath):
-		print("FFIILLEE")
+		print("the input object is a file")
 		quotedPath = urllib.parse.quote(proxyPath, safe='')	
 		result = resourcespace_API_call(
 				user,
@@ -38,7 +37,7 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 				proxyPath
 				)
 	elif os.path.isdir(proxyPath):
-		print("DDIIRR")
+		print("the input object is a directory")
 		items = os.listdir(proxyPath)
 		items.sort()
 		coolItems = [os.path.join(proxyPath,x) for x in items if not x.startswith('.')]

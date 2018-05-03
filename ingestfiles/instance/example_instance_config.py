@@ -17,6 +17,14 @@ SHARED_DIR = {
 		}
 }
 
+AIP_STAGING_DIR = {
+	'my directory':{
+		'host name':'my host',
+		'host IP address':'1.2.3.4',
+		'directory full path':'/full/path/to/my/dir'
+		}
+}
+
 
 # SETTING SECRET STUFF HERE IN CONFIG DICTS 
 # SINCE WE ONLY HAVE A FEW USERS AND IT'S NOT

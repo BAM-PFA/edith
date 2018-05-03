@@ -12,4 +12,7 @@ def create_app(config_name):
 	from .ingest import ingest as ingest_blueprint
 	app.register_blueprint(ingest_blueprint)
 
+	from .lto import lto as lto_blueprint
+	app.register_blueprint(lto_blueprint)
+
 	return app

@@ -89,7 +89,8 @@ def status():
 		results = {}
 
 	return render_template(
-		'status.html',title='Ingest',
+		'status.html',
+		title='Ingest',
 		data=_data,
 		user=user,
 		toIngest=toIngest,

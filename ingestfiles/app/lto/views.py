@@ -13,4 +13,15 @@ from .. import listObjects
 
 @lto.route('/lto',methods=['GET','POST'])
 def lto():
-	print('hooo')
+
+
+
+@lto.route('/lto_id',methods=['GET','POST'])
+def lto_id():
+	LTOid = forms.LTO_id_form()
+
+	return render_template(
+		'lto.html',
+		title="LTO id"
+		form=LTOid
+		)

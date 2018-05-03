@@ -2,6 +2,7 @@ import os
 from instance import config as instance
 
 SHARED_DIR = instance.SHARED_DIR
+AIP_STAGING_DIR = instance.AIP_STAGING_DIR
 KNOWN_USERS = instance.KNOWN_USERS
 DB_CONNECTIONS = instance.DB_CONNECTIONS
 REMOTE_CONNECTIONS = instance.REMOTE_CONNECTIONS
@@ -33,6 +34,7 @@ app_config = {
 	'development': DevelopmentConfig,
 	'production': ProductionConfig,
 	'SHARED_DIR': SHARED_DIR,
+	'AIP_STAGING_DIR': AIP_STAGING_DIR,
 	'KNOWN_USERS': KNOWN_USERS,
 	'DB_CONNECTIONS': DB_CONNECTIONS,
 	'REMOTE_CONNECTIONS': REMOTE_CONNECTIONS,
