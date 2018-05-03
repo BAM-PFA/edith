@@ -1,28 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<h1>Enter a new LTO tape ID for the "A" tape.</h1>
-	<div>
-		<p>It needs to follow this format:<br>
-			6 caracters consisting of year, month, 1-digit tape number, and uppercase "A": YRMO##A<br>
-			Example for the 3rd tape set of Septemer 2018: <b>18093A</b><br>
-			If we go over 9 LTO sets for a month, start over with uppercase letters (18099A, then 1809AA)
-		</p>
-	</div>
-	<form action="{{ url_for('ingest.status') }}" method='POST'>
-		{{ form.hidden_tag() }}
-		{{ form.csrf_token }}
-		
-		{% for item,vals in form.suchChoices.items() %}
-		<div class="form-group">
-			{% for field in vals %}
-				{{macros.render_field(field,vals.targetBase.data)}}
-			{% endfor %}
-		</div>
+	{% if not ltoIDstatus == False %}
 
-		{%endfor%}
+		<h1>The new LTO tape ID is {{ ltoID }} </h1>
 
-	{{form.user.label}}{{form.user()}}<br>
-	{{form.submit()}}
-	</form>
+	{% else %}
+
+		<p> The LTO ID you entered ( {{ ltoID }} ) doesn't follow the expected pattern. Try Again!</p>
+
+	{% endif %}
+
 {% endblock %}
