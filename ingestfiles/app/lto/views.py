@@ -11,9 +11,12 @@ from . import forms
 from .. import listObjects
 
 
-@lto.route('/lto',methods=['GET','POST'])
-def lto():
-
+@lto.route('/lto_menu',methods=['GET','POST'])
+def lto_menu():
+	return render_template(
+		'lto_menu.html',
+		title='LTO MENU'
+		)
 
 
 @lto.route('/lto_id',methods=['GET','POST'])
@@ -22,6 +25,6 @@ def lto_id():
 
 	return render_template(
 		'lto.html',
-		title="LTO id"
+		title="LTO id",
 		form=LTOid
 		)
