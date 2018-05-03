@@ -8,9 +8,9 @@
 		</p>
 	</div>
 	<div>
-		<p>If you have inserted blank tapes and needs to create a new LTO tape ID, do it here.<br>
+		<p>If you have inserted blank tapes and need to create a new LTO tape ID, do it here.<br>
 			It has to follow this format:<br>
-			6 caracters consisting of year, month, 1-digit tape number, and uppercase "A": YRMO##A<br>
+			6 caracters consisting of year, month, 1-digit tape number, and uppercase "A": YRMO#A<br>
 			Example for the 3rd tape set of Septemer 2018: <b>18093A</b><br>
 			If we go over 9 LTO sets for a month, start over with uppercase letters (18099A, then 1809AA)
 		</p>
@@ -22,6 +22,16 @@
 		{{ IDform.tapeAid.label }}{{ IDform.tapeAid() }}
 
 		{{ IDform.submit() }}
+	</form>
+
+	<form action="{{ url_for('lto.format_status') }}" method='POST'>
+		
+		{{ formatForm.hidden_tag() }}
+		{{ formatForm.csrf_token }}
+
+		{{  }}
+
+		{{ formatForm.submit() }}
 	</form>
 
 

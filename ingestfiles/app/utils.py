@@ -77,3 +77,23 @@ def get_extension(basename):
 	split = os.path.splitext(basename)
 	ext = split[1]
 	return ext
+
+def get_current_LTO_id():
+	tmpDir = get_temp_dir()
+	ltoIdFilePath = os.path.join(tmpDir,'LTOID.txt')
+	if not os.path.exists(ltoIdFilePath):
+		try:
+			with open(ltoIdFilePath,'w') as idfile:
+				idfile.write('no lto id in use')
+		except:
+			print("You have some permission issues writing to the tmp dir")
+	try:
+		with open(ltoIdFilePath,'r') as idfile:
+			currentLTOid = idfile.readline().strip()
+	except:
+		currentLTOid = "Couldn't read the LTO id file"
+
+	return currentLTOid
+
+
+
