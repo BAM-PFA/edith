@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+	{% if not ltoIDstatus == False %}
+
+		<h1>The new LTO tape ID is {{ ltoID }} </h1>
+
+	{% else %}
+
+		<p> The LTO ID you entered ( {{ ltoID }} ) doesn't follow the expected pattern. Try Again!</p>
+
+	{% endif %}
+
+{% endblock %}

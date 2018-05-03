@@ -13,5 +13,4 @@ class format_form(FlaskForm):
 	"""
 	Action to format LTO tapes in A and B drives
 	"""	
-	LTOid = wtforms.HiddenField('LTOid')
-	submit = wtforms.SubmitField('Submit')
+	submit = wtforms.SubmitField('FORMAT TAPES!!')

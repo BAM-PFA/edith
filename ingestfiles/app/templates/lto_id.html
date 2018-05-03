@@ -1,14 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-	{% if not ltoIDstatus == False %}
+	<h1>{{ title }}</h1>
+	<div>
+		<p>The current LTO ID in use is:<br>
+			<b>{{ currentLTOid }}</b>
+		</p>
+	</div>
+	<div>
+		<p>If you have inserted blank tapes and need to create a new LTO tape ID, do it here.<br>
+			It has to follow this format:<br>
+			6 caracters consisting of year, month, 1-digit tape number, and uppercase "A": YRMO#A<br>
+			Example for the 3rd tape set of Septemer 2018: <b>18093A</b><br>
+			If we go over 9 LTO sets for a month, start over with uppercase letters (18099A, then 1809AA)
+		</p>
+	</div>
+	<form action="{{ url_for('lto.lto_id') }}" method='POST'>
+		{{ IDform.hidden_tag() }}
+		{{ IDform.csrf_token }}
+		
+		{{ IDform.tapeAid.label }}{{ IDform.tapeAid() }}
 
-		<h1>The new LTO tape ID is {{ ltoID }} </h1>
-
-	{% else %}
-
-		<p> The LTO ID you entered ( {{ ltoID }} ) doesn't follow the expected pattern. Try Again!</p>
-
-	{% endif %}
+		{{ IDform.submit() }}
+	</form>
 
 {% endblock %}

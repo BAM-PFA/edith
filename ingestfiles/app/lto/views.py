@@ -17,14 +17,8 @@ from . import forms
 from .. import listObjects
 from .. import utils
 
-
-# we're going to store the current LTO id for the "A" tape in a text file.
-# get the value of that ID for processing/display/mounting LTO later.
-
-
 @lto.route('/lto_menu',methods=['GET','POST'])
 def lto_menu():
-
 	return render_template(
 		'lto_menu.html',
 		title='LTO MENU'
@@ -35,27 +29,27 @@ def lto_menu():
 def format_lto():
 	currentLTOid = utils.get_current_LTO_id()
 
-	newLTOid = forms.LTO_id_form()
 	formatLTO = forms.format_form()
-
-	import getpass
-	user = getpass.getuser()
-	print("THIS IS THE USER FOR THE APP")
-	print(user)
-	print(os.getegid())
 
 	return render_template(
 		'format_lto.html',
 		title="Format LTO",
-		IDform=newLTOid,
 		formatForm=formatLTO,
 		currentLTOid=currentLTOid
 		)
 
-
-
 @lto.route('/lto_id',methods=['GET','POST'])
 def lto_id():
+	newLTOid = forms.LTO_id_form()
+
+	return render_template(
+		'lto_id.html',
+		title='Create LTO ID',
+		IDform=newLTOid,
+		)
+
+@lto.route('/lto_id_status',methods=['GET','POST'])
+def lto_id_status():
 	tapeIdRegex = re.compile(r'^((\d{4}[A-Z]A)|(\d{5}A))$')
 	ltoIDstatus = False
 	try:
@@ -72,8 +66,9 @@ def lto_id():
 		ltoID = 'none'
 
 	return render_template(
-		'lto_id.html',
+		'lto_id_status.html',
 		ltoID=ltoID,
+		title="LTO ID status"
 		ltoIDstatus = ltoIDstatus
 		)
 
