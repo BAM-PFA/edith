@@ -58,13 +58,15 @@ The ResourceSpace API call post assets and metadata metadata at the same time. I
 These options should probably be conditionally constrained based on input. This makes a *really* big file for a potentially poor, standard-def video transfer.
 
 ### LTO (under revision)
-This uses [`ltopers`](https://github.com/amiaopensource/ltopers) to write the SIP created by `ingestfile` to LTO tape. We use an HP 2-drive unit that we use to create a redundant backup, with tapes stored in separate locations.
+This is based on [`ltopers`](https://github.com/amiaopensource/ltopers) to write the AIP created by `ingestfile` to LTO tape. We use an HP 2-drive unit that we use to create a redundant backup, with tapes stored in separate locations.
 
 The interface asks for a tapeID to be entered, but it also shows you the last one used so you can just confirm that there isn't a new one in.
 
 When an AIP is written to LTO, there is an API call to ResourceSpace to grap the resource ID and push the LTO tape ID to that resource for searching in RS.
 
 The contents of the LTO tapes are also updated and indexed in the mediamicroservices database.
+
+The user that Apache is run as (declared in ingestfiles.wsgi) has to be added to the `tape` group so that it has access to the tape devices in Linux. I am not totally sure what this will/would look like in Mac. `ltopers` doesn't seem to need additional permissions.
 
 ### Some major unknowns/ to-dos
 * Searching the database created by mediamicroservices. Maybe make a separate front end? I have looked at [Xataface](http://xataface.com/) as an option. **UPDATE** Xataface is ok, but ugly.

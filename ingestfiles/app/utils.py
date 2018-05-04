@@ -95,5 +95,15 @@ def get_current_LTO_id():
 
 	return currentLTOid
 
+def get_devices():
+	aTapeID = get_current_LTO_id()
+	bTapeID = aTapeID[:-1]+"B"
+	linuxDevices = {
+		'/dev/nst0':aTapeID,
+		'/dev/nst1':bTapeID
+		}
+
+	return linuxDevices
+
 
 

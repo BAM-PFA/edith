@@ -14,3 +14,9 @@ class format_form(FlaskForm):
 	Action to format LTO tapes in A and B drives
 	"""	
 	submit = wtforms.SubmitField('FORMAT TAPES!!')
+
+class mount(FlaskForm):
+	"""
+	Action to mount formatted LTO tapes in A and B drives
+	"""	
+	submit = wtforms.SubmitField('MOUNT TAPES!!')

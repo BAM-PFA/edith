@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h1>Mount LTO</h1>
+	<div>
+		<p>The current base LTO ID in use is:<br>
+			<b>{{ currentLTOid }}</b>
+		</p>
+	</div>
+
+	<form action="{{ url_for('lto.mount_status') }}" method='POST'>
+		
+		{{ formatForm.hidden_tag() }}
+		{{ formatForm.csrf_token }}
+
+		{{ formatForm.submit() }}
+	</form>
+
+
+
+{% endblock %}

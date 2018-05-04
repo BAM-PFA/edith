@@ -15,7 +15,7 @@
 			If we go over 9 LTO sets for a month, start over with uppercase letters (18099A, then 1809AA)
 		</p>
 	</div>
-	<form action="{{ url_for('lto.lto_id') }}" method='POST'>
+	<form action="{{ url_for('lto.lto_id_status') }}" method='POST'>
 		{{ IDform.hidden_tag() }}
 		{{ IDform.csrf_token }}
 		
