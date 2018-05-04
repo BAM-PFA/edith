@@ -95,7 +95,7 @@ def lto_id():
 def lto_id_status():
 	tapeIdRegex = re.compile(r'^((\d{4}[A-Z]A)|(\d{5}A))$')
 	ltoIDstatus = False
-
+	ltoIdFilePath = os.path.join(utils.get_temp_dir(),'LTOID.txt')
 	try:
 		_data = request.form.to_dict(flat=False)
 		ltoID = request.form['tapeAid']
@@ -107,7 +107,7 @@ def lto_id_status():
 		else:
 			ltoIDstatus = False
 	except:
-		_data = 'none'
+		_data = 'there was an error'
 		ltoID = 'there was an error'
 
 	return render_template(
@@ -120,12 +120,43 @@ def lto_id_status():
 @lto.route('/mount_lto',methods=['GET','POST'])
 def mount_lto():
 	mountEmUp = forms.mount()
+	
+	# get the current attached tape devices and try to read a barcode from each
+	tempDir = utils.get_temp_dir()
+	barcodes = {"A":"/dev/nst0","B":"/dev/nst1"}
+	for letter, device in barcodes.items():
+		# purposefully fail to mount each device,
+		# send stderr to a text file to parse ,
+		# and get the tape barcode from it
+		
+		tempFile = os.path.join(tempDir,"{}_{}_temp.txt".format(letter,now))
+		out,err = subprocess.Popen([
+			'ltfs','-f'
+			'-o','devname={}'.format(device),
+			'2>',tempFile
+			])
+		if os.path.exists(tempFile):
+			with open(tempFile,'r') as f:
+				for line in f.readlines():
+					if "Volser(Barcode)" in line:
+						barcodeLine = line.strip().split()
+						barcode = barcodeLine[4]
+						print(barcode)
+						barcodes[letter] = barcode
+		else:
+			barcodes[letter] = "Trouble getting the tape barcode"
+
+
+
+
+
 
 	return render_template(
 		'mount_lto.html',
 		title="Mount LTO tapes",
 		currentLTOid = utils.get_current_LTO_id(),
-		mountForm=mountEmUp
+		mountForm=mountEmUp,
+		barcodes=barcodes
 		)
 
 

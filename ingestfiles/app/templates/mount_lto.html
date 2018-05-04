@@ -8,6 +8,13 @@
 		</p>
 	</div>
 
+	<div>
+		Found these formatted tapes:
+		{% for letter, barcode in barcodes.items() %}
+			<p>{{ letter }} drive: {{ barcode }} </p>
+		{% endfor %}
+	</div>
+
 	<form action="{{ url_for('lto.mount_status') }}" method='POST'>
 		
 		{{ mountForm.hidden_tag() }}
