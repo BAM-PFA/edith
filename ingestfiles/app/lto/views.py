@@ -120,36 +120,40 @@ def lto_id_status():
 @lto.route('/mount_lto',methods=['GET','POST'])
 def mount_lto():
 	mountEmUp = forms.mount()
-	
-	# get the current attached tape devices and try to read a barcode from each
-	tempDir = utils.get_temp_dir()
-	barcodes = {"A":"/dev/nst0","B":"/dev/nst1"}
-	for letter, device in barcodes.items():
-		# purposefully fail to mount each device,
-		# send stderr to a text file to parse ,
-		# and get the tape barcode from it
-		
-		tempFile = os.path.join(tempDir,"{}_{}_temp.txt".format(letter,now))
-		out,err = subprocess.Popen([
-			'ltfs','-f'
-			'-o','devname={}'.format(device),
-			'2>',tempFile
-			])
-		if os.path.exists(tempFile):
-			with open(tempFile,'r') as f:
-				for line in f.readlines():
-					if "Volser(Barcode)" in line:
-						barcodeLine = line.strip().split()
-						barcode = barcodeLine[4]
-						print(barcode)
-						barcodes[letter] = barcode
-		else:
-			barcodes[letter] = "Trouble getting the tape barcode"
 
-
-
-
-
+        # get the current attached tape devices and try to read a barcode from each
+        tempDir = utils.get_temp_dir()
+        barcodes = {"A":"/dev/nst0","B":"/dev/nst1"}
+        for letter, device in barcodes.items():
+                # purposefully fail to mount each device,
+                # send stderr to a text file to parse ,
+                # and get the tape barcode from it
+                now = utils.now()
+                tempFile = os.path.join(tempDir,"{}_{}_temp.txt".format(letter,now))
+                command = ['ltfs','-f','-o','devname={}'.format(device)]
+                out,err = subprocess.Popen(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
+                #print(out)
+                #print("that was out")
+                #print(err)
+                #print("that was err")
+                with open(tempFile,'x') as x:
+                    pass
+                with open(tempFile,'w+') as f:
+                        for line in err.splitlines():
+                                print(line)
+                                f.write(line.decode())
+                                f.write('\n')
+                if os.path.exists(tempFile):
+                        with open(tempFile,'r') as f:
+                                for line in f.readlines():
+                                        if "Volser(Barcode)" in line:
+                                                barcodeLine = line.strip().split()
+                                                barcode = barcodeLine[4]
+                                                print(barcode)
+                                                barcodes[letter] = barcode
+                else:
+                        barcodes[letter] = "Trouble getting the tape barcode"
+        print(barcodes)
 
 	return render_template(
 		'mount_lto.html',
