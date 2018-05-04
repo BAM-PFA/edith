@@ -5,6 +5,7 @@ Useful utility stuff.
 # standard libraries
 import os
 import shutil
+import time
 # local modules
 import app
 
@@ -105,5 +106,7 @@ def get_devices():
 
 	return linuxDevices
 
-
+def now():
+	now = time.strftime("%Y-%m-%dT%H-%M-%S")
+	return now
 
