@@ -119,6 +119,7 @@ def lto_id_status():
 
 @lto.route('/mount_lto',methods=['GET','POST'])
 def mount_lto():
+	
 	mountEmUp = forms.mount()
 
 	# get the current attached tape devices and try to read a barcode from each
@@ -155,6 +156,8 @@ def mount_lto():
 			barcodes[letter] = "Trouble getting the tape barcode"
 		print(barcodes)
 
+	mountEmUp.tapeBarcodes = barcodes
+
 	return render_template(
 		'mount_lto.html',
 		title="Mount LTO tapes",
@@ -166,13 +169,19 @@ def mount_lto():
 
 @lto.route('/mount_status',methods=['GET','POST'])
 def mount_status():
-	linuxDevices = utils.get_devices()
 	statuses = {}
 	userId = os.getegid()
 	tempDir = utils.get_temp_dir()
 
-	for device, tape in linuxDevices.items():
-		mountpoint = os.path.join(tempDir,tape)
+	barcodes = request.mountForm["barcodes"]
+	print("barcodes")
+
+	devices = {}
+	devices['/dev/nst0'] = barcodes['A']
+	devices['/dev/nst1'] = barcodes['B']
+
+	for device, tapeID in devices.items():
+		mountpoint = os.path.join(tempDir,tapeID)
 		try:
 			subprocess.call(['mkdir',mountpoint])
 		except:

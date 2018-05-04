@@ -19,4 +19,5 @@ class mount(FlaskForm):
 	"""
 	Action to mount formatted LTO tapes in A and B drives
 	"""	
+	tapeBarcodes = wtforms.HiddenField('tapeBarcodes')
 	submit = wtforms.SubmitField('MOUNT TAPES!!')
