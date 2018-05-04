@@ -83,20 +83,23 @@ def format_status():
 @lto.route('/lto_id',methods=['GET','POST'])
 def lto_id():
 	newLTOid = forms.LTO_id_form()
-
+	currentLTOid = utils.get_current_LTO_id()
 	return render_template(
 		'lto_id.html',
 		title='Create LTO ID',
 		IDform=newLTOid,
+		currentLTOid=currentLTOid
 		)
 
 @lto.route('/lto_id_status',methods=['GET','POST'])
 def lto_id_status():
 	tapeIdRegex = re.compile(r'^((\d{4}[A-Z]A)|(\d{5}A))$')
 	ltoIDstatus = False
+
 	try:
 		_data = request.form.to_dict(flat=False)
 		ltoID = request.form['tapeAid']
+		ltoIdFilePath = os.path.join(utils.get_temp_dir(),'LTOID.txt')
 		if re.match(tapeIdRegex,ltoID):
 			with open(ltoIdFilePath,'w') as idfile:
 				idfile.write(ltoID)
@@ -105,7 +108,7 @@ def lto_id_status():
 			ltoIDstatus = False
 	except:
 		_data = 'none'
-		ltoID = 'none'
+		ltoID = 'there was an error'
 
 	return render_template(
 		'lto_id_status.html',
@@ -121,6 +124,7 @@ def mount_lto():
 	return render_template(
 		'mount_lto.html',
 		title="Mount LTO tapes",
+		currentLTOid = utils.get_current_LTO_id(),
 		mountForm=mountEmUp
 		)
 

@@ -10,10 +10,10 @@
 
 	<form action="{{ url_for('lto.mount_status') }}" method='POST'>
 		
-		{{ formatForm.hidden_tag() }}
-		{{ formatForm.csrf_token }}
+		{{ mountForm.hidden_tag() }}
+		{{ mountForm.csrf_token }}
 
-		{{ formatForm.submit() }}
+		{{ mountForm.submit() }}
 	</form>
 
 
