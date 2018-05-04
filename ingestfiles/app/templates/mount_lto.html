@@ -13,6 +13,7 @@
 		{% for letter, barcode in barcodes.items() %}
 			<p>{{ letter }} drive: {{ barcode }} </p>
 		{% endfor %}
+		<p>If for whatever reason the tapes shown above don't match the current LTO ID, you may need to find and reinsert the current tapes.</p>
 	</div>
 
 	<form action="{{ url_for('lto.mount_status') }}" method='POST'>
