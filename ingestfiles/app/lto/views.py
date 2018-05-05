@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # standard library modules
 # import getpass
+import ast
 import json
 import os
 import re
@@ -119,7 +120,7 @@ def lto_id_status():
 
 @lto.route('/mount_lto',methods=['GET','POST'])
 def mount_lto():
-	
+
 	mountEmUp = forms.mount()
 
 	# get the current attached tape devices and try to read a barcode from each
@@ -154,9 +155,9 @@ def mount_lto():
 						barcodes[letter] = barcode
 		else:
 			barcodes[letter] = "Trouble getting the tape barcode"
-		print(barcodes)
+		#print(barcodes)
 
-	mountEmUp.tapeBarcodes = barcodes
+	mountEmUp.tapeBarcodes.data = barcodes
 
 	return render_template(
 		'mount_lto.html',
@@ -172,13 +173,18 @@ def mount_status():
 	statuses = {}
 	userId = os.getegid()
 	tempDir = utils.get_temp_dir()
-
-	barcodes = request.mountForm["barcodes"]
+	_data = request.form.to_dict(flat=False)
+	print(_data)
+	coolBarcodes = _data["tapeBarcodes"][0]
 	print("barcodes")
+	print(coolBarcodes)
+	coolBarcodes = ast.literal_eval(coolBarcodes)
+	print(type(coolBarcodes))
+	devices = {'/dev/nst0':'','/dev/nst0':''}
+	print(type(devices))
 
-	devices = {}
-	devices['/dev/nst0'] = barcodes['A']
-	devices['/dev/nst1'] = barcodes['B']
+	devices['/dev/nst0'] = coolBarcodes['A']
+	devices['/dev/nst1'] = coolBarcodes['B']
 
 	for device, tapeID in devices.items():
 		mountpoint = os.path.join(tempDir,tapeID)
@@ -198,10 +204,10 @@ def mount_status():
 		]
 
 		try:
-			out,err = subprocess.Popen(LTFS,stdout=subprocess.PIPE).communicate()
-			statuses[tape] = 'mounted, ready to go'
+			out,err = subprocess.Popen(LTFS,stdout=subprocess.DEVNULL).communicate()
+			statuses[tapeID] = 'mounted, ready to go'
 		except:
-			statuses[tape] = 'there was an error in the LTFS command'
+			statuses[tapeID] = 'there was an error in the LTFS command'
 
 	return render_template(
 		'mount_status.html',
