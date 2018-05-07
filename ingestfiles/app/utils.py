@@ -97,14 +97,29 @@ def get_current_LTO_id():
 	return currentLTOid
 
 def get_devices():
-	# aTapeID = get_current_LTO_id()
-	# bTapeID = aTapeID[:-1]+"B"
+
 	linuxDevices = {
-		'/dev/nst0':"",
-		'/dev/nst1':""
+		"/dev/nst0":"",
+		"/dev/nst1":""
 		}
 
 	return linuxDevices
+
+def get_a_and_b():
+	noID = [
+		"no lto id in use",
+		"Couldn't read the LTO id file"
+		]
+	theID = get_current_LTO_id()
+
+	if not theID in noID:		
+		aTapeID = theID
+		bTapeID = aTapeID[:-1]+"B"
+	else:
+		aTapeID = "no id"
+		bTapeID = "no id"
+
+	return aTapeID,bTapeID
 
 def now():
 	now = time.strftime("%Y-%m-%dT%H-%M-%S")

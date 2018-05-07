@@ -46,35 +46,41 @@ def format_status():
 	# device names to nst0 and nst1, which are the non-auto-rewind device 
 	# names
 	linuxDevices = utils.get_devices()
+	aTapeID, bTapeID = utils.get_a_and_b()
+	linuxDevices["/dev/nst0"] = aTapeID
+	linuxDevices["/dev/nst1"] = bTapeID
 
 	statuses = {
 		"/dev/nst0":False,
 		"/dev/nst1":False
 	}
 
-	for device,tapeID in linuxDevices.items():
-		MKLTFS = [
-		'mkltfs','-f',
-		'--device={}'.format(device),
-		'--tape-serial={}'.format(tapeID),
-		'--volume-name={}'.format(tapeID)
-		]
+	if not aTapeID == "no id" and not bTapeID == "no id":
+		for device,tapeID in linuxDevices.items():
+			MKLTFS = [
+			'mkltfs','-f',
+			'--device={}'.format(device),
+			'--tape-serial={}'.format(tapeID),
+			'--volume-name={}'.format(tapeID)
+			]
 
-		try:
-			out, err = subprocess.Popen(
-				MKLTFS,
-				stdout=subprocess.PIPE
-				).communicate()
-			statuses[device] = True
-			print(out)
-			if not "LTFS15047E" in out:
-				statuses[device] = True
-			else:
-				statuses[device] = "can't format tape, maybe it's already formatted"
+			try:
+				out, err = subprocess.Popen(
+					MKLTFS,
+					stdout=subprocess.PIPE
+					).communicate()
+				# statuses[device] = True
+				print(out)
+				if not "LTFS15047E" in out:
+					statuses[device] = True
+				else:
+					statuses[device] = "can't format tape, maybe it's already formatted"
 
-		except:
-			statuses[device] = "there was an error in the LTFS command execution... meh?"
-
+			except:
+				statuses[device] = "there was an error in the LTFS command execution... meh?"
+	else:
+		for device,tapeID in linuxDevices.items():
+			statuses[device] = "There doesn't appear to be a valid ID in place for the A and/or B tapes."
 
 	return render_template(
 		'format_status.html',
