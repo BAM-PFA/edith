@@ -219,10 +219,14 @@ def mount_status():
 		'-o','umask=777',
 		mountpoint
 		]
-		print(LTFS)
+		# print(LTFS)
 		try:
 			# subprocess.run(LTFS,stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)
-			subprocess.run(LTFS,stdin=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)
+			# subprocess.run(LTFS,stdin=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)
+			# pass the ltfs command as a list to a helper function
+			# to try to get it to not block
+			utils.mount_tape(LTFS)
+
 			statuses[tapeID] = 'mounted, ready to go'
 			print("I DID A SUBPROCESS LTFS...")
 		except:

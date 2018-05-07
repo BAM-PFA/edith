@@ -5,6 +5,7 @@ Useful utility stuff.
 # standard libraries
 import os
 import shutil
+import subprocess
 import time
 # local modules
 import app
@@ -124,4 +125,10 @@ def get_a_and_b():
 def now():
 	now = time.strftime("%Y-%m-%dT%H-%M-%S")
 	return now
+
+def mount_tape(command):
+	print(command)
+	subprocess.run(LTFS,stdin=subprocess.DEVNULL, close_fds=True)
+	return True
+	
 
