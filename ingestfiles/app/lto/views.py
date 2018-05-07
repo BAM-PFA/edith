@@ -54,7 +54,7 @@ def format_status():
 
 	for device,tapeID in linuxDevices.items():
 		MKLTFS = [
-		'mkltfs',
+		'mkltfs','-f',
 		'--device={}'.format(device),
 		'--tape-serial={}'.format(tapeID),
 		'--volume-name={}'.format(tapeID)
@@ -204,7 +204,7 @@ def mount_status():
 		]
 
 		try:
-			out,err = subprocess.Popen(LTFS,stdout=subprocess.DEVNULL).communicate()
+			subprocess.call(LTFS,stdin=subprocess.DEVNULL,close_fds=True)
 			statuses[tapeID] = 'mounted, ready to go'
 		except:
 			statuses[tapeID] = 'there was an error in the LTFS command'
