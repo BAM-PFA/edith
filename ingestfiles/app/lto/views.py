@@ -57,6 +57,7 @@ def format_status():
 
 	if not aTapeID == "no id" and not bTapeID == "no id":
 		for device,tapeID in linuxDevices.items():
+			# -f force option is here for testing ONLY @fixme remove it for production!
 			MKLTFS = [
 			'mkltfs','-f',
 			'--device={}'.format(device),
@@ -147,6 +148,7 @@ def mount_lto():
 		with open(tempFile,'x') as x:
 			pass
 		with open(tempFile,'w+') as f:
+			print("GETTING BARCODE FOR TAPE,HANG ON")
 			for line in err.splitlines():
 				print(line)
 				f.write(line.decode())
@@ -161,7 +163,7 @@ def mount_lto():
 						barcodes[letter] = barcode
 		else:
 			barcodes[letter] = "Trouble getting the tape barcode"
-		#print(barcodes)
+		print(barcodes)
 
 	mountEmUp.tapeBarcodes.data = barcodes
 
@@ -194,24 +196,35 @@ def mount_status():
 
 	for device, tapeID in devices.items():
 		mountpoint = os.path.join(tempDir,tapeID)
-		try:
-			subprocess.call(['mkdir',mountpoint])
-		except:
-			print("can't make the mount point... check yr permissions")
-
+		if os.path.exists(mountpoint):
+			try:
+				os.rmdir(mountpoint)
+			except:
+				print("mountpoint dir exists and is not empty...")
+		else:
+			try:
+				os.mkdir(mountpoint,mode=0o777)
+				#subprocess.call(['mkdir','-m','777',mountpoint])
+			except:
+				print("can't make the mount point... check yr permissions")
+		# -o uid sets user to www-data (apache user)
+		# -o umask sets permissions to 777
 		LTFS = [
 		'ltfs','-f',
 		'-o','work_directory={}'.format(tempDir),
 		'-o','noatime',
 		'-o','capture_index',
 		'-o','devname={}'.format(device),
-		'-o','uid={}'.format(userId),
+		'-o','gid=33',
+		'-o','umask=777',
 		mountpoint
 		]
-
+		print(LTFS)
 		try:
-			subprocess.call(LTFS,stdin=subprocess.DEVNULL,close_fds=True)
+			# subprocess.run(LTFS,stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)
+			subprocess.run(LTFS,stdin=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)
 			statuses[tapeID] = 'mounted, ready to go'
+			print("I DID A SUBPROCESS LTFS...")
 		except:
 			statuses[tapeID] = 'there was an error in the LTFS command'
 
