@@ -214,15 +214,23 @@ def mount_status():
 
 		# -o uid sets user to www-data (apache user)
 		# -o umask sets permissions to 777
+		#LTFS = [
+		#'ltfs','-f',
+		#'-o','work_directory={}'.format(tempDir),
+		#'-o','noatime',
+		#'-o','capture_index',
+		#'-o','devname={}'.format(device),
+		#'-o','gid=33',
+		#'-o','uid=33',
+		#'-o','umask=777',
+		#mountpoint
+		#]
 		LTFS = [
 		'ltfs','-f',
 		'-o','work_directory={}'.format(tempDir),
 		'-o','noatime',
 		'-o','capture_index',
 		'-o','devname={}'.format(device),
-		'-o','gid=33',
-		'-o','uid=33',
-		'-o','umask=777',
 		mountpoint
 		]
 		#print(LTFS)
@@ -241,12 +249,21 @@ def mount_status():
 			# print(out.stdout)
 			# utils.mount_tape(LTFS)
 			mounted = 0
+			#while mounted < 1:
+			run = subprocess.Popen(LTFS,stdout=subprocess.PIPE,stderr=subprocess.PIPE,close_fds=True)
 			while mounted < 1:
-				out, err = subprocess.run(LTFS,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-				for line in out.splitlines():
-					print(line.decode())
-					if "Ready to receive filesystem requests" in line.decode():
+				out,err = run.communicate()
+				run.kill()
+				print(err)
+				for line in err.splitlines():
+					print(line)
+					if "Ready to receive" in line:
 						mounted +=1
+						print("mounted is:")
+						print(mounted)
+			#for line in out.splitlines():
+			#	print("OUT")
+			#	print(line)
 
 			statuses[tapeID] = 'mounted, ready to go'
 			print("I DID A SUBPROCESS LTFS...")
