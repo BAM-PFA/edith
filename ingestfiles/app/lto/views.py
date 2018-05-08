@@ -7,6 +7,7 @@ import os
 import re
 import subprocess
 import sys
+from time import sleep
 import urllib
 import uuid
 # non-standard libraries
@@ -266,11 +267,13 @@ def mount_status():
 			#	print("OUT")
 			#	print(line)
 			mount = mountClass.mountTape(tapeID,device,LTFS)
-				while True:
-					print(mount.stderr)
-					break
-
-
+			mount.run_ltfs()
+			print(mount.err)
+			mounted = 0
+			while mounted < 2:
+				mount.stderr()
+				sleep(.5)
+				mounted += 1
 
 			statuses[tapeID] = 'mounted, ready to go'
 			print("I DID A SUBPROCESS LTFS...")

@@ -11,10 +11,12 @@ class mountTape:
 		self.command = command
 		print("I EXIST")
 
-	def run_ltfs():
+	def run_ltfs(self):
 		self.run = subprocess.Popen(self.command,stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,stderr=subprocess.PIPE,close_fds=True)
 		self.out,self.err = self.run.communicate()
 
-	def stderr():
-		self.stderr = self.err.splitlines()
-		return self.stderr
+	def stderr(self):
+		self.output = self.err.splitlines()
+		for line in self.output:
+			print(line)
+		return self.output
