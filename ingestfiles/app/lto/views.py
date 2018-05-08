@@ -231,15 +231,22 @@ def mount_status():
 			# subprocess.run(LTFS,stdin=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)
 			# pass the ltfs command as a list to a helper function
 			# to try to get it to not block
-			print("trying out the helper function for {}".format(tapeID))
-			ltfsCommandString = ' '.join(LTFS[1:])
-			print(ltfsCommandString)
-			thisDir = os.path.dirname(os.path.realpath(__file__))
-			mountSub = os.path.join(thisDir,"mount.sh")
-			print(mountSub)
-			out  = subprocess.run(['/bin/bash',mountSub,ltfsCommandString],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+			# print("trying out the helper function for {}".format(tapeID))
+			# ltfsCommandString = ' '.join(LTFS[1:])
+			# print(ltfsCommandString)
+			# thisDir = os.path.dirname(os.path.realpath(__file__))
+			# mountSub = os.path.join(thisDir,"mount.sh")
+			# print(mountSub)
+			# out  = subprocess.run(['/bin/bash',mountSub,ltfsCommandString],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 			# print(out.stdout)
 			# utils.mount_tape(LTFS)
+			mounted = 0
+			while mounted < 1:
+				out, err = subprocess.run(LTFS,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+				for line in out.splitlines():
+					print(line.decode())
+					if "Ready to receive filesystem requests" in line.decode():
+						mounted +=1
 
 			statuses[tapeID] = 'mounted, ready to go'
 			print("I DID A SUBPROCESS LTFS...")
