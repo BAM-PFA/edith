@@ -16,6 +16,7 @@ from werkzeug import MultiDict
 # local modules
 from . import lto
 from . import forms
+from . import mountClass
 from .. import listObjects
 from .. import utils
 
@@ -248,22 +249,28 @@ def mount_status():
 			# out  = subprocess.run(['/bin/bash',mountSub,ltfsCommandString],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 			# print(out.stdout)
 			# utils.mount_tape(LTFS)
-			mounted = 0
-			#while mounted < 1:
-			run = subprocess.Popen(LTFS,stdout=subprocess.PIPE,stderr=subprocess.PIPE,close_fds=True)
-			while mounted < 1:
-				out,err = run.communicate()
-				run.kill()
-				print(err)
-				for line in err.splitlines():
-					print(line)
-					if "Ready to receive" in line:
-						mounted +=1
-						print("mounted is:")
-						print(mounted)
+			# mounted = 0
+			# #while mounted < 1:
+			# run = subprocess.Popen(LTFS,stdout=subprocess.PIPE,stderr=subprocess.PIPE,close_fds=True)
+			# while mounted < 1:
+			# 	out,err = run.communicate()
+			# 	run.kill()
+			# 	print(err)
+			# 	for line in err.splitlines():
+			# 		print(line)
+			# 		if "Ready to receive" in line:
+			# 			mounted +=1
+			# 			print("mounted is:")
+			# 			print(mounted)
 			#for line in out.splitlines():
 			#	print("OUT")
 			#	print(line)
+			mount = mountClass.mountTape(tapeID,device,LTFS)
+				while True:
+					print(mount.stderr)
+					break
+
+
 
 			statuses[tapeID] = 'mounted, ready to go'
 			print("I DID A SUBPROCESS LTFS...")
