@@ -128,7 +128,6 @@ def now():
 
 def mount_tape(command):
 	print(command)
-	subprocess.run(LTFS,stdin=subprocess.DEVNULL, close_fds=True)
+	subprocess.run(command,stdin=None,stdout=None,close_fds=True)
+	print("gave it a shot")
 	return True
-	
-

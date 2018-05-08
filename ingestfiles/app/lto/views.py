@@ -165,6 +165,8 @@ def mount_lto():
 			barcodes[letter] = "Trouble getting the tape barcode"
 		print(barcodes)
 
+		os.remove(tempFile)
+
 	mountEmUp.tapeBarcodes.data = barcodes
 
 	return render_template(
@@ -199,14 +201,17 @@ def mount_status():
 		if os.path.exists(mountpoint):
 			try:
 				os.rmdir(mountpoint)
+				os.mkdir(mountpoint,mode=0o777)
+				print("made the mountpoint at {}".format(mountpoint))
 			except:
 				print("mountpoint dir exists and is not empty...")
 		else:
 			try:
 				os.mkdir(mountpoint,mode=0o777)
-				#subprocess.call(['mkdir','-m','777',mountpoint])
+				print("made the mountpoint at {}".format(mountpoint))
 			except:
-				print("can't make the mount point... check yr permissions")
+				print("can't make the mountpoint... check yr permissions")
+
 		# -o uid sets user to www-data (apache user)
 		# -o umask sets permissions to 777
 		LTFS = [
@@ -216,16 +221,25 @@ def mount_status():
 		'-o','capture_index',
 		'-o','devname={}'.format(device),
 		'-o','gid=33',
+		'-o','uid=33',
 		'-o','umask=777',
 		mountpoint
 		]
-		# print(LTFS)
+		#print(LTFS)
 		try:
 			# subprocess.run(LTFS,stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)
 			# subprocess.run(LTFS,stdin=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)
 			# pass the ltfs command as a list to a helper function
 			# to try to get it to not block
-			utils.mount_tape(LTFS)
+			print("trying out the helper function for {}".format(tapeID))
+			ltfsCommandString = ' '.join(LTFS[1:])
+			print(ltfsCommandString)
+			thisDir = os.path.dirname(os.path.realpath(__file__))
+			mountSub = os.path.join(thisDir,"mount.sh")
+			print(mountSub)
+			out  = subprocess.run(['/bin/bash',mountSub,ltfsCommandString],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+			# print(out.stdout)
+			# utils.mount_tape(LTFS)
 
 			statuses[tapeID] = 'mounted, ready to go'
 			print("I DID A SUBPROCESS LTFS...")

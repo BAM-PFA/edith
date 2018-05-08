@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
-export PATH=/usr/local/bin:$PATH
-mount='/usr/local/bin/mountlto ${1}'
+# export PATH=/usr/local/bin:$PATH
+# mount='/usr/local/bin/mountlto ${1}'
 
-eval $mount
-echo "mounting . . ."
+# eval $mount
+# echo "mounting . . ."
+
+echo "I AM A SUBSCRIPT!"
+echo $@
+
+ltfs $@
