@@ -182,7 +182,7 @@ def mount_lto():
 
 def run_ltfs(devname,tempdir,mountpoint):
 	command = (
-		"ltfs -f "
+		"ltfs "
 		"-o work_directory={} "
 		"-o noatime "
 		"-o capture_index "
@@ -195,9 +195,12 @@ def run_ltfs(devname,tempdir,mountpoint):
 		commandList,
 		stdin=subprocess.DEVNULL,
 		stdout=subprocess.DEVNULL,
-		stderr=subprocess.DEVNULL,
+		stderr=subprocess.PIPE,
 		close_fds=True
 		)
+	for line in doit.stderr.read().splitlines():
+		print(line.decode())
+
 
 @lto.route('/mount_status',methods=['GET','POST'])
 def mount_status():
@@ -224,13 +227,15 @@ def mount_status():
 		if os.path.exists(mountpoint):
 			try:
 				os.rmdir(mountpoint)
-				os.mkdir(mountpoint,mode=0o777)
+				os.mkdir(mountpoint)
+				#os.chmod(mountpoint,0o777)
 				print("made the mountpoint at {}".format(mountpoint))
 			except:
 				print("mountpoint dir exists and is not empty...")
 		else:
 			try:
-				os.mkdir(mountpoint,mode=0o777)
+				os.mkdir(mountpoint)
+				#os.chmod(mountpoint,0o777)
 				print("made the mountpoint at {}".format(mountpoint))
 			except:
 				print("can't make the mountpoint... check yr permissions")
@@ -243,17 +248,20 @@ def mount_status():
 	pool.starmap(run_ltfs,ltfsDetails)
 	pool.close()
 	# wait for the tapes to mount
-	sleep(9)
+	sleep(13)
 	mountedDevices = []
 	successes = []
 	with subprocess.Popen(['mount'],stdout=subprocess.PIPE) as mount:
 		for line in mount.stdout.read().splitlines():
 			if '/dev/nst' in line.decode():
 				mountedDevices.append(line.decode())
+	print(mountedDevices)
 	for device, tapeID in devices.items():
 		statuses[tapeID] = ''
 		for item in mountedDevices:
-			if device in item:
+			if tapeID in item:
+				print("THIS TAPE YO")
+				print(tapeID)
 				statuses[tapeID] = 'mounted, ready to go'
 			else:
 				pass
