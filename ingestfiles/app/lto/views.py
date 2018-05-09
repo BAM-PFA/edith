@@ -182,7 +182,9 @@ def mount_lto():
 
 def run_ltfs(devname,tempdir,mountpoint):
 	command = (
-		"ltfs "
+		"sudo ltfs "
+		"-o gid=33 "
+		"-o uid=33 "
 		"-o work_directory={} "
 		"-o noatime "
 		"-o capture_index "
@@ -228,14 +230,14 @@ def mount_status():
 			try:
 				os.rmdir(mountpoint)
 				os.mkdir(mountpoint)
-				#os.chmod(mountpoint,0o777)
+				os.chmod(mountpoint,0o777)
 				print("made the mountpoint at {}".format(mountpoint))
 			except:
 				print("mountpoint dir exists and is not empty...")
 		else:
 			try:
 				os.mkdir(mountpoint)
-				#os.chmod(mountpoint,0o777)
+				os.chmod(mountpoint,0o777)
 				print("made the mountpoint at {}".format(mountpoint))
 			except:
 				print("can't make the mountpoint... check yr permissions")
