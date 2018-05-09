@@ -3,6 +3,7 @@
 # import getpass
 import ast
 import json
+from multiprocessing.dummy import Pool as ThreadPool
 import os
 import re
 import subprocess
@@ -180,6 +181,25 @@ def mount_lto():
 		)
 
 
+def run_ltfs(devname,tempdir,mountpoint):
+	command = (
+		"ltfs -f "
+		"-o work_directory={} "
+		"-o noatime "
+		"-o capture_index "
+		"-o devname={} "
+		"{}".format(tempdir,devname,mountpoint)
+		)
+	commandList = command.split()
+	print(commandList)
+	doit = subprocess.Popen(
+		commandList,
+		stdin=subprocess.DEVNULL,
+		stdout=subprocess.DEVNULL,
+		stderr=subprocess.DEVNULL,
+		close_fds=True
+		)
+
 @lto.route('/mount_status',methods=['GET','POST'])
 def mount_status():
 	statuses = {}
@@ -190,13 +210,15 @@ def mount_status():
 	coolBarcodes = _data["tapeBarcodes"][0]
 	print("barcodes")
 	print(coolBarcodes)
+	# this is dumb. the dict is passed as a string from the form
+	# so i have to re-read it as a dict
 	coolBarcodes = ast.literal_eval(coolBarcodes)
-	print(type(coolBarcodes))
 	devices = {'/dev/nst0':'','/dev/nst0':''}
-	print(type(devices))
 
 	devices['/dev/nst0'] = coolBarcodes['A']
 	devices['/dev/nst1'] = coolBarcodes['B']
+
+	ltfsDetails = []
 
 	for device, tapeID in devices.items():
 		mountpoint = os.path.join(tempDir,tapeID)
@@ -214,71 +236,31 @@ def mount_status():
 			except:
 				print("can't make the mountpoint... check yr permissions")
 
-		# -o uid sets user to www-data (apache user)
-		# -o umask sets permissions to 777
-		#LTFS = [
-		#'ltfs','-f',
-		#'-o','work_directory={}'.format(tempDir),
-		#'-o','noatime',
-		#'-o','capture_index',
-		#'-o','devname={}'.format(device),
-		#'-o','gid=33',
-		#'-o','uid=33',
-		#'-o','umask=777',
-		#mountpoint
-		#]
-		LTFS = [
-		'ltfs','-f',
-		'-o','work_directory={}'.format(tempDir),
-		'-o','noatime',
-		'-o','capture_index',
-		'-o','devname={}'.format(device),
-		mountpoint
-		]
-		#print(LTFS)
-		try:
-			# subprocess.run(LTFS,stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)
-			# subprocess.run(LTFS,stdin=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)
-			# pass the ltfs command as a list to a helper function
-			# to try to get it to not block
-			# print("trying out the helper function for {}".format(tapeID))
-			# ltfsCommandString = ' '.join(LTFS[1:])
-			# print(ltfsCommandString)
-			# thisDir = os.path.dirname(os.path.realpath(__file__))
-			# mountSub = os.path.join(thisDir,"mount.sh")
-			# print(mountSub)
-			# out  = subprocess.run(['/bin/bash',mountSub,ltfsCommandString],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-			# print(out.stdout)
-			# utils.mount_tape(LTFS)
-			# mounted = 0
-			# #while mounted < 1:
-			# run = subprocess.Popen(LTFS,stdout=subprocess.PIPE,stderr=subprocess.PIPE,close_fds=True)
-			# while mounted < 1:
-			# 	out,err = run.communicate()
-			# 	run.kill()
-			# 	print(err)
-			# 	for line in err.splitlines():
-			# 		print(line)
-			# 		if "Ready to receive" in line:
-			# 			mounted +=1
-			# 			print("mounted is:")
-			# 			print(mounted)
-			#for line in out.splitlines():
-			#	print("OUT")
-			#	print(line)
-			mount = mountClass.mountTape(tapeID,device,LTFS)
-			mount.run_ltfs()
-			print(mount.err)
-			mounted = 0
-			while mounted < 2:
-				mount.stderr()
-				sleep(.5)
-				mounted += 1
+		details = [device,tempdir,mountpoint]
+		ltfsDetails.append(details)
 
-			statuses[tapeID] = 'mounted, ready to go'
-			print("I DID A SUBPROCESS LTFS...")
-		except:
-			statuses[tapeID] = 'there was an error in the LTFS command'
+	print(ltfsDetails)
+	pool = ThreadPool(2)
+	pool.starmap(run_ltfs,ltfsDetails)
+	pool.close()
+	# wait for the tapes to mount
+	sleep(9)
+	mountedDevices = []
+	successes = []
+	with subprocess.Popen(['mount'],stdout=subprocess.PIPE) as mount:
+		for line in mount.stdout.read().splitlines():
+			if '/dev/nst' in line:
+				mountedDevices.append(line)
+	for device, tapeID in devices.items():
+		statuses[tapeID] = ''
+		for item in mountedDevices:
+			if device in item:
+				statuses[tapeID] = 'mounted, ready to go'
+			else:
+				pass
+		if not statuses[tapeID] == 'mounted, ready to go':
+			statuses[tapeID] = 'not mounted, there was an error'
+
 
 	return render_template(
 		'mount_status.html',
