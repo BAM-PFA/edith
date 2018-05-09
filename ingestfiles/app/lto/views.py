@@ -18,7 +18,6 @@ from werkzeug import MultiDict
 # local modules
 from . import lto
 from . import forms
-from . import mountClass
 from .. import listObjects
 from .. import utils
 
@@ -236,7 +235,7 @@ def mount_status():
 			except:
 				print("can't make the mountpoint... check yr permissions")
 
-		details = [device,tempdir,mountpoint]
+		details = [device,tempDir,mountpoint]
 		ltfsDetails.append(details)
 
 	print(ltfsDetails)
@@ -249,8 +248,8 @@ def mount_status():
 	successes = []
 	with subprocess.Popen(['mount'],stdout=subprocess.PIPE) as mount:
 		for line in mount.stdout.read().splitlines():
-			if '/dev/nst' in line:
-				mountedDevices.append(line)
+			if '/dev/nst' in line.decode():
+				mountedDevices.append(line.decode())
 	for device, tapeID in devices.items():
 		statuses[tapeID] = ''
 		for item in mountedDevices:
