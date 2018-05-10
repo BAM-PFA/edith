@@ -30,6 +30,8 @@ class aip_object_form(FlaskForm):
 	targetPath = wtforms.HiddenField('targetPath')
 	# this is the human readable name for the AIP
 	targetBase = wtforms.HiddenField('targetBase')
+	# this is the size of the AIP:
+	aipSize = wtforms.HiddenField('aipSize')
 	writeToLTO = wtforms.BooleanField('Write to tape?',default='')
 
 class write_to_LTO(FlaskForm):

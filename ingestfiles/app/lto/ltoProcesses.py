@@ -13,6 +13,44 @@ import wtforms
 # local modules
 from .. import utils
 
+
+def get_aip_human_name(aipPath):
+	'''
+	ALERT: THIS IS A HACK!!!
+	Peer into the UUID named AIP and look for the PBCore XML file for the asset,
+	which *should* be named after the canonical name of the ingested object.
+	Then return this human-readable name so that it can be listed for writing 
+	to LTO. 
+	It is 100 percent possible/likely that this is a dumb way of finding
+	what we are looking for, but it's a quick&dirty solution that should also
+	mostly work.
+	'''
+	# init humanName as False in preparation for failure
+	humanName = False
+	if os.path.exists(aipPath):
+		# going to assume that the AIP follows the current structure for this
+		# so there is a parent dir named after the ingest UUID
+		# and under that there is a metadata dir and in that is the pbcore 
+		# xml file that contains the human-readable name that we want
+		UUID = os.path.basename(aipPath)
+		metadataDir = os.path.join(aipPath,UUID,'metadata')
+		if os.path.exists(metadataDir):
+			for thing in os.listdir(aipPath):
+				if "_pbcore.xml" in thing:
+					# GRAB THE HUMAN NAME
+					humanName = thing.replace("_pbcore.xml","")
+				else:
+					print("THERE IS NO PBCORE XML FILE FOR THIS OBJECT!!")
+		else:
+			print("there is no metadata dir in the AIP??")
+			
+	else:
+		print(
+			"the aip path you provided ({}) does not exist.".format(aipPath)
+			)
+
+	return humanName
+
 def run_ltfs(devname,tempdir,mountpoint):
 	command = (
 		"sudo ltfs "
@@ -38,7 +76,7 @@ def run_ltfs(devname,tempdir,mountpoint):
 
 	return doit.stderr
 
-def folder_size(path):
+def aip_size(path):
 	'''
 	Stolen from https://stackoverflow.com/q/40840037
 	'''

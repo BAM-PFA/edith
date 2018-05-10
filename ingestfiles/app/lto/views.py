@@ -176,30 +176,6 @@ def mount_lto():
 		barcodes=barcodes
 		)
 
-# def run_ltfs(devname,tempdir,mountpoint):
-# 	command = (
-# 		"sudo ltfs "
-# 		"-o gid=33 "
-# 		"-o uid=33 "
-# 		"-o work_directory={} "
-# 		"-o noatime "
-# 		"-o capture_index "
-# 		"-o devname={} "
-# 		"{}".format(tempdir,devname,mountpoint)
-# 		)
-# 	commandList = command.split()
-# 	print(commandList)
-# 	doit = subprocess.Popen(
-# 		commandList,
-# 		stdin=subprocess.DEVNULL,
-# 		stdout=subprocess.DEVNULL,
-# 		stderr=subprocess.PIPE,
-# 		close_fds=True
-# 		)
-# 	for line in doit.stderr.read().splitlines():
-# 		print(line.decode())
-
-
 @lto.route('/mount_status',methods=['GET','POST'])
 def mount_status():
 	statuses = {'errors':[]}
@@ -294,7 +270,20 @@ def list_aips():
 		pass
 	choices = {}
 	for path,_object in objects.items():
-		choices[path] = one_aip(targetPath=path,targetBase=_object)
+		humanName = ltoProcesses.get_human_name(path)
+		aipSize = ltoProcesses.aip_size(path)
+		if not humanName == False:
+			choices[path] = one_aip(
+				targetPath=path,
+				targetBase=humanName,
+				aipSize=aipSize
+				)
+		else:
+			choices[path] = one_aip(
+				targetPath=path,
+				targetBase=_object,
+				aipSize=aipSize
+				)
 
 	form = forms.write_to_LTO()
 	form.suchChoices = choices
@@ -305,6 +294,7 @@ def list_aips():
 		objects=objects,
 		form=form
 		)
+
 @lto.route('/write_status',methods=['GET','POST'])
 def write_status():
 	_data = request.form.to_dict(flat=False)
