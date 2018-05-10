@@ -9,9 +9,9 @@ import app
 from . import sshStuff
 from . import utils
 
-def list_objects():
+def list_objects(dirType):
 	objects = {}
-	dirName, hostName, sourceDir = utils.get_shared_dir_stuff()
+	dirName, hostName, sourceDir = utils.get_shared_dir_stuff(dirType)
 	if not hostName == 'localhost':
 		sourceDir, remoteAddress, remoteUser, remotePassword, sshKeyfile = utils.get_remote_credentials()
 		try:
@@ -34,3 +34,4 @@ def list_objects():
 				objects[(os.path.join(sourceDir,_object))] = _object
 	
 	return objects
+

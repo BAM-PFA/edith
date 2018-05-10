@@ -179,7 +179,6 @@ def mount_lto():
 		barcodes=barcodes
 		)
 
-
 def run_ltfs(devname,tempdir,mountpoint):
 	command = (
 		"sudo ltfs "
@@ -276,3 +275,7 @@ def mount_status():
 		title="LTO Mount Status",
 		statuses=statuses
 		)
+
+@lto.route('/list_aips',methods=['GET','POST'])
+def list_aips():
+	objects = listObjects.list_objects()

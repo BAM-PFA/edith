@@ -12,10 +12,15 @@ import app
 
 config = app.app_config
 
-def get_shared_dir_stuff():
-	dirName = list(config["SHARED_DIR"].keys())[0]
-	hostName = config["SHARED_DIR"][dirName]['host name']
-	sourceDir = config["SHARED_DIR"][dirName]['directory full path']
+def get_shared_dir_stuff(dirType):
+	if dirType == 'shared':
+		dirName = list(config["SHARED_DIR"].keys())[0]
+		hostName = config["SHARED_DIR"][dirName]['host name']
+		sourceDir = config["SHARED_DIR"][dirName]['directory full path']
+	elif dirType == 'aip':
+		dirName = list(config["AIP_STAGING_DIR"].keys())[0]
+		hostName = config["AIP_STAGING_DIR"][dirName]['host name']
+		sourceDir = config["AIP_STAGING_DIR"][dirName]['directory full path']
 	
 	return dirName, hostName, sourceDir
 

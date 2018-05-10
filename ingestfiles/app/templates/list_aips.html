@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div>
+		format new LTO tapes:
+		<a href="/format_lto">FORMAT LTO</a><br>
+	</div>
+
+	<div>
+		mount the current, formatted LTO tapes:
+		<a href="/mount_lto">MOUNT LTO</a><br>
+	</div>
+	
+
+
+	<div>
+		write AIP packages to mounted LTO tapes:
+		<a href="/write_lto">WRITE LTO</a><br>
+	</div>
+	
+{% endblock %}
