@@ -300,11 +300,18 @@ def list_aips():
 	form.suchChoices = choices
 
 	return render_template(
-		'write_status.html',
+		'list_aips.html',
 		title="LTO write status",
 		objects=objects,
 		form=form
 		)
 @lto.route('/write_status',methods=['GET','POST'])
 def write_status():
+	_data = request.form.to_dict(flat=False)
+
+	return render_template(
+		'write_status.html',
+		title="Write status",
+		_data=_data
+		)
 	

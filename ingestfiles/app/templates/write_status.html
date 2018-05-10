@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+	{% for aip, status in _data.items() %}
+		<p> {{ aip }} : {{ status }} </p>
+
+	{% endfor %}
+
+{% endblock %}
