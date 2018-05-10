@@ -1,23 +1,20 @@
 #!/usr/bin/env python3
 # standard library modules
-# import getpass
 import ast
-import json
 from multiprocessing.dummy import Pool as ThreadPool
 import os
 import re
 import subprocess
 import sys
 from time import sleep
-import urllib
-import uuid
 # non-standard libraries
+from flask import render_template, request
 import wtforms
-from flask import render_template, url_for, request, redirect, jsonify
-from werkzeug import MultiDict
 # local modules
-from . import lto
 from . import forms
+from . import lto
+from . import ltoProcesses
+
 from .. import listObjects
 from .. import utils
 
@@ -179,33 +176,33 @@ def mount_lto():
 		barcodes=barcodes
 		)
 
-def run_ltfs(devname,tempdir,mountpoint):
-	command = (
-		"sudo ltfs "
-		"-o gid=33 "
-		"-o uid=33 "
-		"-o work_directory={} "
-		"-o noatime "
-		"-o capture_index "
-		"-o devname={} "
-		"{}".format(tempdir,devname,mountpoint)
-		)
-	commandList = command.split()
-	print(commandList)
-	doit = subprocess.Popen(
-		commandList,
-		stdin=subprocess.DEVNULL,
-		stdout=subprocess.DEVNULL,
-		stderr=subprocess.PIPE,
-		close_fds=True
-		)
-	for line in doit.stderr.read().splitlines():
-		print(line.decode())
+# def run_ltfs(devname,tempdir,mountpoint):
+# 	command = (
+# 		"sudo ltfs "
+# 		"-o gid=33 "
+# 		"-o uid=33 "
+# 		"-o work_directory={} "
+# 		"-o noatime "
+# 		"-o capture_index "
+# 		"-o devname={} "
+# 		"{}".format(tempdir,devname,mountpoint)
+# 		)
+# 	commandList = command.split()
+# 	print(commandList)
+# 	doit = subprocess.Popen(
+# 		commandList,
+# 		stdin=subprocess.DEVNULL,
+# 		stdout=subprocess.DEVNULL,
+# 		stderr=subprocess.PIPE,
+# 		close_fds=True
+# 		)
+# 	for line in doit.stderr.read().splitlines():
+# 		print(line.decode())
 
 
 @lto.route('/mount_status',methods=['GET','POST'])
 def mount_status():
-	statuses = {}
+	statuses = {'errors':[]}
 	userId = os.getegid()
 	tempDir = utils.get_temp_dir()
 	_data = request.form.to_dict(flat=False)
@@ -232,21 +229,25 @@ def mount_status():
 				os.chmod(mountpoint,0o777)
 				print("made the mountpoint at {}".format(mountpoint))
 			except:
-				print("mountpoint dir exists and is not empty...")
+				error = "mountpoint dir exists and is not empty..."
+				statuses['errors'].append(error)
+				print(error)
 		else:
 			try:
 				os.mkdir(mountpoint)
 				os.chmod(mountpoint,0o777)
 				print("made the mountpoint at {}".format(mountpoint))
 			except:
-				print("can't make the mountpoint... check yr permissions")
+				error = "can't make the mountpoint... check yr permissions"
+				statuses['errors'].append(error)
+				print(error)
 
 		details = [device,tempDir,mountpoint]
 		ltfsDetails.append(details)
 
 	print(ltfsDetails)
 	pool = ThreadPool(2)
-	pool.starmap(run_ltfs,ltfsDetails)
+	pool.starmap(ltoProcesses.run_ltfs,ltfsDetails)
 	pool.close()
 	# wait for the tapes to mount
 	sleep(13)
@@ -267,6 +268,7 @@ def mount_status():
 			else:
 				pass
 		if not statuses[tapeID] == 'mounted, ready to go':
+			statuses['errors'].append("error mounting{}".format(tapeID))
 			statuses[tapeID] = 'not mounted, there was an error'
 
 
@@ -278,4 +280,31 @@ def mount_status():
 
 @lto.route('/list_aips',methods=['GET','POST'])
 def list_aips():
-	objects = listObjects.list_objects()
+	objects = listObjects.list_objects('aip')
+
+	# need to get a human readable targetBase:
+	# do a query (WHERE??) on the ingest UUID to retrieve the original filename
+	# options:
+	# the pymm database
+	# resourcespace
+	# drill into the AIP structure and look for the pbcore xml filename and parse that
+
+	class one_aip(forms.aip_object_form):
+		# http://wtforms.simplecodes.com/docs/1.0.1/specific_problems.html
+		pass
+	choices = {}
+	for path,_object in objects.items():
+		choices[path] = OneObject(targetPath=path,targetBase=_object)
+
+	form = forms.write_to_LTO()
+	form.suchChoices = choices
+
+	return render_template(
+		'write_status.html',
+		title="LTO write status",
+		objects=objects,
+		form=form
+		)
+@lto.route('/write_status',methods=['GET','POST'])
+def write_status():
+	

@@ -1,23 +1,21 @@
-import json
-import urllib
-import uuid
-
+#!/usr/bin/env python3
+# standard library modules
+# nerp
+# non-standard libraries
+from flask import render_template, request
 import wtforms
-from flask import render_template, url_for, request, redirect, jsonify
-from werkzeug import MultiDict
-
-from . import ingest
-from . import forms
+# local modules
 import app
-from .. import listObjects
-from . import fmQuery
+from . import ingest
 from . import ingestProcesses
+from . import fmQuery
+from . import forms
 
+from .. import listObjects
 
-# @ingest.route('/',methods=['GET','POST'])
 @ingest.route('/ingestor',methods=['GET','POST'])
 def ingestor():
-	objects = listObjects.list_objects()
+	objects = listObjects.list_objects('shared')
 
 	class OneObject(forms.ObjectForm):
 		# http://wtforms.simplecodes.com/docs/1.0.1/specific_problems.html
@@ -30,7 +28,12 @@ def ingestor():
 	form = forms.IngestForm()
 	form.suchChoices = choices
 
-	return render_template('ingestor.html',title='Ingestor',objects=objects,form=form)
+	return render_template(
+		'ingestor.html',
+		title='Ingestor',
+		objects=objects,
+		form=form
+		)
 
 @ingest.route('/status',methods=['GET','POST'])
 def status():

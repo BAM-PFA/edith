@@ -21,3 +21,20 @@ class mount(FlaskForm):
 	"""	
 	tapeBarcodes = wtforms.HiddenField('tapeBarcodes')
 	submit = wtforms.SubmitField('MOUNT TAPES!!')
+
+class aip_object_form(FlaskForm):
+	"""
+	Fields for an individual AIP
+	"""
+	# this is the full path to the individual AIP
+	targetPath = wtforms.HiddenField('targetPath')
+	# this is the human readable name for the AIP
+	targetBase = wtforms.HiddenField('targetBase')
+	writeToLTO = wtforms.BooleanField('Write to tape?',default='')
+
+class write_to_LTO(FlaskForm):
+	'''
+	General input form
+	'''
+	suchChoices = wtforms.HiddenField(default='default choices')
+	submit = wtforms.SubmitField('WRITE TO LTO')

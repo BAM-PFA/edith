@@ -1,21 +1,23 @@
+{% import "macros.html" as macros %}
+
 {% extends "base.html" %}
 
 {% block content %}
-	<div>
-		format new LTO tapes:
-		<a href="/format_lto">FORMAT LTO</a><br>
-	</div>
+	<h1>Here are files to ingest:</h1>
+	<form action="{{ url_for('lto.write_status') }}" method='POST'>
+		{{ form.hidden_tag() }}
+		{{ form.csrf_token }}
+		
+		{% for item,vals in form.suchChoices.items() %}
+		<div class="form-group">
+			{% for field in vals %}
+				{{ macros.render_field(field,vals.targetBase.data) }}
+			{% endfor %}
+		</div>
 
-	<div>
-		mount the current, formatted LTO tapes:
-		<a href="/mount_lto">MOUNT LTO</a><br>
-	</div>
-	
+		{%endfor%}
 
-
-	<div>
-		write AIP packages to mounted LTO tapes:
-		<a href="/write_lto">WRITE LTO</a><br>
-	</div>
-	
+	{{ form.user.label }}{{ form.user() }}<br>
+	{{ form.submit() }}
+	</form>
 {% endblock %}
