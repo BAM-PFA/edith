@@ -3,7 +3,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<h1>Here are files to ingest:</h1>
+	<h1>Here are Archival Information Packages to write to tape:</h1>
 	<form action="{{ url_for('lto.write_status') }}" method='POST'>
 		{{ form.hidden_tag() }}
 		{{ form.csrf_token }}
@@ -17,7 +17,6 @@
 
 		{%endfor%}
 
-	{{ form.user.label }}{{ form.user() }}<br>
 	{{ form.submit() }}
 	</form>
 {% endblock %}

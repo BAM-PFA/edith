@@ -294,7 +294,7 @@ def list_aips():
 		pass
 	choices = {}
 	for path,_object in objects.items():
-		choices[path] = OneObject(targetPath=path,targetBase=_object)
+		choices[path] = one_aip(targetPath=path,targetBase=_object)
 
 	form = forms.write_to_LTO()
 	form.suchChoices = choices
