@@ -12,8 +12,10 @@
 	<label for="{{ field.id }}-{{ uniqueName }}">{{ uniqueName }}</label>
 	<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="hidden" value="{{ field.data }}"/>
 {% elif field.name == 'aipSize' %}
-	<label for="{{ field.id }}-{{ uniqueName }}">{{ field.label.text }} {{ field.data }}</label>
-	<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="text" value="{{ field.data }}"/>
+	<div>
+		<label for="{{ field.id }}-{{ uniqueName }}">AIP SIZE: {{ field.data }}</label>
+		<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="hidden" value="{{ field.data }}"/>
+	</div>
 {% endif %}
 
 {% endmacro %}

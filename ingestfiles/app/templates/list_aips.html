@@ -9,12 +9,13 @@
 		{{ form.csrf_token }}
 		
 		{% for item,vals in form.suchChoices.items() %}
-		<div class="form-group">
-			{% for field in vals %}
-				{{ macros.render_field(field,vals.targetBase.data) }}
-			{% endfor %}
+		<div class="container">
+			<div class="form-group">
+				{% for field in vals %}
+					{{ macros.render_field(field,vals.targetBase.data) }}
+				{% endfor %}
+			</div>
 		</div>
-
 		{%endfor%}
 
 	{{ form.submit() }}

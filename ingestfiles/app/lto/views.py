@@ -270,8 +270,10 @@ def list_aips():
 		pass
 	choices = {}
 	for path,_object in objects.items():
-		humanName = ltoProcesses.get_human_name(path)
+		humanName = ltoProcesses.get_aip_human_name(path)
 		aipSize = ltoProcesses.aip_size(path)
+		# convert aip size from bytes to human readable form
+		aipSize = ltoProcesses.humansize(aipSize)
 		if not humanName == False:
 			choices[path] = one_aip(
 				targetPath=path,
@@ -304,4 +306,3 @@ def write_status():
 		title="Write status",
 		_data=_data
 		)
-	

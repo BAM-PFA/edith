@@ -5,25 +5,29 @@
 	<!-- 
 	<div>
 		create a new LTO id for new tapes:
-		<a href="/lto_id">LTO ID</a>
+		<a type="button" class="btn btn-info" href="/lto_id">LTO ID</button>
 	</div>
 	-->
 
-	<div>
+	<div class="container">
 		format new LTO tapes:
-		<a href="/format_lto">FORMAT LTO</a>
+		<p>
+			<a class="btn btn-danger" href="/format_lto">FORMAT LTO</a>
+		</p>
 	</div>
 
-	<div>
+	<div class="container">
 		mount the current, formatted LTO tapes:
-		<a href="/mount_lto">MOUNT LTO</a>
+		<p>
+			<a class="btn btn-info" href="/mount_lto">MOUNT LTO</a>
+		</p>
 	</div>
 	
-
-
-	<div>
+	<div class="container">
 		write AIP packages to mounted LTO tapes:
-		<a href="/list_aips">WRITE LTO</a>
+		<p>
+			<a class="btn btn-info" href="/list_aips">WRITE LTO</a>
+		</p>
 	</div>
 	
 {% endblock %}

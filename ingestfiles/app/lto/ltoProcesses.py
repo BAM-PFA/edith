@@ -35,7 +35,7 @@ def get_aip_human_name(aipPath):
 		UUID = os.path.basename(aipPath)
 		metadataDir = os.path.join(aipPath,UUID,'metadata')
 		if os.path.exists(metadataDir):
-			for thing in os.listdir(aipPath):
+			for thing in os.listdir(metadataDir):
 				if "_pbcore.xml" in thing:
 					# GRAB THE HUMAN NAME
 					humanName = thing.replace("_pbcore.xml","")
@@ -76,6 +76,7 @@ def run_ltfs(devname,tempdir,mountpoint):
 
 	return doit.stderr
 
+# MOVE THIS TO UTILS AND RENAME IT FOLDER_SIZE()
 def aip_size(path):
 	'''
 	Stolen from https://stackoverflow.com/q/40840037
@@ -85,7 +86,7 @@ def aip_size(path):
 		if entry.is_file():
 			total += entry.stat().st_size
 		elif entry.is_dir():
-		   total += folder_size(entry.path)
+		   total += aip_size(entry.path)
 	return total
 
 def LTO_free_space(mountpoint):
@@ -107,5 +108,16 @@ def LTO_free_space(mountpoint):
 	else:
 		return 0
 
-
-
+# this file size calc came from:
+# http://stackoverflow.com/questions/14996453/python-libraries-to-calculate-human-readable-filesize-from-bytes
+# MOVE THIS TO UTILS.PY
+def humansize(nbytes):
+	suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+	if nbytes == 0:
+		return '0 B'
+	i = 0
+	while nbytes >= 1024 and i < len(suffixes)-1:
+		nbytes /= 1024.
+		i += 1
+	f = ('%.2f' % nbytes).rstrip('0').rstrip('.')
+	return '%s %s' % (f, suffixes[i])
