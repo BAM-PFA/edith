@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 import wtforms
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired,Email
 
 class LTO_id_form(FlaskForm):
 	"""
@@ -32,6 +32,7 @@ class aip_object_form(FlaskForm):
 	targetBase = wtforms.HiddenField('targetBase')
 	# this is the size of the AIP:
 	aipSize = wtforms.HiddenField('aipSize')
+	aipHumanSize = wtforms.HiddenField('aipHumanSize')
 	writeToLTO = wtforms.BooleanField('Write to tape?',default='')
 
 class write_to_LTO(FlaskForm):
@@ -39,4 +40,5 @@ class write_to_LTO(FlaskForm):
 	General input form
 	'''
 	suchChoices = wtforms.HiddenField(default='default choices')
+	user = wtforms.StringField('Please enter your email address:',validators=[DataRequired(), Email()])
 	submit = wtforms.SubmitField('WRITE TO LTO')

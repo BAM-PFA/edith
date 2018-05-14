@@ -121,3 +121,6 @@ def humansize(nbytes):
 		i += 1
 	f = ('%.2f' % nbytes).rstrip('0').rstrip('.')
 	return '%s %s' % (f, suffixes[i])
+
+def write_LTO(aipDict,user):
+	pass

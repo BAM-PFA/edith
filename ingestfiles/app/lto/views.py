@@ -273,18 +273,20 @@ def list_aips():
 		humanName = ltoProcesses.get_aip_human_name(path)
 		aipSize = ltoProcesses.aip_size(path)
 		# convert aip size from bytes to human readable form
-		aipSize = ltoProcesses.humansize(aipSize)
+		aipHumanSize = ltoProcesses.humansize(aipSize)
 		if not humanName == False:
 			choices[path] = one_aip(
 				targetPath=path,
 				targetBase=humanName,
-				aipSize=aipSize
+				aipSize=aipSize,
+				aipHumanSize=aipHumanSize
 				)
 		else:
 			choices[path] = one_aip(
 				targetPath=path,
 				targetBase=_object,
-				aipSize=aipSize
+				aipSize=aipSize,
+				aipHumanSize=aipHumanSize
 				)
 
 	form = forms.write_to_LTO()
@@ -301,6 +303,25 @@ def list_aips():
 def write_status():
 	_data = request.form.to_dict(flat=False)
 	print(_data)
+	user = request.form['user']
+
+	results = {}
+	toWrite = []
+	targetPaths = []
+	for key,value in _data.items():
+		if 'writeToLTO' in key:
+			toWrite.append(key.replace('writeToLTO-',''))
+		elif 'targetPath' in key:
+			targetPaths.append(value[0])
+	for _object in toWrite:
+		# build a dict of AIPS to write
+		for path in targetPaths:
+			if _object in path:
+				results[path] = {'canonicalName' : _object}
+
+	results = ltoProcesses.write_LTO(results,user)
+
+
 	return render_template(
 		'write_status.html',
 		title="Write status",
