@@ -300,7 +300,7 @@ def list_aips():
 @lto.route('/write_status',methods=['GET','POST'])
 def write_status():
 	_data = request.form.to_dict(flat=False)
-
+	print(_data)
 	return render_template(
 		'write_status.html',
 		title="Write status",

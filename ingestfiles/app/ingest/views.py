@@ -42,6 +42,7 @@ def status():
 
 	try:
 		_data = request.form.to_dict(flat=False)
+		# print(_data)
 		user = request.form['user']
 
 		if not user in app.app_config['KNOWN_USERS']:

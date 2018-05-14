@@ -135,11 +135,9 @@ def main(ingestDict,user):
 	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
 	# run `pymm` on ingest objects
 	# post access copies to resourcespace
-	dirName, hostName, sourceDir = utils.get_shared_dir_stuff()
-
+	dirName, hostName, sourceDir = utils.get_shared_dir_stuff('shared')
 	# try to search filemaker for descriptive metadata
 	ingestDict = add_metadata(ingestDict)
-	# print(ingestDict)
 
 	if not hostName == 'localhost':
 		for objectPath in ingestDict.keys():
@@ -158,7 +156,7 @@ def main(ingestDict,user):
 				pymmCommand.extend(['-j',metadataFilepath])
 			else:
 				pass
-			
+
 			subprocess.call(pymmCommand)
 
 	else:
