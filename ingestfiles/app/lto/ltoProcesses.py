@@ -36,11 +36,12 @@ def get_aip_human_name(aipPath):
 		metadataDir = os.path.join(aipPath,UUID,'metadata')
 		if os.path.exists(metadataDir):
 			for thing in os.listdir(metadataDir):
+				# REDO THIS WITH GLOB
 				if "_pbcore.xml" in thing:
 					# GRAB THE HUMAN NAME
 					humanName = thing.replace("_pbcore.xml","")
 				else:
-					print("THERE IS NO PBCORE XML FILE FOR THIS OBJECT!!")
+					pass
 		else:
 			print("there is no metadata dir in the AIP??")
 			
