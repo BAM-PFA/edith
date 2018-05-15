@@ -108,6 +108,15 @@ def LTO_free_space(mountpoint):
 	else:
 		return 0
 
+def checkRoomOnTape(aipSizes):
+	aipTotalSize = 0
+	for aip in aipSizes:
+		aipTotalSize += aip
+
+	roomOnATape = LTO_free_space('')
+
+	return roomOnATape
+
 # this file size calc came from:
 # http://stackoverflow.com/questions/14996453/python-libraries-to-calculate-human-readable-filesize-from-bytes
 # MOVE THIS TO UTILS.PY
@@ -123,4 +132,7 @@ def humansize(nbytes):
 	return '%s %s' % (f, suffixes[i])
 
 def write_LTO(aipDict,user):
+	pythonBinary = utils.get_python_path()
+	pymmPath = utils.get_pymm_path()
+
 	pass
