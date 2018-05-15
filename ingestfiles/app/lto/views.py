@@ -308,17 +308,23 @@ def write_status():
 	results = {}
 	toWrite = []
 	targetPaths = []
+	aipSizes = []
 	for key,value in _data.items():
 		if 'writeToLTO' in key:
 			toWrite.append(key.replace('writeToLTO-',''))
 		elif 'targetPath' in key:
 			targetPaths.append(value[0])
+		elif 'aipSize' in key:
+			aipSizes.append(value[0])
 	for _object in toWrite:
 		# build a dict of AIPS to write
 		for path in targetPaths:
 			if _object in path:
 				results[path] = {'canonicalName' : _object}
 
+	roomAvailable = ltoProcesses.assesSize(aipSizes)
+
+	print(results)
 	results = ltoProcesses.write_LTO(results,user)
 
 
