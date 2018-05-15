@@ -6,10 +6,17 @@
 	<h1>Here are Archival Information Packages to write to tape:</h1>
 	<div>
 		<p class="lead">Here is the space available on the mounted tapes:</p>
-		{% for tape, stats in spaceAvailable.items() %}
-				<strong>{{ tape }} : {{ stats['spaceAvailableHuman'] }}</strong>
-		{% endfor %}
+		<table>
+			{% for tape, stats in spaceAvailable.items() %}
+			
+					<tr class='active'>
+						<td>Space avalable on {{ tape }} tape : <b>{{ stats['spaceAvailableHuman'] }}</b></td>
+					</tr>
+			{% endfor %}
+		</table>
 	</div>
+	<br>
+	<br>
 	<form action="{{ url_for('lto.write_status') }}" method='POST'>
 		{{ form.hidden_tag() }}
 		{{ form.csrf_token }}
@@ -23,7 +30,7 @@
 			</div>
 		</div>
 		{%endfor%}
-	{{ form.user.label }}{{ form.user() }}<br>
+	{{ form.user.label }}  {{ form.user() }}<br>
 	{{ form.submit() }}
 	</form>
 {% endblock %}

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # standard library modules
 import ast
+import json
 from multiprocessing.dummy import Pool as ThreadPool
 import os
 import re
@@ -140,9 +141,11 @@ def write_LTO_temp_stats():
 	tempDir = utils.get_temp_dir()
 	statsJsonPath = os.path.join(tempDir,"tempTapeStats.json")
 	try:
+		with open(statsJsonPath,"x") as f:
+			pass
+		os.chmod(statsJsonPath,0o777)
 		with open(statsJsonPath,"w") as f:
 			json.dump(stats,f)
-		os.chmod(statsJsonPath,0o777)
 		return True
 	except:
 		print("couldn't write the temp tape stats file")

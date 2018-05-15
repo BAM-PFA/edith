@@ -301,7 +301,9 @@ def list_aips():
 	spaceAvailable = ltoProcesses.check_tape_space()
 	if not spaceAvailable == "NO STATS AVAILABLE":
 		for tape, stats in spaceAvailable.items():
-			space = utils.humansize(stats['spaceAvailable'])
+			oneKblocks = stats['spaceAvailable']
+			bytes = int(oneKblocks)*1000
+			space = utils.humansize(bytes)
 			stats['spaceAvailableHuman'] = space
 
 	return render_template(

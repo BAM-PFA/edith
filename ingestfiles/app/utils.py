@@ -143,7 +143,7 @@ def humansize(nbytes):
 	# http://stackoverflow.com/questions/14996453/
 	#   python-libraries-to-calculate-human-readable-filesize-from-bytes
 	'''
-
+	nbytes = int(nbytes)
 	suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
 	if nbytes == 0:
 		return '0 B'
