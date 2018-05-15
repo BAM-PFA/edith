@@ -17,9 +17,9 @@ from .. import utils
 def get_aip_human_name(aipPath):
 	'''
 	ALERT: THIS IS A HACK!!!
-	Peer into the UUID named AIP and look for the PBCore XML file for the asset,
+	Peer into the UUID named AIP and find the PBCore XML file for the asset,
 	which *should* be named after the canonical name of the ingested object.
-	Then return this human-readable name so that it can be listed for writing 
+	Then return this human-readable name so that it can be listed for writing
 	to LTO. 
 	It is 100 percent possible/likely that this is a dumb way of finding
 	what we are looking for, but it's a quick&dirty solution that should also
@@ -90,25 +90,6 @@ def aip_size(path):
 		   total += aip_size(entry.path)
 	return total
 
-def LTO_free_space(mountpoint):
-	'''
-	Get the free space left on an LTO tape and return the value in bytes`
-	'''
-	output = subprocess.run(['df',mountpoint],stdout=subprocess.PIPE)
-	dfLine = output.stdout.decode().splitlines()[1]
-	# should look like:
-	# "ltfs:/dev/nst1 # mountpoint
-	# 5597795328  # 1K-blocks
-	# 6144 # used
-	# 5597789184  # available
-	# 1% # Use%
-	# /path/to/mtn/point/18051B" # mounted on
-	if dfLine.startswith('ltfs'):
-		bytesAvailable = dfLine.split()[3]
-		return int(bytesAvailable)
-	else:
-		return 0
-
 def checkRoomOnTape(aipSizes):
 	aipTotalSize = 0
 	for aip in aipSizes:
@@ -118,22 +99,87 @@ def checkRoomOnTape(aipSizes):
 
 	return roomOnATape
 
-# this file size calc came from:
-# http://stackoverflow.com/questions/14996453/python-libraries-to-calculate-human-readable-filesize-from-bytes
-# MOVE THIS TO UTILS.PY
-def humansize(nbytes):
-	suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
-	if nbytes == 0:
-		return '0 B'
-	i = 0
-	while nbytes >= 1024 and i < len(suffixes)-1:
-		nbytes /= 1024.
-		i += 1
-	f = ('%.2f' % nbytes).rstrip('0').rstrip('.')
-	return '%s %s' % (f, suffixes[i])
+
 
 def write_LTO(aipDict,user):
 	pythonBinary = utils.get_python_path()
 	pymmPath = utils.get_pymm_path()
 
 	pass
+
+def write_LTO_temp_stats():
+	'''
+	Save the stats on mounted tapes to a temp file for reading
+	by various processes.
+	This file gets deleted on unmounting tapes (after writes?)
+	'''
+
+	stats = {
+		"A":{
+			"mountpoint":"",
+			"spaceAvailable":""
+			},
+		"B":{
+			"mountpoint":"",
+			"spaceAvailable":""
+			}
+		}
+	dfProcess = subprocess.run(['df'],stdout=subprocess.PIPE)
+	dfTape = [
+		line.decode() for line in dfProcess.stdout.splitlines() 
+		if '/dev/nst' in line.decode()
+		]
+	for line in dfTape:
+		if '/dev/nst0' in line:
+			stats["A"]["mountpoint"] = line.split()[5]
+			stats["A"]["spaceAvailable"] = line.split()[3]
+		elif '/dev/nst1' in line:
+			stats["B"]["mountpoint"] = line.split()[5]
+			stats["B"]["spaceAvailable"] = line.split()[3]
+
+	tempDir = utils.get_temp_dir()
+	statsJsonPath = os.path.join(tempDir,"tempTapeStats.json")
+	try:
+		with open(statsJsonPath,"w") as f:
+			json.dump(stats,f)
+		os.chmod(statsJsonPath,0o777)
+		return True
+	except:
+		print("couldn't write the temp tape stats file")
+		return False
+
+def check_tape_space():
+	tempDir = utils.get_temp_dir()
+	statsJsonPath = os.path.join(tempDir,"tempTapeStats.json")
+	try:
+		with open(statsJsonPath,'r') as f:
+			stats = json.load(f)
+	except:
+		try:
+			with open(statsJsonPath,'r') as f:
+				stats = f.read()
+				stats = ast.literal_eval(stats)
+		except:
+			print("couldn't read the stats file or it doesn't exist")
+			stats = "NO STATS AVAILABLE"
+
+	return stats
+
+
+def delete_tape_temp_stats():
+	'''
+	Run this on unmounting tapes
+	'''
+	tempDir = utils.get_temp_dir()
+	statsJsonPath = os.path.join(tempDir,"tempTapeStats.json")
+	if os.path.exists(statsJsonPath):
+		try:
+			os.remove(statsJsonPath)
+			return True
+		except:
+			print("couldn't delete the temp tape stats file")
+			return False
+	else:
+		return False
+
+

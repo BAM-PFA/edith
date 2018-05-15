@@ -247,6 +247,12 @@ def mount_status():
 			statuses['errors'].append("error mounting{}".format(tapeID))
 			statuses[tapeID] = 'not mounted, there was an error'
 
+	if statuses['errors'] == []:
+		# if there were no errors, write the current tapes stats
+		# to a temp file for later reading/processing
+		tempStats = ltoProcesses.write_LTO_temp_stats()
+		if tempStats:
+			statuses['errors'] = 'No errors. :)'
 
 	return render_template(
 		'mount_status.html',
@@ -273,7 +279,7 @@ def list_aips():
 		humanName = ltoProcesses.get_aip_human_name(path)
 		aipSize = ltoProcesses.aip_size(path)
 		# convert aip size from bytes to human readable form
-		aipHumanSize = ltoProcesses.humansize(aipSize)
+		aipHumanSize = utils.humansize(aipSize)
 		if not humanName == False:
 			choices[path] = one_aip(
 				targetPath=path,
@@ -292,10 +298,17 @@ def list_aips():
 	form = forms.write_to_LTO()
 	form.suchChoices = choices
 
+	spaceAvailable = ltoProcesses.check_tape_space()
+	if not spaceAvailable == "NO STATS AVAILABLE":
+		for tape, stats in spaceAvailable.items():
+			space = utils.humansize(stats['spaceAvailable'])
+			stats['spaceAvailableHuman'] = space
+
 	return render_template(
 		'list_aips.html',
-		title="LTO write status",
+		title="List AIPs available",
 		objects=objects,
+		spaceAvailable=spaceAvailable,
 		form=form
 		)
 
@@ -322,7 +335,7 @@ def write_status():
 			if _object in path:
 				results[path] = {'canonicalName' : _object}
 
-	roomAvailable = ltoProcesses.assesSize(aipSizes)
+
 
 	print(results)
 	results = ltoProcesses.write_LTO(results,user)
