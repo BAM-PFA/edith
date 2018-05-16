@@ -118,9 +118,19 @@ def run_moveNcopy(aipPath,tapeMountpoint):
 
 def write_LTO(aipDict,user):
 	aMount,bMount = get_tape_mountpoints()
+	sipWriteTuples = []
 	if not False in (aMount,bMount):
-		for path,stuff in aipDict.items():
-			# DO THE REST OF IT, DAMMIT
+		for tapeMountpoint in (aMount,bMount):
+			for path,stuff in aipDict.items():
+				# get aip paths and tape mountponts 
+				# to build multithreading commands for both tapes
+				details = [path,tapeMountpoint]
+				sipWriteTuples.append(details)
+	
+	print(sipWriteTuples)
+	pool = ThreadPool(4)
+	# pool.starmap(run_moveNcopy,sipWriteTuples)
+	pool.close()
 	pass
 
 def write_LTO_temp_stats():
