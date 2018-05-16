@@ -65,7 +65,7 @@ def run_ltfs(devname,tempdir,mountpoint):
 		"{}".format(tempdir,devname,mountpoint)
 		)
 	commandList = command.split()
-	print(commandList)
+	# print(commandList)
 	doit = subprocess.Popen(
 		commandList,
 		stdin=subprocess.DEVNULL,
@@ -91,21 +91,36 @@ def aip_size(path):
 		   total += aip_size(entry.path)
 	return total
 
-def checkRoomOnTape(aipSizes):
-	aipTotalSize = 0
-	for aip in aipSizes:
-		aipTotalSize += aip
+def run_moveNcopy(aipPath,tapeMountpoint):
+	pythonBinary = utils.get_python_path()
+	pymmPath = utils.get_pymm_path()
+	moveNcopyPath = os.path.join(pymmPath,'moveNcopy.py')
+	command = (
+		"{} {} "
+		"-s "
+		"-i {} "
+		"-d {}".format(
+			pythonBinary,
+			moveNcopyPath,
+			aipPath,
+			tapeMountpoint
+			)
+		)
 
-	roomOnATape = LTO_free_space('')
+	runit = subprocess.run(
+		command,
+		stdout=subprocess.PIPE,
+		stderr=subprocess.PIPE
+		)
 
-	return roomOnATape
-
+	return runit.stdout
 
 
 def write_LTO(aipDict,user):
-	pythonBinary = utils.get_python_path()
-	pymmPath = utils.get_pymm_path()
-
+	aMount,bMount = get_tape_mountpoints()
+	if not False in (aMount,bMount):
+		for path,stuff in aipDict.items():
+			# DO THE REST OF IT, DAMMIT
 	pass
 
 def write_LTO_temp_stats():
@@ -151,7 +166,7 @@ def write_LTO_temp_stats():
 		print("couldn't write the temp tape stats file")
 		return False
 
-def check_tape_space():
+def get_tape_stats():
 	tempDir = utils.get_temp_dir()
 	statsJsonPath = os.path.join(tempDir,"tempTapeStats.json")
 	try:
@@ -167,6 +182,16 @@ def check_tape_space():
 			stats = "NO STATS AVAILABLE"
 
 	return stats
+
+def get_tape_mountpoints():
+	stats = get_tape_stats()
+	if not stats == "NO STATS AVAILABLE":
+		aMount = stats["A"]["mountpoint"]
+		bMount = stats["B"]["mountpoint"]
+	else:
+		aMount = bMount = False
+
+	return aMount,bMount
 
 
 def delete_tape_temp_stats():

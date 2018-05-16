@@ -298,7 +298,7 @@ def list_aips():
 	form = forms.write_to_LTO()
 	form.suchChoices = choices
 
-	spaceAvailable = ltoProcesses.check_tape_space()
+	spaceAvailable = ltoProcesses.get_tape_stats()
 	if not spaceAvailable == "NO STATS AVAILABLE":
 		for tape, stats in spaceAvailable.items():
 			oneKblocks = stats['spaceAvailable']
@@ -316,35 +316,36 @@ def list_aips():
 
 @lto.route('/write_status',methods=['GET','POST'])
 def write_status():
+	# raw data from the form
 	_data = request.form.to_dict(flat=False)
-	print(_data)
+	# print(_data)
 	user = request.form['user']
 
 	results = {}
 	toWrite = []
-	targetPaths = []
+	targetPaths = {}
 	aipSizes = []
 	for key,value in _data.items():
 		if 'writeToLTO' in key:
 			toWrite.append(key.replace('writeToLTO-',''))
 		elif 'targetPath' in key:
-			targetPaths.append(value[0])
+			# make a dict entry for {objectName:aipPath}
+			targetPaths[key.replace('targetPath-','')] = value[0]
 		elif 'aipSize' in key:
 			aipSizes.append(value[0])
 	for _object in toWrite:
 		# build a dict of AIPS to write
-		for path in targetPaths:
-			if _object in path:
-				results[path] = {'canonicalName' : _object}
-
-
+		for objectName,aipPath in targetPaths.items():
+			if objectName == _object:
+				results[aipPath] = {'canonicalName' : objectName}
 
 	print(results)
-	results = ltoProcesses.write_LTO(results,user)
+	writeResults = ltoProcesses.write_LTO(results,user)
 
 
 	return render_template(
 		'write_status.html',
 		title="Write status",
+		writeResults=writeResults,
 		_data=_data
 		)
