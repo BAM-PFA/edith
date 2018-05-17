@@ -3,7 +3,6 @@
 import ast
 import json
 from multiprocessing import Pool
-from multiprocessing.dummy import Pool as ThreadPool
 import os
 import re
 import subprocess
@@ -133,17 +132,17 @@ def write_LTO(aipDict,user):
 				# to build multithreading commands for both tapes
 				details = [path,tapeMountpoint]
 				sipWriteTuples.append(details)
-		#for tapeMountpoint in (aMount,bMount):
-		#	for path,stuff in aipDict.items():
-		#		out = run_moveNcopy(path,tapeMountpoint)
-		#		print("did moveNcopy on "+path)
-		#		print(out)
 
-	print(sipWriteTuples)
+	# print(sipWriteTuples)
+	# this is a mutli-*process* call instead of a multithread call, 
+	# which reduces the back and forth on LTO (apparently)
 	pool = Pool(2)
-	pool.starmap(run_moveNcopy,sipWriteTuples)
+	poolresult = pool.starmap(run_moveNcopy,sipWriteTuples)
 	pool.close()
-	#pass
+
+	# print(poolresult)
+
+	return poolresult
 
 def write_LTO_temp_stats():
 	'''

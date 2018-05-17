@@ -341,6 +341,8 @@ def write_status():
 
 	print(results)
 	writeResults = ltoProcesses.write_LTO(results,user)
+	print("RESULTS:")
+	print(writeResults)
 
 
 	return render_template(

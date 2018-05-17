@@ -167,6 +167,7 @@ def main(ingestDict,user):
 			pymmCommand = [pythonBinary,ingestSipPath,'-i',_object,'-u',user]
 			metadataFilepath = ingestDict[_object]['metadataFilepath']
 			print(metadataFilepath)
+			
 			os.chmod(metadataFilepath,0o777)
 			if ingestDict[_object]['metadata']['hasBAMPFAmetadata'] != False:
 				pymmCommand.extend(['-j',metadataFilepath])
