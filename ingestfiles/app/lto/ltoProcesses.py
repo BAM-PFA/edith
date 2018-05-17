@@ -136,13 +136,14 @@ def write_LTO(aipDict,user):
 	# print(sipWriteTuples)
 	# this is a mutli-*process* call instead of a multithread call, 
 	# which reduces the back and forth on LTO (apparently)
-	pool = Pool(2)
-	poolresult = pool.starmap(run_moveNcopy,sipWriteTuples)
-	pool.close()
-
-	# print(poolresult)
-
-	return poolresult
+	try:
+		pool = Pool(2)
+		poolresult = pool.starmap(run_moveNcopy,sipWriteTuples)
+		pool.close()
+		# print(poolresult)
+		return poolresult
+	except:
+		return False
 
 def write_LTO_temp_stats():
 	'''
@@ -218,6 +219,7 @@ def get_tape_mountpoints():
 def delete_tape_temp_stats():
 	'''
 	Run this on unmounting tapes
+	OR ACTUALLY RUN utils.clean_temp_dir()
 	'''
 	tempDir = utils.get_temp_dir()
 	statsJsonPath = os.path.join(tempDir,"tempTapeStats.json")
@@ -232,3 +234,22 @@ def delete_tape_temp_stats():
 		return False
 
 
+def unmount_tapes():
+	# apahce user added to sudoers overrides for `umount`
+	aMount,bMount = get_tape_mountpoints()
+	errors = []
+	if not False in (aMount,bMount):
+		for tape in (aMount,bMount):
+			command = [
+			'sudo','umount',
+			mountpoint
+			]
+			out = subprocess.run(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+			if not out.stderr.decode() == '':
+				errors.append(out.stderr.decode())
+			else:
+				pass
+	if not errors == []:
+		return errors
+	else:
+		return True

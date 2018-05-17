@@ -344,6 +344,9 @@ def write_status():
 	print("RESULTS:")
 	print(writeResults)
 
+	ltoProcesses.unmount_tapes()
+	utils.clean_temp_dir()
+
 
 	return render_template(
 		'write_status.html',

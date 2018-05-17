@@ -137,6 +137,17 @@ def mount_tape(command):
 	print("gave it a shot")
 	return True
 
+def clean_temp_dir():
+	tempDir = get_temp_dir()
+	for thing in os.listdir(tempDir):
+		if '.json' in thing:
+			os.remove(thing)
+		if os.path.isdir(thing):
+			try:
+				os.rmdir(thing)
+			except OSError:
+				print(thing+" is not empty... I won't delete it.")
+
 def humansize(nbytes):
 	'''
 	# this file size calc came from:
