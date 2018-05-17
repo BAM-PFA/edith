@@ -2,6 +2,7 @@
 # standard library modules
 import ast
 import json
+from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 import os
 import re
@@ -45,7 +46,7 @@ def get_aip_human_name(aipPath):
 					pass
 		else:
 			print("there is no metadata dir in the AIP??")
-			
+
 	else:
 		print(
 			"the aip path you provided ({}) does not exist.".format(aipPath)
@@ -107,11 +108,17 @@ def run_moveNcopy(aipPath,tapeMountpoint):
 			)
 		)
 
+	commandList = command.split()
+	print(commandList)
 	runit = subprocess.run(
-		command,
+		commandList,
 		stdout=subprocess.PIPE,
 		stderr=subprocess.PIPE
 		)
+	for line in runit.stdout.splitlines():
+		print(line.decode())
+	for line in runit.stderr.splitlines():
+		print(line.decode())
 
 	return runit.stdout
 
@@ -126,10 +133,10 @@ def write_LTO(aipDict,user):
 				# to build multithreading commands for both tapes
 				details = [path,tapeMountpoint]
 				sipWriteTuples.append(details)
-	
+
 	print(sipWriteTuples)
-	pool = ThreadPool(4)
-	# pool.starmap(run_moveNcopy,sipWriteTuples)
+	pool = ThreadPool(2)
+	pool.starmap(run_moveNcopy,sipWriteTuples)
 	pool.close()
 	pass
 
