@@ -141,7 +141,7 @@ def write_LTO(aipDict,user):
 		pool = Pool(2)
 		poolresult = pool.starmap(run_moveNcopy,sipWriteTuples)
 		pool.close()
-		print(poolresult)
+		# print(poolresult)
 		return poolresult
 	except:
 		return False

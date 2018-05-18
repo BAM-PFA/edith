@@ -344,9 +344,10 @@ def write_status():
 	# print(results)
 	writeResults = ltoProcesses.write_LTO(results,user)
 	print("LTO WRITE RESULTS:")
+	print(type(writeResults))
 	print(writeResults)
 
-	ltoProcesses.post_tape_id_to_rs(writeResults)
+	#ltoProcesses.post_tape_id_to_rs(writeResults)
 
 	ltoProcesses.unmount_tapes()
 	utils.clean_temp_dir()
