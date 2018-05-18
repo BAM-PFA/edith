@@ -2,7 +2,8 @@
 '''
 Useful utility stuff.
 '''
-# standard libraries
+# standard library stuff
+import glob
 import os
 import shutil
 import subprocess
@@ -141,7 +142,8 @@ def clean_temp_dir():
 	tempDir = get_temp_dir()
 	for thing in os.listdir(tempDir):
 		if '.json' in thing:
-			os.remove(thing)
+			print('deleting '+thing)
+			os.remove(os.path.join(tempDir,thing))
 		if os.path.isdir(thing):
 			try:
 				os.rmdir(thing)

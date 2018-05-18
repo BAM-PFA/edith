@@ -242,7 +242,7 @@ def unmount_tapes():
 		for tape in (aMount,bMount):
 			command = [
 			'sudo','umount',
-			mountpoint
+			tape
 			]
 			out = subprocess.run(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 			if not out.stderr.decode() == '':
