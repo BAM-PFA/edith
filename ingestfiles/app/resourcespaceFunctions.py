@@ -11,7 +11,6 @@ import urllib.parse
 # nonstandard libraries
 import requests
 # local modules
-from . import ingestProcesses
 from .. import utils
 
 def do_resourcespace(user,proxyPath,metadataFilepath=None):

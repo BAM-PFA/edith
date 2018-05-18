@@ -11,8 +11,8 @@ import time
 import urllib
 # local modules
 from . import fmQuery
-from . import resourcespaceFunctions
 from . import metadataMaster
+from .. import resourcespaceFunctions
 from .. import sshStuff
 from .. import utils
 
@@ -42,10 +42,16 @@ def get_barcode_from_filename(basename):
 
 
 def get_metadata(idNumber,basename):
+	# added in multiple return statements
+	# somehow if there was no metadata the variable 
+	# remembered the previous assignment and gave the current
+	# file the same metadata. still have no idea how that happens.
 	metadataDict = metadataMaster.metadata
-
 	if idNumber == '--':
 		metadataDict['hasBAMPFAmetadata'] = False
+		
+		return metadataDict
+	
 	elif idNumber == '00000':
 		# if the acc item number is zeroed out,
 		# try looking for a barcode to search on
@@ -54,10 +60,15 @@ def get_metadata(idNumber,basename):
 			# print(barcode)
 			if barcode == "000000000":
 				metadataDict['hasBAMPFAmetadata'] = False
+
+				return metadataDict
+			
 			else:
 				metadataDict = fmQuery.xml_query(barcode)
 		except:
 			metadataDict['hasBAMPFAmetadata'] = False
+
+			return metadataDict
 	else:
 		try:
 			print('searching on '+idNumber)
@@ -73,6 +84,9 @@ def get_metadata(idNumber,basename):
 			except:
 				# give up
 				metadataDict['hasBAMPFAmetadata'] = False
+				
+				return metadataDict
+
 	print(metadataDict)
 	return(metadataDict)
 

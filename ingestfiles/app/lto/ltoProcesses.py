@@ -12,6 +12,7 @@ from time import sleep
 from flask import render_template, request
 import wtforms
 # local modules
+from .. import resourcespaceFunctions
 from .. import utils
 
 
@@ -108,16 +109,16 @@ def run_moveNcopy(aipPath,tapeMountpoint):
 		)
 
 	commandList = command.split()
-	print(commandList)
+	# print(commandList)
 	runit = subprocess.run(
 		commandList,
 		stdout=subprocess.PIPE,
 		stderr=subprocess.PIPE
 		)
-	for line in runit.stdout.splitlines():
-		print(line.decode())
-	for line in runit.stderr.splitlines():
-		print(line.decode())
+	# for line in runit.stdout.splitlines():
+	# 	print(line.decode())
+	# for line in runit.stderr.splitlines():
+	# 	print(line.decode())
 
 	return runit.stdout
 
@@ -129,7 +130,7 @@ def write_LTO(aipDict,user):
 		for tapeMountpoint in (aMount,bMount):
 			for path,stuff in aipDict.items():
 				# get aip paths and tape mountponts 
-				# to build multithreading commands for both tapes
+				# to build commands for both tapes
 				details = [path,tapeMountpoint]
 				sipWriteTuples.append(details)
 
@@ -140,7 +141,7 @@ def write_LTO(aipDict,user):
 		pool = Pool(2)
 		poolresult = pool.starmap(run_moveNcopy,sipWriteTuples)
 		pool.close()
-		# print(poolresult)
+		print(poolresult)
 		return poolresult
 	except:
 		return False

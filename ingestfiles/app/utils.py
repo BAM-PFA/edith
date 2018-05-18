@@ -141,6 +141,7 @@ def clean_temp_dir():
 	tempDir = get_temp_dir()
 	for thing in os.listdir(tempDir):
 		if '.json' in thing:
+			print('deleting'+)
 			os.remove(thing)
 		if os.path.isdir(thing):
 			try:
@@ -150,12 +151,13 @@ def clean_temp_dir():
 
 def humansize(nbytes):
 	'''
-	# this file size calc came from:
-	# http://stackoverflow.com/questions/14996453/
-	#   python-libraries-to-calculate-human-readable-filesize-from-bytes
+	Return Mebibytes/Gibibytes (1024-based blocks)
+	this file size calc came from:
+	http://stackoverflow.com/questions/14996453/
+	  python-libraries-to-calculate-human-readable-filesize-from-bytes
 	'''
 	nbytes = int(nbytes)
-	suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+	suffixes = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB']
 	if nbytes == 0:
 		return '0 B'
 	i = 0

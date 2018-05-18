@@ -301,8 +301,10 @@ def list_aips():
 	spaceAvailable = ltoProcesses.get_tape_stats()
 	if not spaceAvailable == "NO STATS AVAILABLE":
 		for tape, stats in spaceAvailable.items():
-			oneKblocks = stats['spaceAvailable']
-			bytes = int(oneKblocks)*1000
+			# the `df` command that gets space available
+			# defaults to 1024-byte blocks
+			oneKiBblocks = stats['spaceAvailable']
+			bytes = int(oneKiBblocks)*1024
 			space = utils.humansize(bytes)
 			stats['spaceAvailableHuman'] = space
 
@@ -339,10 +341,12 @@ def write_status():
 			if objectName == _object:
 				results[aipPath] = {'canonicalName' : objectName}
 
-	print(results)
+	# print(results)
 	writeResults = ltoProcesses.write_LTO(results,user)
-	print("RESULTS:")
+	print("LTO WRITE RESULTS:")
 	print(writeResults)
+
+	ltoProcesses.post_tape_id_to_rs(writeResults)
 
 	ltoProcesses.unmount_tapes()
 	utils.clean_temp_dir()
