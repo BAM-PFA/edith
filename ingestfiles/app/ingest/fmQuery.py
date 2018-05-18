@@ -8,7 +8,7 @@ import requests
 import subprocess
 import sys
 import urllib.parse
-import xml.etree.ElementTree as ET
+import lxml.etree as ET
 # local imports
 from . import metadataMaster
 import app
@@ -46,7 +46,7 @@ def xml_query(idNumber):
 	root = ET.fromstring(xml.text)
 	# THERE SHOULD ONLY EVER BE ONE RECORD IN A RESULTSET SINCE ITEM NUMBERS SHOULD BE UNIQUE
 	recordElement = root.find("./filemaker:resultset/filemaker:record",namespace)
-	recordString = ET.tostring(recordElement)
+	recordString = ET.tostring(recordElement,encoding='UTF-8')
 	recordRoot = ET.fromstring(recordString)
 
 	# BUILD OUT THE DICT WITH VALUES FROM THE FILEMAKER RESULT
@@ -116,6 +116,9 @@ def xml_query(idNumber):
 	for key,value in recordDict.items():
 		if value == None:
 			recordDict[key] = ""
+		else:
+			print(type(value))
+
 
 	# print(recordDict)
 	return recordDict
