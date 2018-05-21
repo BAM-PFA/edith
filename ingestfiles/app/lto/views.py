@@ -342,10 +342,16 @@ def write_status():
 				results[aipPath] = {'canonicalName' : objectName}
 
 	# print(results)
+	writeStatuses = {}
 	writeResults = ltoProcesses.write_LTO(results,user)
 	print("LTO WRITE RESULTS:")
-	print(type(writeResults))
-	print(writeResults)
+	for result in writeResults:
+		for element in result:
+			if "HASHEDEEP" in element:
+				sip = element.split('|')[1]
+				aipStatus =  element.split('|')[2]
+				writeStatuses[sip] = aipStatus
+	print(writeStatuses)
 
 	#ltoProcesses.post_tape_id_to_rs(writeResults)
 
@@ -356,6 +362,6 @@ def write_status():
 	return render_template(
 		'write_status.html',
 		title="Write status",
-		writeResults=writeResults,
+		writeResults=writeStatuses,
 		_data=_data
 		)
