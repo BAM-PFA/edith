@@ -347,17 +347,22 @@ def write_status():
 	print("LTO WRITE RESULTS:")
 	print(writeResults)
 	for result in writeResults:
-		for element in result:
-			if "HASHEDEEP" in element:
-				sip = element.split('|')[1]
-				aipStatus =  element.split('|')[2]
-				writeStatuses[sip] = aipStatus
+		#print(result)
+		resultString = str(result)
+		#print(resultString)
+		if "HASHDEEP" in resultString:
+			sip = result.decode().split('|')[1]
+			#print(sip)
+			aipStatus =  result.decode().split('|')[2].rstrip()
+			#print(aipStatus)
+			writeStatuses[sip] = aipStatus
 	print(writeStatuses)
 
-	#ltoProcesses.post_tape_id_to_rs(writeResults)
+	# ltoProcesses.remove_staged_AIPs(writeStatuses)
+	#ltoProcesses.post_tape_id_to_rs(writeStatuses)
 
-	ltoProcesses.unmount_tapes()
-	utils.clean_temp_dir()
+	#ltoProcesses.unmount_tapes()
+	#utils.clean_temp_dir()
 
 
 	return render_template(
