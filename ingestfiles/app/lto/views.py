@@ -345,6 +345,7 @@ def write_status():
 	writeStatuses = {}
 	writeResults = ltoProcesses.write_LTO(results,user)
 	print("LTO WRITE RESULTS:")
+	print(writeResults)
 	for result in writeResults:
 		for element in result:
 			if "HASHEDEEP" in element:

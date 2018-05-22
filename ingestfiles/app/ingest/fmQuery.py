@@ -8,7 +8,8 @@ import requests
 import subprocess
 import sys
 import urllib.parse
-import lxml.etree as ET
+#from lxml import etree
+import xml.etree.ElementTree as ET
 # local imports
 from . import metadataMaster
 import app
@@ -42,11 +43,17 @@ def xml_query(idNumber):
 	# print(requestURL)
 	xml = requests.get(requestURL,auth=(user,password))
 	recordDict = metadataMaster.metadata
-	
+	#goodParser = etree.XMLParser(encoding='UTF-8',recover=True)
+	#test = etree.fromstring(u"<test>TEST!!</test>",goodParser)
+	#print(test)
+	#print(test.data)
+	#print(xml.encoding)
 	root = ET.fromstring(xml.text)
+	print(root)
 	# THERE SHOULD ONLY EVER BE ONE RECORD IN A RESULTSET SINCE ITEM NUMBERS SHOULD BE UNIQUE
 	recordElement = root.find("./filemaker:resultset/filemaker:record",namespace)
-	recordString = ET.tostring(recordElement,encoding='UTF-8')
+	print(recordElement)
+	recordString = ET.tostring(recordElement)
 	recordRoot = ET.fromstring(recordString)
 
 	# BUILD OUT THE DICT WITH VALUES FROM THE FILEMAKER RESULT
@@ -56,7 +63,7 @@ def xml_query(idNumber):
 
 	altTitleField = recordRoot.find("./filemaker:field[@name='AlternativeTitle']",namespace)
 	recordDict["altTitle"] = altTitleField[0].text
-	
+
 	accPrefField = recordRoot.find("./filemaker:field[@name='AccessionNumberPrefix']",namespace)
 	recordDict["accPref"] = accPrefField[0].text
 	accDeposField = recordRoot.find("./filemaker:field[@name='AccessionNumberDepositorNumber']",namespace)
@@ -64,25 +71,25 @@ def xml_query(idNumber):
 	accItemField = recordRoot.find("./filemaker:field[@name='AccessionNumberItemNumber']",namespace)
 	recordDict["accItem"] = accItemField[0].text
 	recordDict["accFull"] = "{}-{}-{}".format(recordDict["accPref"],recordDict["accDepos"],recordDict["accItem"])
-	
+
 	projGrpField = recordRoot.find("./filemaker:field[@name='ProjectGroupTitle']",namespace)
 	recordDict["projGrp"] = projGrpField[0].text
-	
+
 	countryField = recordRoot.find("./filemaker:field[@name='m_257a_Country']",namespace)
 	recordDict["country"] = countryField[0].text
-	
+
 	releaseYearField = recordRoot.find("./filemaker:field[@name='m_260c_ReleaseYear']",namespace)
 	recordDict["releaseYear"] = releaseYearField[0].text
-	
+
 	directorsNamesField = recordRoot.find("./filemaker:field[@name='ct_DirectorsNames']",namespace)
 	recordDict["directorsNames"] = directorsNamesField[0].text
-	
+
 	creditsField = recordRoot.find("./filemaker:field[@name='Credits']",namespace)
 	recordDict["credits"] = creditsField[0].text
-	
+
 	generalNotesField = recordRoot.find("./filemaker:field[@name='GeneralNotes']",namespace)
 	recordDict["generalNotes"] = generalNotesField[0].text
-	
+
 	conditionNoteField = recordRoot.find("./filemaker:field[@name='m_945z_GeneralConditionNotes']",namespace)
 	recordDict["conditionNote"] = conditionNoteField[0].text
 
