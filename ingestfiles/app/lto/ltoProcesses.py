@@ -254,3 +254,10 @@ def unmount_tapes():
 		return errors
 	else:
 		return True
+
+def post_tape_id_to_rs(writeStatuses):
+	stats = get_tape_stats()
+	ltoID = os.path.basename(stats["A"]["mountpoint"])
+	for AIP, status in writeStatuses.items():
+		if "True" in status:
+			resourcespaceFunctions.post_LTO_id(AIP,ltoID)

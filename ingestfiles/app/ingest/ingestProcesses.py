@@ -48,6 +48,9 @@ def get_metadata(idNumber,basename):
 	# file the same metadata. still have no idea how that happens.
 	metadataDict = metadataMaster.metadata
 	if idNumber == '--':
+		for key, value in metadataDict.items():
+			metadataDict[key] = ""
+
 		metadataDict['hasBAMPFAmetadata'] = False
 		
 		return metadataDict
@@ -59,6 +62,8 @@ def get_metadata(idNumber,basename):
 			barcode = get_barcode_from_filename(basename)
 			# print(barcode)
 			if barcode == "000000000":
+				for key, value in metadataDict.items():
+					metadataDict[key] = ""
 				metadataDict['hasBAMPFAmetadata'] = False
 
 				return metadataDict
@@ -129,18 +134,18 @@ def add_metadata(ingestDict):
 	for objectPath, options in ingestDict.items():
 		metadataJson = {}
 		metadataJson[objectPath] = {}
+
 		basename = options['basename']
 		idNumber = get_acc_from_filename(basename)
+
 		metadata = get_metadata(idNumber,basename)
 		options['metadata'] = metadata
+
 		metadataJson[objectPath]['metadata'] = metadata
 		metadataJson[objectPath]['basename'] = basename
-		# FIND A BETTER WAY TO DENOTE NO BAMPFA METADATA
-		# if metadata['title'] != 'No metadata':
+
 		options['metadataFilepath'] = write_metadata_json(metadataJson,basename)
-			# print(metadataFile)
-		# else:
-			# options['metadataFilepath'] = ''
+
 	print(ingestDict)
 	print("HELLO THERE")
 	return ingestDict
