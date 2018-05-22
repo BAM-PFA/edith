@@ -36,7 +36,6 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 				quotedPath,
 				proxyPath
 				)
-		if 
 
 	elif os.path.isdir(proxyPath):
 		print("the input object is a directory")

@@ -47,7 +47,8 @@ def get_metadata(idNumber,basename):
 	# remembered the previous assignment and gave the current
 	# file the same metadata. still have no idea how that happens.
 	metadataDict = metadataMaster.metadata
-	if idNumber == '--':
+	if idNumber == "--":
+		print("NO EFFING ID NUMBER")
 		for key, value in metadataDict.items():
 			metadataDict[key] = ""
 

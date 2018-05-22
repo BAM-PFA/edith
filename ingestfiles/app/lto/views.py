@@ -359,7 +359,7 @@ def write_status():
 	print(writeStatuses)
 
 	# ltoProcesses.remove_staged_AIPs(writeStatuses)
-	# ltoProcesses.post_tape_id_to_rs(writeStatuses)
+	ltoProcesses.post_tape_id_to_rs(writeStatuses,user)
 
 	#ltoProcesses.unmount_tapes()
 	#utils.clean_temp_dir()
