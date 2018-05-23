@@ -13,7 +13,7 @@ This is a work in progress webapp for use in BAMPFA a/v digital preservation. It
    * package resulting a/v files and metadata into OAIS Submission Information Packages (that are then written to LTO)
    * and post access copies and metadata to ResourceSpace for internal a/v digital asset management. 
 
-## some details
+## some high-level details
 First, on ingesting an audiovisual file, we create a Submission Information Package [\(following the OAIS conceptual model\)](https://en.wikipedia.org/wiki/Open_Archival_Information_System) for audiovisual files using [pymediamicroservices](https://github.com/BAM-PFA/pymm) (`pymm`). 
 
 `pymm` is a python 3 port (a distillation? a rip-off?) of some core functionality in [mediamicroservices](https://github.com/mediamicroservices/mm), namely the package structure, metadata extraction, etc. `mm` does a lot more as of 3/2018 for file fixity checks, perceptual fingerprinting, a/v quality/conformance checking, etc., plus a plethora of derivative options. We're starting with the basics and are gonna assess what else we can/should/want to add once we are off the ground. There's a lot inspired by/stolen from the [Irish Film Archive](https://github.com/kieranjol/IFIscripts) in there too.
@@ -22,7 +22,7 @@ The pymm/mediamicroservices SIP consists of a predefined folder structure contai
 
 Along the way, we query the BAMPFA film collection's FileMaker database (our collection management system for the film collection) for basic descriptive metadata and technical information about analog source material in cases where the original has been accessioned into the BAMPFA collection. This is returned as JSON that is also sent to ResourceSpace along with the access mp4 file. 
 
-The SIPs are then written to [Linear Tape Open (LTO)](https://en.wikipedia.org/wiki/Linear_Tape-Open), which is also indexed in the `mm` MySQL database. This portion uses [`ltopers`](https://github.com/amiaopensource/ltopers).
+The SIPs are then written to [Linear Tape Open (LTO)](https://en.wikipedia.org/wiki/Linear_Tape-Open), which is also indexed in the `pymm` MySQL database. This portion uses code inspired by/ripped off from [`ltopers`](https://github.com/amiaopensource/ltopers). 
 
 ## Usage overview
 
@@ -60,19 +60,26 @@ These options should probably be conditionally constrained based on input. This 
 ### LTO (under revision)
 This is based on [`ltopers`](https://github.com/amiaopensource/ltopers) to write the AIP created by `ingestfile` to LTO tape. We use an HP 2-drive unit that we use to create a redundant backup, with tapes stored in separate locations.
 
-The interface asks for a tapeID to be entered, but it also shows you the last one used so you can just confirm that there isn't a new one in.
+A user can insert new tapes in the drives and format them via a call to `mkltfs` and there's a form for users to update the "Current LTO ID" that is recorded in a text file. The current ID is formmatted as YYMM#A where "#" is a sequence number 1-9 that starts over each month. If we go over 9 tapes for a month, the sequece restarts with A-Z. The `mkltfs` call does not allow users to reformat tapes that are already formatted with LTFS.
 
-When an AIP is written to LTO, there is an API call to ResourceSpace to grap the resource ID and push the LTO tape ID to that resource for searching in RS.
+Currently, users have to mount the LTFS filesystem to the system each time that they need to write AIPs to tape. This is so that after a write, the tape filesystems can be unmounted and the index.schema XML file can be updated with new content listings.
 
-The contents of the LTO tapes are also updated and indexed in the mediamicroservices database.
+Upon ingest, AIPs are sent to a shared directory on the server that is then listed when a user wishes to write to tape. 
 
-The user that Apache is run as (declared in ingestfiles.wsgi) has to be added to the `tape` group so that it has access to the tape devices in Linux. I am not totally sure what this will/would look like in Mac. `ltopers` doesn't seem to need additional permissions.
+Each AIP is written to LTO using the `pymm` function `move_n_verify_sip()` to verify the AIP completeness via `hashdeep`. If the the transfer to LTO is verified as successful there is an API call to ResourceSpace to add the LTO ID of the 'A' tape to the RS record for the ingested object. Ingested objects can then be searched by LTO tape ID and this provides a first-line index of LTO tape contents. 
+
+The index.schema files are also parsed the contents are indexed in the `pymm` database. [UNDER REVISION]
+
+The user that Apache is run as (declared in ingestfiles.wsgi) has to be added to the `tape` user group so that it has access to the tape devices in Linux. I am not totally sure what this will/would look like in Mac. `ltopers` doesn't seem to need additional permissions.
+
+On mounting a tape, there's also a temp .json file that is created listing the tape letter (A/B), the mountpoint for the tape filesystem (in the `tmp` folder of the app), and the number of 1024-byte blocks that are available on the tape (read from a call to `df` during the mount process). 
 
 ### Some major unknowns/ to-dos
-* Searching the database created by mediamicroservices. Maybe make a separate front end? I have looked at [Xataface](http://xataface.com/) as an option. **UPDATE** Xataface is ok, but ugly.
+* Searching the `pymm` database. Maybe make a separate front end? I have looked at [Xataface](http://xataface.com/) as an option. **UPDATE** Xataface is ok, but ugly.
 * Alert for an LTO tape that is getting full
+  * CURRENTLY (5/22/18) THE TOTAL SIZE OF AIPS TO WRITE ARE TOTALLED. THIS TOTAL NUMBER OF BYTES SHOULD BE COMPARED TO THE NUMBER OF BYTES AVAILABLE ON THE TAPE AND ANY WRITES PREVENTED IF THERE'S INSUFFICIENT ROOM.
 * Metadata Schemas for non-film-collection resources.
-	* do we want to investigate PBCore as a blanket schema that can/could absorb everything? ([maybe](https://docs.google.com/spreadsheets/d/1pF6giZVXvgoqoy0bLwTezoDW7Ylpib8RKMxvNXhVxLI/edit?usp=sharing)?)
+    * do we want to investigate PBCore as a blanket schema that can/could absorb everything? ([maybe](https://docs.google.com/spreadsheets/d/1pF6giZVXvgoqoy0bLwTezoDW7Ylpib8RKMxvNXhVxLI/edit?usp=sharing)?)
 * Explore a plugin to re-query Filemaker if the database record has changed
 
 ### Flask UI notes:
@@ -81,7 +88,7 @@ The structure of the app is pretty basic. I have a lot (all) of the 'secret stuf
 Still deployed as dev, will be run on Apache in production.
 
 ## Dependencies
-Tested on Ubuntu 16.04 and Mac El Capitan and Sierra.
+Tested on Ubuntu 16.04.
 * Runs on Python 3
 * paramiko (on Ubuntu `pip3 install -U paramiko` for correct Cryptography build)
 * requests (`pip3 install requests`)
@@ -92,9 +99,7 @@ Tested on Ubuntu 16.04 and Mac El Capitan and Sierra.
    * xmltodict
    * Levenshtein
    * mysql connector/python
+   * lxml
 * Flask-specific dependencies: 
   * Flask (pip3 install Flask; gets core Flask dependencies automatically: wtforms, werkzeug)
   * flask_wtf (pip3 install flask_wtf)
-
-
-  
