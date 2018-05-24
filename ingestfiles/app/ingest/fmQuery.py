@@ -49,10 +49,10 @@ def xml_query(idNumber):
 	#print(test.data)
 	#print(xml.encoding)
 	root = ET.fromstring(xml.text)
-	print(root)
+	#print(root)
 	# THERE SHOULD ONLY EVER BE ONE RECORD IN A RESULTSET SINCE ITEM NUMBERS SHOULD BE UNIQUE
 	recordElement = root.find("./filemaker:resultset/filemaker:record",namespace)
-	print(recordElement)
+	#print(recordElement)
 	recordString = ET.tostring(recordElement)
 	recordRoot = ET.fromstring(recordString)
 
@@ -124,8 +124,8 @@ def xml_query(idNumber):
 		if value == None:
 			recordDict[key] = ""
 		else:
-			print(type(value))
-
+			#print(type(value))
+			pass
 
 	# print(recordDict)
 	return recordDict

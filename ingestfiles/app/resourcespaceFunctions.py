@@ -84,7 +84,6 @@ def format_RS_POST(RSquery,APIkey):
 	sign it w API key,
 	return completePOST
 	'''
-	if 
 
 	rs_base_url = utils.get_rs_base_url()
 	sign = hashlib.sha256(APIkey.encode()+RSquery.encode())
@@ -139,6 +138,7 @@ def resourcespace_API_call(user,metadata,quotedPath,filePath):
 	print(httpStatus)
 	print(RSrecordID)
 	if httpStatus in ('200',200):
+		print("SUCCESS! POSTED THE THING TO RS")
 		utils.delete_it(filePath)
 	return RSrecordID
 
@@ -247,7 +247,7 @@ def getRSid(AIP,user):
 		searchResult = json.loads(text)
 		print(searchResult)
 		searchJSON = dict(searchResult[0])
-		RSid = ref["ref"]
+		RSid = searchJSON["ref"]
 	except:
 		print("No resourcespace record returned")
 		RSid = None
@@ -263,7 +263,7 @@ def post_LTO_id(AIP,ltoID,user):
 	postStatus = False
 
 	rsUser,APIkey = utils.get_rs_credentials(user)
-	RSid = getRSid(AIP,APIkey)
+	RSid = getRSid(AIP,user)
 	if RSid:
 		RSquery = (
 			"user={}"
@@ -277,7 +277,7 @@ def post_LTO_id(AIP,ltoID,user):
 				)
 			)
 
-		completePOST = format_RS_POST(RSquery)
+		completePOST = format_RS_POST(RSquery,APIkey)
 		status,text = make_RS_API_call(completePOST)
 
 		if text in (True,"True","true"):

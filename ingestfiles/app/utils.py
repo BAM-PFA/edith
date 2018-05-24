@@ -54,14 +54,14 @@ def delete_it(_object):
 		try:
 			os.remove(_object)
 		except:
-			print("cant remove "+_object)
+			print("cant remove {}".format(_object))
 	elif os.path.isdir(_object):
 		try:
 			shutil.rmtree(_object)
 		except:
 			pass
 	else:
-		print("cant remove "+_object)
+		print("cant remove {}".format(_object))
 
 def clean_temp_dir():
 	for _object in os.listdir(get_temp_dir):

@@ -53,9 +53,9 @@ def get_metadata(idNumber,basename):
 			metadataDict[key] = ""
 
 		metadataDict['hasBAMPFAmetadata'] = False
-		
+
 		return metadataDict
-	
+
 	elif idNumber == '00000':
 		# if the acc item number is zeroed out,
 		# try looking for a barcode to search on
@@ -68,7 +68,7 @@ def get_metadata(idNumber,basename):
 				metadataDict['hasBAMPFAmetadata'] = False
 
 				return metadataDict
-			
+
 			else:
 				metadataDict = fmQuery.xml_query(barcode)
 		except:
@@ -93,7 +93,7 @@ def get_metadata(idNumber,basename):
 				
 				return metadataDict
 
-	print(metadataDict)
+	#print(metadataDict)
 	return(metadataDict)
 
 def grab_remote_files(targetFilepath):
@@ -147,7 +147,7 @@ def add_metadata(ingestDict):
 
 		options['metadataFilepath'] = write_metadata_json(metadataJson,basename)
 
-	print(ingestDict)
+	#print(ingestDict)
 	print("HELLO THERE")
 	return ingestDict
 
@@ -155,10 +155,15 @@ def main(ingestDict,user):
 	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
 	# run `pymm` on ingest objects
 	# post access copies to resourcespace
+	print("INGEST DICT LOOKS LIKE THIS NOW")
+	for k,v in ingestDict.items():
+		print(k)
+		print(v)
+		print("------")
 	dirName, hostName, sourceDir = utils.get_shared_dir_stuff('shared')
 	# try to search filemaker for descriptive metadata
 	ingestDict = add_metadata(ingestDict)
-
+	#print(ingestDict)
 	if not hostName == 'localhost':
 		for objectPath in ingestDict.keys():
 			try:
@@ -186,14 +191,14 @@ def main(ingestDict,user):
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 			pymmCommand = [pythonBinary,ingestSipPath,'-i',_object,'-u',user]
 			metadataFilepath = ingestDict[_object]['metadataFilepath']
-			print(metadataFilepath)
-			
+			#print(metadataFilepath)
+
 			os.chmod(metadataFilepath,0o777)
 			if ingestDict[_object]['metadata']['hasBAMPFAmetadata'] != False:
 				pymmCommand.extend(['-j',metadataFilepath])
 			else:
 				pass
-			# print(pymmCommand)
+			print(pymmCommand)
 			try:
 				pymmOut = subprocess.check_output(
 					pymmCommand
@@ -224,8 +229,8 @@ def main(ingestDict,user):
 			rsDir = utils.get_rs_dir()
 			rsProxyPath = pymmResult['accessPath']
 			basename = ingestDict[_object]['basename']
-			print(rsProxyPath)
-			print(os.path.exists(rsProxyPath))
+			#print(rsProxyPath)
+			#print(os.path.exists(rsProxyPath))
 			if os.path.exists(rsProxyPath):
 				print("WOOOT")
 				rsStatus = resourcespaceFunctions.do_resourcespace(
@@ -234,7 +239,7 @@ def main(ingestDict,user):
 					metadataFilepath
 					)
 
-				print(rsStatus)
+				#print(rsStatus)
 			else:
 				print("PATH PROBLEMO")
 	return(ingestDict)
