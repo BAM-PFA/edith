@@ -212,10 +212,6 @@ def metadata_for_rs(metadataJSON):
 	rsMetaDict[95] = metadataJSON['ingestUUID']
 	# rsMetaDict[] = metadataJSON['']
 	
-	for key, value in rsMetaDict.items():
-		if "\n" in value:
-			value.replace("\n"," \n")
-
 	rsMetaJSON = json.dumps(rsMetaDict)
 	quotedJSON = urllib.parse.quote(rsMetaJSON.encode())
 
