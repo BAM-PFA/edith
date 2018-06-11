@@ -198,8 +198,9 @@ def main(ingestDict,user):
 				pymmCommand.extend(['-j',metadataFilepath])
 			else:
 				pass
-			if ingestDict[_object]['concat reels'] != False:
-				pymmCommand.extend(['-c'])
+			if 'concat reels' in ingestDict[_object].keys():
+				if ingestDict[_object]['concat reels']:
+					pymmCommand.extend(['-c'])
 
 			print(pymmCommand)
 			try:
