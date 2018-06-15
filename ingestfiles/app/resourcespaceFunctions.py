@@ -59,20 +59,26 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 		print('primaryRecord')
 		print(primaryRecord)
 		if primaryRecord not in (None,''):
-			coolItems.del(0)
-			print(coolItems)
-			for _file in coolItems:
-				quotedPath = urllib.parse.quote(_file, safe='')
+			coolItems.remove(primaryItem)
+			# print(coolItems)
+			while len(coolItems) > 0:
+				alt = coolItems[0]
+				# print("I want to post {} as an alt file!!".format(alt))
+				# print(coolItems)
+				quotedPath = urllib.parse.quote(alt, safe='')
 				result = rs_alt_file_API_call(
 					user,
 					primaryRecord,
 					quotedPath,
-					_file
+					alt
 					)
-				if result:
+				print("RESULT: {}".format(result))
+				if result not in (None, False, 'false',''):
 					coolItems.remove(
-						_file
+						alt
 					)
+				else:
+					break
 			if len(coolItems) == 0:
 				success = True
 	return success
@@ -171,7 +177,7 @@ def rs_alt_file_API_call(user,primaryRecord,quotedPath,filePath):
 		)
 	# print(RSquery)
 	completePOST = format_RS_POST(RSquery,APIkey)
-	# print(completePOST)
+	print(completePOST)
 	status,text = make_RS_API_call(completePOST)
 	# print(status)
 	# print(text)
