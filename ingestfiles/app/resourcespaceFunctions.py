@@ -48,7 +48,7 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 			primaryItem,
 			safe=''
 			)
-		print(quotedPath)
+		# print(quotedPath)
 		# post the first/primary to RS and get its record ID
 		primaryRecord = resourcespace_API_call(
 			user,
@@ -59,7 +59,7 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 		print('primaryRecord')
 		print(primaryRecord)
 		if primaryRecord not in (None,''):
-			coolItems.pop(0)
+			coolItems.del(0)
 			print(coolItems)
 			for _file in coolItems:
 				quotedPath = urllib.parse.quote(_file, safe='')
@@ -70,8 +70,8 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 					_file
 					)
 				if result:
-					coolItems.pop(
-						coolItems.index(_file)
+					coolItems.remove(
+						_file
 					)
 			if len(coolItems) == 0:
 				success = True
