@@ -40,6 +40,7 @@ KNOWN_USERS = {
 DB_CONNECTIONS = {
 	'my_database':{
 		'dsn':'my_db_dsn',
+		'layout':'',
 		'server':'my_db_server',
 		'accountName':'my_ingest_user',
 		'password':'my_ingest_user_pass'
