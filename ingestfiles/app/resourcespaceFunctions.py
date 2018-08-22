@@ -63,7 +63,7 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 			# print(coolItems)
 			while len(coolItems) > 0:
 				alt = coolItems[0]
-				# print("I want to post {} as an alt file!!".format(alt))
+				print("I want to post {} as an alt file!!".format(alt))
 				# print(coolItems)
 				quotedPath = urllib.parse.quote(alt, safe='')
 				result = rs_alt_file_API_call(

@@ -9,6 +9,9 @@ import subprocess
 import sys
 import time
 import urllib
+
+# import Levenshtein
+
 # local modules
 from . import fmQuery
 from . import metadataMaster
@@ -77,10 +80,11 @@ def get_metadata(idNumber,basename):
 			return metadataDict
 	else:
 		try:
-			print('searching on '+idNumber)
+			print('searching FileMaker on '+idNumber)
 			metadataDict = fmQuery.xml_query(idNumber)
 			metadataDict['hasBAMPFAmetadata'] = True
-			print('metadataDict')
+			# print(metadataDict)
+			# print('metadataDict')
 		except:
 			# if no results, try padding with zeros
 			idNumber = "{0:0>5}".format(idNumber)
@@ -93,7 +97,7 @@ def get_metadata(idNumber,basename):
 				
 				return metadataDict
 
-	#print(metadataDict)
+	# print(metadataDict)
 	return(metadataDict)
 
 def grab_remote_files(targetFilepath):
@@ -122,17 +126,17 @@ def grab_remote_files(targetFilepath):
 
 def write_metadata_json(metadata,basename):
 	tempDir = utils.get_temp_dir()
-	# print(tempDir)
 	jsonPath = os.path.join(tempDir,basename+".json")
 	# print(jsonPath)
 	with open(jsonPath,'w+') as jsonTemp:
 		json.dump(metadata,jsonTemp)
-	print(jsonPath)
+	# print(jsonPath)
 
 	return jsonPath
 
 def add_metadata(ingestDict):
 	for objectPath, options in ingestDict.items():
+		# print(options)
 		metadataJson = {}
 		metadataJson[objectPath] = {}
 
@@ -147,8 +151,8 @@ def add_metadata(ingestDict):
 
 		options['metadataFilepath'] = write_metadata_json(metadataJson,basename)
 
-	#print(ingestDict)
-	print("HELLO THERE")
+	# print(ingestDict)
+	print("HELLO THERE WE ADDED METADATA!")
 	return ingestDict
 
 def main(ingestDict,user):
@@ -165,6 +169,9 @@ def main(ingestDict,user):
 	ingestDict = add_metadata(ingestDict)
 	#print(ingestDict)
 	if not hostName == 'localhost':
+		'''
+		THIS SECTION IS ACTUALLY DEAD... WOULD NEED TO BE REVISED!
+		'''
 		for objectPath in ingestDict.keys():
 			try:
 				grab_remote_files(objectPath)
@@ -189,7 +196,7 @@ def main(ingestDict,user):
 			pythonBinary = utils.get_python_path()
 			pymmPath = utils.get_pymm_path()
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
-			pymmCommand = [pythonBinary,ingestSipPath,'-i',_object,'-u',user]
+			pymmCommand = [pythonBinary,ingestSipPath,'-i',_object,'-u',user,'-dz']
 			metadataFilepath = ingestDict[_object]['metadataFilepath']
 			#print(metadataFilepath)
 
@@ -217,7 +224,7 @@ def main(ingestDict,user):
 			except subprocess.CalledProcessError as e:
 				print(e)
 
-			print('hey')
+			# print('hey')
 			# add the UUID to the metadata file
 			ingestUUID = pymmResult['ingestUUID']
 
