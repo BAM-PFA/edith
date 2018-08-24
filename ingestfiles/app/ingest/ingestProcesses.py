@@ -129,7 +129,7 @@ def write_metadata_json(metadata,basename):
 	jsonPath = os.path.join(tempDir,basename+".json")
 	# print(jsonPath)
 	with open(jsonPath,'w+') as jsonTemp:
-		json.dump(metadata,jsonTemp)
+		json.dump(metadata,jsonTemp)#,ensure_ascii=False)
 	# print(jsonPath)
 
 	return jsonPath
@@ -231,10 +231,11 @@ def main(ingestDict,user):
 			with open(metadataFilepath,'r+') as mdread:
 				print('opened')
 				data = json.load(mdread)
+				print(data)
 				key = list(data.keys())[0]
 				data[key]['metadata']['ingestUUID'] = ingestUUID
 				theGoods = data[key]['metadata']
-				#print(theGoods)
+				print(data)
 			with open(metadataFilepath,'w+') as mdwrite:
 				json.dump(theGoods,mdwrite)
 			rsDir = utils.get_rs_dir()

@@ -8,8 +8,8 @@ import requests
 import subprocess
 import sys
 import urllib.parse
-#from lxml import etree
-import xml.etree.ElementTree as ET
+# non standard modules
+from lxml import etree
 # local imports
 from . import metadataMaster
 import app
@@ -43,18 +43,14 @@ def xml_query(idNumber):
 	# print(requestURL)
 	xml = requests.get(requestURL,auth=(user,password))
 	recordDict = metadataMaster.metadata
-	#goodParser = etree.XMLParser(encoding='UTF-8',recover=True)
-	#test = etree.fromstring(u"<test>TEST!!</test>",goodParser)
-	#print(test)
-	#print(test.data)
-	#print(xml.encoding)
-	root = ET.fromstring(xml.text)
+	root = etree.fromstring(xml.text.encode())
 	#print(root)
 	# THERE SHOULD ONLY EVER BE ONE RECORD IN A RESULTSET SINCE ITEM NUMBERS SHOULD BE UNIQUE
 	recordElement = root.find("./filemaker:resultset/filemaker:record",namespace)
 	#print(recordElement)
-	recordString = ET.tostring(recordElement)
-	recordRoot = ET.fromstring(recordString)
+	# do a little back and forth to get a new root that is just the single <record> element
+	recordString = etree.tostring(recordElement)
+	recordRoot = etree.fromstring(recordString)
 
 	# BUILD OUT THE DICT WITH VALUES FROM THE FILEMAKER RESULT
 	# uh, redo this with an iterator... 
@@ -127,5 +123,6 @@ def xml_query(idNumber):
 			#print(type(value))
 			pass
 
+	# print("THIS IS THE RECORD DICT FROM FMQUERY")
 	# print(recordDict)
 	return recordDict

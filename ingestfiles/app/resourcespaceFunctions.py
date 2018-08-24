@@ -23,6 +23,7 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 	if metadataFilepath != None:
 		with open(metadataFilepath,'r+') as mf:
 			metadata = json.load(mf)
+			print("READING IN THE RS PROCESS")
 			print(metadata)
 
 	urlMetadata = metadata_for_rs(metadata)
@@ -218,8 +219,12 @@ def metadata_for_rs(metadataJSON):
 	rsMetaDict[95] = metadataJSON['ingestUUID']
 	# rsMetaDict[] = metadataJSON['']
 	
-	rsMetaJSON = json.dumps(rsMetaDict)
+	rsMetaJSON = json.dumps(rsMetaDict,ensure_ascii=False)
+	# print(rsMetaJSON)
 	quotedJSON = urllib.parse.quote(rsMetaJSON.encode())
+	if "%5Cn" in quotedJSON:
+		print("REPLACING NEWLINES")
+		quotedJSON = quotedJSON.replace('%5Cn','%3Cbr%2F%3E')
 
 	return quotedJSON
 
@@ -244,7 +249,6 @@ def getRSid(AIP,user):
 	# print(query)
 	completePOST = format_RS_POST(RSquery,APIkey)
 	print(completePOST)
-
 	status,text = make_RS_API_call(completePOST)
 	try:
 		# RS should return a JSON object of the search results
