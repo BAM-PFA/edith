@@ -1,6 +1,7 @@
 # INGESTFILES VERSION ROADMAP
-## Version 0.x (Development)
-### Version 0.0.5 : current development as of 5/2018
+## Version 0.x (Alpha)
+### v0.0.5 : 
+@ 5/2018
 
 * Basic functions are almost all in place. 
 * Missing:
@@ -13,19 +14,21 @@ Easy but time consuming
     * Need to plan db writes carefully
     * Is each sql record insertion an object? Or is each query run directly?
 
-### Version 0.1:
+### v0.1:
 * Add missing steps listed above
 * Debugging
 
 
 
-### Version 0.2:
+### v0.2:
+Release 8/20/2018
 * Add audio ingests to pymm
+* Treat image sequences as a single unit
+* Add DPX ingest to pymm
+
+### v0.3
 * Read LTO index file on tape unmount 
   * And add entries to the pymm database
-* Treat image sequences as a single unit
-
-### Version 0.3
 * Reading from LTO
   * Offer to list either A tape or B tape
   * List contents of selected tape
@@ -33,17 +36,16 @@ Easy but time consuming
 * users can then FTP the files to a local machine (?)
 
 ### Version 0.4 
-* Add DPX ingest tp pymm
+~~ ~~
 
-***
 ## Version 1.x 
-### Version 1.0:
+### v1.0:
 * Versions 0.x are debugged
-* UI improvements
+* UI improvements?
 
-### Version 1.1:
+## Version 2.x:
+### v2.0
 * Add metadata form to ingest form per-object
   * This creates a csv that is kept with pymm object
   * To be used for non-pfa collection objects
   * Pull code from piction metadoodler
-
