@@ -13,8 +13,8 @@ from . import forms
 
 from .. import listObjects
 
-@ingest.route('/ingestor',methods=['GET','POST'])
-def ingestor():
+@ingest.route('/edith',methods=['GET','POST'])
+def edith():
 	objects = listObjects.list_objects('shared')
 
 	class OneObject(forms.ObjectForm):
@@ -29,8 +29,8 @@ def ingestor():
 	form.suchChoices = choices
 
 	return render_template(
-		'ingestor.html',
-		title='Ingestor',
+		'edith.html',
+		title='EDITH',
 		objects=objects,
 		form=form
 		)

@@ -1,4 +1,4 @@
-# ingestfiles
+# EDITH
 This is a work in progress webapp for use in BAMPFA a/v digital preservation. It uses the Flask framework in a pretty basic way to 
 1) provide archive staff with a few simple choices...
 
@@ -38,14 +38,14 @@ The SIPs are then written to [Linear Tape Open (LTO)](https://en.wikipedia.org/w
 
 ResourceSpace has some setup requirements that are [documented](https://www.resourcespace.com/knowledge-base/systemadmin/install_macosx) on its website. Mostly just getting the Apache server settings correct and tweaking some of the PHP got it working.
 
-Previous iterations of `ingestfiles` used ODBC to connect to our FileMaker 13 database, but due to some constraints (FM doesn't provide an ODBC driver for Linux) I am now using the FileMaker XML API. It's... ok. We set up the FM Server to provide the XML Web Publishing API and our DBA created a FM view specifically for this purpose. Presumably if you (aka future me) want to reuse the ODBC code to perform more standard SQL queries on a less proprietary database, you can dig through the history to plug it back in.
+Previous iterations of `EDITH` used ODBC to connect to our FileMaker 13 database, but due to some constraints (FM doesn't provide an ODBC driver for Linux) I am now using the FileMaker XML API. It's... ok. We set up the FM Server to provide the XML Web Publishing API and our DBA created a FM view specifically for this purpose. Presumably if you (aka future me) want to reuse the ODBC code to perform more standard SQL queries on a less proprietary database, you can dig through the history to plug it back in.
 
 #### Permissions & CONFIGs
 This module uses a Flask instance config file 
 `chmod 777` helpful on: 
 
 *`pymm_log.txt`
-*`/path/to/ingestfiles/ingestfiles/app/tmp/`
+*`/path/to/EDITH/EDITH/app/tmp/`
 
 ### FileMaker
 Files that are digitized/born digital works from the BAMPFA film collection include a portion of the original accession number in the filename. The script uses that number to query the film collection database and retrieve relevant descriptive metadata. We use '00000' to denote items that are not (yet) accessioned, so we can also search for a 9-digit barcode in a filename to query FM. If that fails, there is no uniqe ID to search in FM and we just set the descriptive metadata to null values.

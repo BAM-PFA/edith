@@ -38,11 +38,11 @@ All ingests will work basically the same, except that depending on the type of f
   * 
 * then he hits *__INGEST__*.
 
-* `ingestfiles.py` does the following:
+* `EDITH` does the following:
   * call `pymm`: 
   * create Universally Unique Identifier (UUID) for ingest process 
   * create UUID-named parent folder for SIP creation, with subfolders for file objects, metadata, and logs 
-  * `rsync` the source file to the Linux jalopy machine for transcoding. [the linux machine is actually now]
+  * ~~`rsync` the source file to the Linux jalopy machine for transcoding.~~ [under revision]
   * create low res proxy H264 
   * `rsync` the proxy/proxies back to the host machine in the right folder
   * create technical metadata for all the file objects
@@ -62,7 +62,7 @@ All ingests will work basically the same, except that depending on the type of f
   * Do/Don't send a mezzanine file to Dave 
   *
 * hit _**INGEST**_
-* `ingestfile.py` does this:
+* `EDITH` does this:
   * call `pymm`:
   * if Jon chooses to concatenate reels, verify losslessness
   * other steps as above

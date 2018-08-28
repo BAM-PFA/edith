@@ -1,4 +1,4 @@
-# INGESTFILES VERSION ROADMAP
+# EDITH VERSION ROADMAP
 ## Version 0.x (Development)
 ### Version 0.0.5 : current development as of 5/2018
 
