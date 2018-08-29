@@ -251,10 +251,25 @@ def unmount_tapes():
 	if not errors == []:
 		return errors
 	else:
-		utils.clean_temp_dir()
 		return True
 
-def parse_index_schema_file():
+def parse_index_schema_file(user):
+	pythonBinary = utils.get_python_path()
+	pymmPath = utils.get_pymm_path()
+	ltfsSchemaParserPath = os.path.join(pymmPath,'ltfsSchemaParser.py')
+	aTapeID = utils.get_current_LTO_id()
+	tempDir = utils.get_temp_dir()
+	aTapeSchema = os.path.join(tempdir,aTapeID+".schema")
+	parseCommand = [
+	pythonBinary,
+	ltfsSchemaParserPath,
+	'-l',aTapeSchema,
+	'-u',user
+	]
+
+	if os.path.isfile(aTapeSchema):
+
+
 
 
 def post_tape_id_to_rs(writeStatuses,user):

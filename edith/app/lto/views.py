@@ -362,11 +362,13 @@ def write_status():
 			writeStatuses[sip] = aipStatus
 	print(writeStatuses)
 
+	# remove staged AIPs ~~THIS DOESN'T EXIST YET!~~
 	# ltoProcesses.remove_staged_AIPs(writeStatuses)
 	ltoProcesses.post_tape_id_to_rs(writeStatuses,user)
-
-	#ltoProcesses.unmount_tapes()
-	#utils.clean_temp_dir()
+	ltoProcesses.unmount_tapes()
+	utils.clean_temp_dir()
+	# PARSE THE UPDATED SCHEMA FILE
+	ltoProcesses.parse_index_schema_file(user)
 
 
 	return render_template(
