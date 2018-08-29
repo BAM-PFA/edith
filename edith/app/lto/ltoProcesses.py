@@ -216,24 +216,22 @@ def get_tape_mountpoints():
 
 	return aMount,bMount
 
-
-def delete_tape_temp_stats():
-	'''
-	Run this on unmounting tapes
-	OR ACTUALLY RUN utils.clean_temp_dir()
-	'''
-	tempDir = utils.get_temp_dir()
-	statsJsonPath = os.path.join(tempDir,"tempTapeStats.json")
-	if os.path.exists(statsJsonPath):
-		try:
-			os.remove(statsJsonPath)
-			return True
-		except:
-			print("couldn't delete the temp tape stats file")
-			return False
-	else:
-		return False
-
+# def delete_tape_temp_stats():
+# 	'''
+# 	Run this on unmounting tapes
+# 	OR ACTUALLY RUN utils.clean_temp_dir()
+# 	'''
+# 	tempDir = utils.get_temp_dir()
+# 	statsJsonPath = os.path.join(tempDir,"tempTapeStats.json")
+# 	if os.path.exists(statsJsonPath):
+# 		try:
+# 			os.remove(statsJsonPath)
+# 			return True
+# 		except:
+# 			print("couldn't delete the temp tape stats file")
+# 			return False
+# 	else:
+# 		return False
 
 def unmount_tapes():
 	# apahce user added to sudoers overrides for `umount`
@@ -253,7 +251,11 @@ def unmount_tapes():
 	if not errors == []:
 		return errors
 	else:
+		utils.clean_temp_dir()
 		return True
+
+def parse_index_schema_file():
+
 
 def post_tape_id_to_rs(writeStatuses,user):
 	stats = get_tape_stats()

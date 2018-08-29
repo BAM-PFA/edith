@@ -1,5 +1,5 @@
 # EDITH
-This is a work in progress webapp for use in BAMPFA a/v digital preservation. It uses the Flask framework in a pretty basic way to 
+`EDITH` is a webapp for use in BAMPFA a/v digital preservation. It uses the Flask framework in a pretty basic way to 
 1) provide archive staff with a few simple choices...
 
    * What file(s) to ingest into our digital preservation system(s)
@@ -48,14 +48,20 @@ Previous iterations of `EDITH` used ODBC to connect to our FileMaker 13 database
 Here's a cool RAID setup [tutorial](https://www.digitalocean.com/community/tutorials/how-to-create-raid-arrays-with-mdadm-on-ubuntu-16-04) for Ubuntu...
 
 ### Permissions & Config files
-This module uses a Flask instance config file to record details like passwords. There's a general config file for less specific/sensitive info. `pymm` requires you to set up a separate config file that records user passwords and database details.
+#### Flask and `pymm` configs
+We use a Flask "instance" config file to record details like passwords. There's a general config file for less specific/sensitive info. `pymm` requires you to set up a separate config file that records user passwords and database details. Each of these has an example config that you can base a working version from.
 
+#### General system file permissions
 `sudo chmod [-R] 777` is helpful on: 
 
-* `pymm_log.txt` (the system log created by `pymm`)
-*`/path/to/EDITH/EDITH/app/tmp/`
+  * `pymm_log.txt` (the system log created by `pymm`)
+  * `/path/to/EDITH/EDITH/app/tmp/` directory used to write and read temp files
 
 Also, the Apache user needs write access to any files/folders being ingested. You can use `setfacl` to help, but files that are copied need but currently (8/2018) I'm searching for a better way for files to automatically get `777` permissions or for a secure way to script `chmod` without needing `sudo`/storing root password.
+
+A viable option I'm looking into is for our network file share to be a "working" file repository where users can send new AV files. In that NAS, there can be a dir where files that are correctly named, DPX sequences correctly arranged, etc., can be placed. That dir can be watched by an `rsync` daemon configured here in `EDITH` that will suck in files to the `EDITH` intake directory (the `SHARED_DIRECTORY` in the config file). This allows me to run `rsync [...] --chmod=ugo+rw [...]` and get around having to set write permissions for Apache.
+
+And unfortunately (at least on Linux) the Apache user needs to be added to the sudoers file to run `sudo ltfs` and `sudo umount` without a password. Do `sudo visudo` and add `www-data ALL=(ALL) NOPASSWD: /usr/local/bin/ltfs, NOPASSWD: /bin/umount`
 
 ## Some other details
 We link to a handful of other systems in our ingest process:

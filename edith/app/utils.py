@@ -63,10 +63,11 @@ def delete_it(_object):
 	else:
 		print("cant remove {}".format(_object))
 
-def clean_temp_dir():
-	for _object in os.listdir(get_temp_dir):
-		if not _object.startswith('.'):
-			delete_it(_object)
+# def clean_temp_dir():
+# 	for _object in os.listdir(get_temp_dir):
+# 		if not _object.startswith('.'):
+# 			if not 
+# 			delete_it(_object)
 
 def get_rs_dir():
 	rs_dir = config['RESOURCESPACE_PROXY_DIR']

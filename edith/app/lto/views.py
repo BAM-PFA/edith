@@ -308,6 +308,10 @@ def list_aips():
 			space = utils.humansize(bytes)
 			stats['spaceAvailableHuman'] = space
 
+	else:
+		spaceAvailable = {}
+		spaceAvailable["NONE"] = {"spaceAvailableHuman":"NO TAPES FOUND, BUDDY!!"}
+
 	return render_template(
 		'list_aips.html',
 		title="List AIPs available",

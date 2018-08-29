@@ -159,6 +159,11 @@ def main(ingestDict,user):
 	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
 	# run `pymm` on ingest objects
 	# post access copies to resourcespace
+
+	# GET THE PYMM PATH TO CALL IN A SEC
+	pymmPath = utils.get_pymm_path()
+	ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
+
 	print("INGEST DICT LOOKS LIKE THIS NOW")
 	for k,v in ingestDict.items():
 		print(k)
@@ -180,8 +185,8 @@ def main(ingestDict,user):
 		for _object in os.listdir(utils.get_temp_dir()):
 			objectPath = os.path.join(utils.get_temp_dir(),_object)
 			pythonBinary = utils.get_python_path()
-			pymmPath = utils.get_pymm_path()
-			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
+			# pymmPath = utils.get_pymm_path()
+			# ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 			pymmCommand = [pythonBinary,ingestSipPath,'-i',objectPath,'-u',user]
 			metadataFilepath = ingestDict[_object]['metadataFilepath']
 			if metadataFilepath != '':
@@ -250,6 +255,7 @@ def main(ingestDict,user):
 					rsProxyPath,
 					metadataFilepath
 					)
+				utils.clean_temp_dir()
 
 				#print(rsStatus)
 			else:
