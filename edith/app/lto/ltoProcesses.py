@@ -268,7 +268,15 @@ def parse_index_schema_file(user):
 	]
 
 	if os.path.isfile(aTapeSchema):
+		out = subprocess.run(
+			parseCommand,
+			stdout=subprocess.PIPE,
+			stderr=subprocess.PIPE
+			)
+		print(out.stdout)
 
+	else:
+		print("SCHEMA FILE DOESN'T EXIST?")
 
 
 
