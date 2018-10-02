@@ -59,7 +59,7 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 			)
 		print('primaryRecord')
 		print(primaryRecord)
-		if primaryRecord not in (None,''):
+		if primaryRecord not in (None,'','Invalid signature'):
 			coolItems.remove(primaryItem)
 			# print(coolItems)
 			while len(coolItems) > 0:
@@ -74,7 +74,7 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 					alt
 					)
 				print("RESULT: {}".format(result))
-				if result not in (None, False, 'false',''):
+				if result not in (None, False, 'false','','Invalid signature'):
 					coolItems.remove(
 						alt
 					)
@@ -82,6 +82,8 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 					break
 			if len(coolItems) == 0:
 				success = True
+		else:
+			pass
 	return success
 
 def format_RS_POST(RSquery,APIkey):
@@ -128,7 +130,7 @@ def resourcespace_API_call(user,metadata,quotedPath,filePath):
 	RSquery = (
 		"user={}"
 		"&function=create_resource"
-		"&param1=3"
+		"&param1=14"
 		"&param2=0"
 		"&param3={}"
 		"&param4=&param5=&param6="
@@ -143,8 +145,9 @@ def resourcespace_API_call(user,metadata,quotedPath,filePath):
 	print(completePOST)
 	httpStatus,RSrecordID = make_RS_API_call(completePOST)
 	print(httpStatus)
+	print("hey")
 	print(RSrecordID)
-	if httpStatus in ('200',200):
+	if httpStatus in ('200',200) and not "Invalid signature" in RSrecordID:
 		print("SUCCESS! POSTED THE THING TO RS")
 		utils.delete_it(filePath)
 	return RSrecordID
@@ -207,6 +210,7 @@ def metadata_for_rs(metadataJSON):
 	rsMetaDict[92] = metadataJSON['credits']
 	rsMetaDict[93] = metadataJSON['generalNotes']
 	rsMetaDict[94] = metadataJSON['conditionNote']
+	rsMetaDict[95] = metadataJSON['ingestUUID']
 	rsMetaDict[98] = metadataJSON['Barcode']
 	rsMetaDict[99] = metadataJSON['language']
 	rsMetaDict[100] = metadataJSON['soundCharacteristics']
@@ -216,15 +220,29 @@ def metadata_for_rs(metadataJSON):
 	rsMetaDict[104] = metadataJSON['dimensions']
 	rsMetaDict[105] = metadataJSON['videoFormat']
 	rsMetaDict[106] = metadataJSON['videoStandard']
-	rsMetaDict[95] = metadataJSON['ingestUUID']
+	rsMetaDict[107] = metadataJSON['eventTitle']
+	rsMetaDict[108] = metadataJSON['eventYear']
+	rsMetaDict[109] = metadataJSON['eventFullDate']
+	rsMetaDict[110] = metadataJSON['eventSeries']
+	rsMetaDict[111] = metadataJSON['eventRelatedExhibition']
+	rsMetaDict[112] = metadataJSON['eventLocation']
+	rsMetaDict[113] = metadataJSON['description']
+	rsMetaDict[114] = metadataJSON['creator']
+	rsMetaDict[115] = metadataJSON['creatorRole']
+	rsMetaDict[116] = metadataJSON['eventOrganizer']
+	rsMetaDict[117] = metadataJSON['assetExternalSource']
+	rsMetaDict[118] = metadataJSON['copyrightStatement']
+	rsMetaDict[119] = metadataJSON['restrictionsOnUse']
+	rsMetaDict[120] = metadataJSON['generation']
+	rsMetaDict[121] = metadataJSON['frameRateTRTdetails']
 	# rsMetaDict[] = metadataJSON['']
 	
 	rsMetaJSON = json.dumps(rsMetaDict,ensure_ascii=False)
 	# print(rsMetaJSON)
 	quotedJSON = urllib.parse.quote(rsMetaJSON.encode())
-	if "%5Cn" in quotedJSON:
-		print("REPLACING NEWLINES")
-		quotedJSON = quotedJSON.replace('%5Cn','%3Cbr%2F%3E')
+	# if "%5Cn" in quotedJSON:
+	# 	print("REPLACING NEWLINES")
+	# 	quotedJSON = quotedJSON.replace('%5Cn','%3Cbr%2F%3E')
 
 	return quotedJSON
 
