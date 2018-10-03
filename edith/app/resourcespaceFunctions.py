@@ -23,13 +23,20 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 	if metadataFilepath != None:
 		with open(metadataFilepath,'r+') as mf:
 			metadata = json.load(mf)
-			print("READING IN THE RS PROCESS")
+			print("READING JSON IN THE RS PROCESS")
 			print(metadata)
 
-	urlMetadata = metadata_for_rs(metadata)
+			# HOW TF DOES THIS HANDLE NO METADATA? don't remember.... :(
+	else:
+		mdDict = '{"frameRateProxy":""}'
+		metadata= json.loads(mdDict)
+	# urlMetadata = metadata_for_rs(metadata)
 
 	if os.path.isfile(proxyPath):
 		print("the input object is a file")
+		frameRateProxy = utils.get_proxy_framerate(proxyPath)
+		metadata['frameRateProxy'] = frameRateProxy
+		urlMetadata = metadata_for_rs(metadata)
 		quotedPath = urllib.parse.quote(proxyPath, safe='')	
 		result = resourcespace_API_call(
 				user,
@@ -45,6 +52,11 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 		coolItems = [os.path.join(proxyPath,x) for x in items if not x.startswith('.')]
 		print(coolItems)
 		primaryItem = coolItems[0]
+		# RS only has metadata per primary item, so hopefully all the reels have
+		# the same framerate.
+		frameRateProxy = utils.get_proxy_framerate(primaryItem)
+		metadata['frameRateProxy'] = frameRateProxy
+		urlMetadata = metadata_for_rs(metadata)
 		quotedPath = urllib.parse.quote(
 			primaryItem,
 			safe=''
@@ -198,6 +210,7 @@ def metadata_for_rs(metadataJSON):
 	rsMetaDict = {}
 
 	rsMetaDict[8] = metadataJSON['title']
+	rsMetaDict[76] = metadataJSON['frameRateProxy']
 	rsMetaDict[84] = metadataJSON['altTitle']
 	rsMetaDict[85] = metadataJSON['releaseYear']
 	rsMetaDict[86] = metadataJSON['accPref']
@@ -240,9 +253,9 @@ def metadata_for_rs(metadataJSON):
 	rsMetaJSON = json.dumps(rsMetaDict,ensure_ascii=False)
 	# print(rsMetaJSON)
 	quotedJSON = urllib.parse.quote(rsMetaJSON.encode())
-	# if "%5Cn" in quotedJSON:
-	# 	print("REPLACING NEWLINES")
-	# 	quotedJSON = quotedJSON.replace('%5Cn','%3Cbr%2F%3E')
+	if "%5Cn" in quotedJSON:
+		print("REPLACING NEWLINES")
+		quotedJSON = quotedJSON.replace('%5Cn','%3Cbr%2F%3E')
 
 	return quotedJSON
 

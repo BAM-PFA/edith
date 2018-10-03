@@ -168,3 +168,30 @@ def humansize(nbytes):
 		i += 1
 	f = ('%.2f' % nbytes).rstrip('0').rstrip('.')
 	return '%s %s' % (f, suffixes[i])
+
+
+def get_proxy_framerate(proxyPath):
+	'''
+	So, AFAICT the framerate of the input master file is always going to be
+	the same as the proxy. Jon wants to have a quick reference in
+	ResourceSpace of the master file framerate, which will combine with 
+	the PFA projection frame rate in the case of silent film transfers to 
+	provide a fuller picture of what an exhibition mezzanine will need to
+	look like.
+	Also: this will return an empty string for things like audio that don't 
+	have a Video track.
+	'''
+	pythonPath = get_python_path()
+	pymmPath = get_pymm_path()
+	makeMetadataPath = os.path.join(pymmPath,'makeMetadata.py')
+	makeMetadataCommand = [
+		pythonPath,
+		makeMetadataPath
+		'-i', proxyPath,
+		'-v','FrameRate/String',
+		'-t','Video'
+	]
+	out = subprocess.run(makeMetadataCommand,stdout=subprocess.PIPE)
+	framerate = out.stdout.decode().rstrip()
+
+	return framerate

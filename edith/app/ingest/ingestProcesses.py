@@ -46,7 +46,7 @@ def get_barcode_from_filename(basename):
 
 def get_metadata(idNumber,basename):
 	# added in multiple return statements
-	# somehow if there was no metadata the variable 
+	# somehow if there was no metadata, the variable 
 	# remembered the previous assignment and gave the current
 	# file the same metadata. still have no idea how that happens.
 	metadataDict = metadataMaster.metadata
@@ -143,7 +143,7 @@ def add_metadata(ingestDict):
 		basename = options['basename']
 		idNumber = get_acc_from_filename(basename)
 
-		metadata = get_metadata(idNumber,basename)
+		metadata = get_metadata(idNumber,basename,objectPath)
 		options['metadata'] = metadata
 
 		metadataJson[objectPath]['metadata'] = metadata
