@@ -139,12 +139,17 @@ def mount_tape(command):
 	print("gave it a shot")
 	return True
 
-def clean_temp_dir():
+def clean_temp_dir(_type=None):
 	tempDir = get_temp_dir()
 	for thing in os.listdir(tempDir):
 		if '.json' in thing:
-			print('deleting '+thing)
-			os.remove(os.path.join(tempDir,thing))
+			if _type == 'ingest':
+				if 'tempTapeStats' not in thing:
+					print('deleting '+thing)
+					os.remove(os.path.join(tempDir,thing))
+			else:
+				print('deleting '+thing)
+				os.remove(os.path.join(tempDir,thing))
 		if os.path.isdir(thing):
 			try:
 				os.rmdir(thing)
@@ -186,7 +191,7 @@ def get_proxy_framerate(proxyPath):
 	makeMetadataPath = os.path.join(pymmPath,'makeMetadata.py')
 	makeMetadataCommand = [
 		pythonPath,
-		makeMetadataPath
+		makeMetadataPath,
 		'-i', proxyPath,
 		'-v','FrameRate/String',
 		'-t','Video'

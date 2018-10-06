@@ -115,10 +115,10 @@ def run_moveNcopy(aipPath,tapeMountpoint):
 		stdout=subprocess.PIPE,
 		stderr=subprocess.PIPE
 		)
-	# for line in runit.stdout.splitlines():
-	# 	print(line.decode())
-	# for line in runit.stderr.splitlines():
-	# 	print(line.decode())
+	for line in runit.stdout.splitlines():
+		print(line.decode())
+	for line in runit.stderr.splitlines():
+		print(line.decode())
 
 	return runit.stdout
 
@@ -141,7 +141,7 @@ def write_LTO(aipDict,user):
 		pool = Pool(2)
 		poolresult = pool.starmap(run_moveNcopy,sipWriteTuples)
 		pool.close()
-		# print(poolresult)
+		print(poolresult)
 		return poolresult
 	except:
 		return False
@@ -178,6 +178,7 @@ def write_LTO_temp_stats():
 
 	tempDir = utils.get_temp_dir()
 	statsJsonPath = os.path.join(tempDir,"tempTapeStats.json")
+	print(stats)
 	try:
 		with open(statsJsonPath,"x") as f:
 			pass
@@ -254,12 +255,13 @@ def unmount_tapes():
 		return True
 
 def parse_index_schema_file(user):
+	print("PAARRRSSSIINNGG")
 	pythonBinary = utils.get_python_path()
 	pymmPath = utils.get_pymm_path()
 	ltfsSchemaParserPath = os.path.join(pymmPath,'ltfsSchemaParser.py')
 	aTapeID = utils.get_current_LTO_id()
 	tempDir = utils.get_temp_dir()
-	aTapeSchema = os.path.join(tempdir,aTapeID+".schema")
+	aTapeSchema = os.path.join(tempDir,aTapeID+".schema")
 	parseCommand = [
 	pythonBinary,
 	ltfsSchemaParserPath,

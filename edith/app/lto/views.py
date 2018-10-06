@@ -345,15 +345,15 @@ def write_status():
 			if objectName == _object:
 				results[aipPath] = {'canonicalName' : objectName}
 
-	# print(results)
+	print(results)
 	writeStatuses = {}
 	writeResults = ltoProcesses.write_LTO(results,user)
 	print("LTO WRITE RESULTS:")
 	print(writeResults)
 	for result in writeResults:
-		#print(result)
+		print(result)
 		resultString = str(result)
-		#print(resultString)
+		print(resultString)
 		if "HASHDEEP" in resultString:
 			sip = result.decode().split('|')[1]
 			#print(sip)

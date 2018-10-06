@@ -143,7 +143,7 @@ def add_metadata(ingestDict):
 		basename = options['basename']
 		idNumber = get_acc_from_filename(basename)
 
-		metadata = get_metadata(idNumber,basename,objectPath)
+		metadata = get_metadata(idNumber,basename)
 		options['metadata'] = metadata
 
 		metadataJson[objectPath]['metadata'] = metadata
@@ -255,7 +255,7 @@ def main(ingestDict,user):
 					rsProxyPath,
 					metadataFilepath
 					)
-				utils.clean_temp_dir()
+				utils.clean_temp_dir('ingest')
 
 				#print(rsStatus)
 			else:

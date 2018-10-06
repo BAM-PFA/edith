@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-	{% for aip, status in _data.items() %}
+	{% for aip, status in writeResults.items() %}
 		<p> {{ aip }} : {{ status }} </p>
 
 	{% endfor %}
-
-	{% <div></div>%}
 
 {% endblock %}

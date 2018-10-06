@@ -114,6 +114,7 @@ Tested on Ubuntu 16.04.
 * Runs on Python 3
 * paramiko (on Ubuntu `pip3 install -U paramiko` for correct Cryptography build)
 * requests (`pip3 install requests`)
+* `gcp` 
 * `pymm` dependencies:
    * mediainfo
    * ffmpeg
