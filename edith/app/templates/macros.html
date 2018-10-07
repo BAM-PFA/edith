@@ -6,6 +6,26 @@
 		<label for="{{ field.id }}-{{ uniqueName }}">{{ field.label.text }}</label>
 		<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="checkbox" default=""/>
 	</div>
+
+{# {% elif field.name.startswith('metadata')  %}#}
+{% elif field.name == 'metadataForm'  %}
+	<p>
+		<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#metadataGroup" aria-expanded="false" aria-controls="metadataGroup">
+			ADD METADATA
+		</button>
+	</p>
+	<div class="collapse" id="metadataGroup">
+	<div class="card card-body">
+		{% for childfield in field %}
+			{% if not 'csrf_token' in childfield.name %}
+				<div>
+					<label for="{{ childfield.id }}-{{ uniqueName }}">{{ childfield.label.text }}</label>
+					<input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
+				</div>
+			{% endif %}
+		{% endfor %}
+	</div>
+	</div>
 {% elif field.name == 'targetPath' %}
 	<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="hidden" value="{{ field.data }}"/>
 {% elif field.name == 'targetBase' %}

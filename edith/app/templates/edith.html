@@ -9,12 +9,13 @@
 		{{ form.csrf_token }}
 		
 		{% for item,vals in form.suchChoices.items() %}
+		<div class ="card text-light bg-secondary">
 		<div class="form-group">
 			{% for field in vals %}
 				{{ macros.render_field(field,vals.targetBase.data) }}
 			{% endfor %}
 		</div>
-
+		</div>
 		{%endfor%}
 
 	{{ form.user.label }}{{ form.user() }}<br>
