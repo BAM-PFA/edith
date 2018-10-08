@@ -6,8 +6,8 @@ class MetadataForm(FlaskForm):
         '''
         Fields for additional metadata
         '''
-        metadataTest1 = wtforms.StringField("one metadata?",default='')
-        metadataTest2 = wtforms.StringField("two metadata?",default='')
+        event_title = wtforms.StringField("Event Title",default='')
+        event_year = wtforms.StringField("Event Year",default='')
 
 class ObjectForm(FlaskForm):
 	"""
