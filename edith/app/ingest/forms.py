@@ -16,9 +16,9 @@ class ObjectForm(FlaskForm):
 	targetPath = wtforms.HiddenField('objectPath')
 	targetBase = wtforms.HiddenField('objectBase')
 	runIngest = wtforms.BooleanField('Ingest?',default='')
-	doProres = wtforms.BooleanField("make prores?",default='')
-	proresToDave = wtforms.BooleanField("deliver prores to dave?",default='')
-	doConcat = wtforms.BooleanField("concatenate reels?",default='')
+	#doProres = wtforms.BooleanField("make prores?",default='')
+	#proresToDave = wtforms.BooleanField("deliver prores to dave?",default='')
+	doConcat = wtforms.BooleanField("Concatenate reels?",default='')
 	metadataForm = wtforms.FormField(MetadataForm)
 	#metadataFields = wtforms.FieldList(StringField('metadata1'))
 

@@ -10,16 +10,16 @@
 {# {% elif field.name.startswith('metadata')  %}#}
 {% elif field.name == 'metadataForm'  %}
 	<p>
-		<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#metadataGroup" aria-expanded="false" aria-controls="metadataGroup">
+		<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#metadataGroup-{{ uniqueName }}" aria-expanded="false" aria-controls="metadataGroup-{{ uniqueName }}">
 			ADD METADATA
 		</button>
 	</p>
-	<div class="collapse" id="metadataGroup">
+	<div class="collapse" id="metadataGroup-{{ uniqueName }}">
 	<div class="card card-body">
 		{% for childfield in field %}
 			{% if not 'csrf_token' in childfield.name %}
 				<div>
-					<label for="{{ childfield.id }}-{{ uniqueName }}">{{ childfield.label.text }}</label>
+					<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
 					<input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
 				</div>
 			{% endif %}
