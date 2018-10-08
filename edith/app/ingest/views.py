@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # standard library modules
-# nerp
+import re
 # non-standard libraries
 from flask import render_template, request
 import wtforms
@@ -42,7 +42,7 @@ def status():
 
 	try:
 		_data = request.form.to_dict(flat=False)
-		# print(_data)
+		print(_data)
 		user = request.form['user']
 
 		if not user in app.app_config['KNOWN_USERS']:
@@ -54,6 +54,7 @@ def status():
 		doProresYES = []
 		proresToDaveYES = []
 		doConcatYES =[]
+		metadataEntries = {}
 		for key, value in _data.items():
 			# get names/paths of files we actually want to process
 			if 'runIngest' in key:
@@ -66,12 +67,29 @@ def status():
 				proresToDaveYES.append(key.replace('proresToDave-',''))
 			elif 'doConcat' in key:
 				doConcatYES.append(key.replace('doConcat-',''))
-
+			# start trawling for metadata entries
+			elif 'metadataForm' in key:
+				# get the field label and object via regex
+				pattern = r'(metadataForm-)([a-zA-Z0-9]+)(-)(.*)'
+				fieldSearch = re.search(pattern,key)
+				field = fieldSearch.group(2)
+				theObject = fieldSearch.group(4)
+				print(field,theObject)
+				if not theObject in  metadataEntries:
+					metadataEntries[theObject] = {}
+					# `value` here is returned as a list from the metadata FormField
+					metadataEntries[theObject][field] = value[0]
+				else:
+					metadataEntries[theObject][field] = value[0]
 		for _object in toIngest:
 			# build a dict of files:options
 			for path in targetPaths:
+				# this line is probably fucking something up (duplicating calls for similar named files) @fixme
 				if _object in path:
 					results[path] = {'basename' : _object}
+					if _object in metadataEntries:
+						results[path]['userMetadata'] = metadataEntries[_object]
+
 		# add boolean options to dict
 		for path,sub in results.items():
 			if results[path]['basename'] in doProresYES:
@@ -81,10 +99,10 @@ def status():
 			if results[path]['basename'] in doConcatYES:
 				results[path]['concat reels'] = 'True'
 
-		# print(results)
+		print(results)
 		# pass dict of files:options to ingestProcesses and get back
 		# a dict that includes metadata
-		results = ingestProcesses.main(results,user)
+		#results = ingestProcesses.main(results,user)
 
 	except:
 		_data = "no data"
