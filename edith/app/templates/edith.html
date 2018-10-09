@@ -1,9 +1,12 @@
+
 {% import "macros.html" as macros %}
 
 {% extends "base.html" %}
 
 {% block content %}
-	<h1>Here are files to ingest:</h1>
+	<!--<button type="button" class="btn btn-primary-md"><div><svg-icon class="glyph-icon"><src href="{{ url_for('static', filename='si-glyph-arrow-reload.svg') }}"/></svg></div></button>-->
+	<a class="btn btn-primary" href="{{ url_for('ingest.edith') }}" role="button">REFRESH PAGE</a>
+	<h1>Here are assets ready to ingest:</h1>
 	<form action="{{ url_for('ingest.status') }}" method='POST'>
 		{{ form.hidden_tag() }}
 		{{ form.csrf_token }}
