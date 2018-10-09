@@ -2,7 +2,7 @@
 # standard library modules
 import re
 # non-standard libraries
-from flask import render_template, request
+from flask import render_template, request, flash, url_for
 import wtforms
 # local modules
 import app
@@ -38,6 +38,7 @@ def edith():
 @ingest.route('/status',methods=['GET','POST'])
 def status():
 	status = 'form submitted ok'
+	error = None
 	print(status)
 
 	try:
@@ -72,7 +73,8 @@ def status():
 				# get the field label and object via regex
 				pattern = r'(metadataForm-)([a-zA-Z0-9]+)(-)(.*)'
 				fieldSearch = re.search(pattern,key)
-				field = fieldSearch.group(2)
+				# raw fields are formed as userMD_event_location
+				field = fieldSearch.group(2).replace('userMD_','')
 				theObject = fieldSearch.group(4)
 				print(field,theObject)
 				if not theObject in  metadataEntries:
@@ -105,6 +107,7 @@ def status():
 		#results = ingestProcesses.main(results,user)
 
 	except:
+		flash("There was an error with your request. Try again. :(")
 		_data = "no data"
 		user = "no user"
 		toIngest = []

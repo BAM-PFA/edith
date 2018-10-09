@@ -174,6 +174,17 @@ def humansize(nbytes):
 	f = ('%.2f' % nbytes).rstrip('0').rstrip('.')
 	return '%s %s' % (f, suffixes[i])
 
+def get_object_size(path):
+	'''
+	Stolen from https://stackoverflow.com/q/40840037
+	'''
+	total = 0
+	for entry in os.scandir(path):
+		if entry.is_file():
+			total += entry.stat().st_size
+		elif entry.is_dir():
+		   total += aip_size(entry.path)
+	return total
 
 def get_proxy_framerate(proxyPath):
 	'''

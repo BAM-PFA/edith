@@ -277,7 +277,7 @@ def list_aips():
 	choices = {}
 	for path,_object in objects.items():
 		humanName = ltoProcesses.get_aip_human_name(path)
-		aipSize = ltoProcesses.aip_size(path)
+		aipSize = utils.get_object_size(path)
 		# convert aip size from bytes to human readable form
 		aipHumanSize = utils.humansize(aipSize)
 		if not humanName == False:

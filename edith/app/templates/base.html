@@ -17,6 +17,15 @@
 		  <a class="navbar-brand">HELLO, I'M EDITH</a><a href="/edith">Ingest Stuff</a><a href="/lto_menu">LTO Stuff</a>
 		</nav>
 		<div class="container my-1">
+			{% with messages = get_flashed_messages() %}
+			  {% if messages %}
+			    <ul class=flashes>
+			    {% for message in messages %}
+			      <li>{{ message }}</li>
+			    {% endfor %}
+			    </ul>
+			  {% endif %}
+			{% endwith %}
   			{% block content %}{% endblock %}
 		</div>
 		
