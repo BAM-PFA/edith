@@ -44,19 +44,25 @@ def get_barcode_from_filename(basename):
 
 
 
-def get_metadata(idNumber,basename):
+def get_metadata(idNumber,basename,intermediateMetadata):
 	# added in multiple return statements
 	# somehow if there was no metadata, the variable 
 	# remembered the previous assignment and gave the current
 	# file the same metadata. still have no idea how that happens.
+	# -- Get the metadata master dict from metadataMaster.py
 	metadataDict = metadataMaster.metadata
-	if idNumber == "--":
-		print("NO EFFING ID NUMBER")
-		for key, value in metadataDict.items():
-			metadataDict[key] = ""
-
+	# -- Add any existing field values to the blank dict
+	for k,v in intermediateMetadata.items():
+		if not v == "":
+			if k in metadataDict:
+				metadataDict[k] = v
+	if not all(value=="" for value in metadataDict.values()):
+		metadataDict['hasBAMPFAmetadata'] = True
+	else:
 		metadataDict['hasBAMPFAmetadata'] = False
 
+	if idNumber == "--":
+		print("NO PFA ID NUMBER")
 		return metadataDict
 
 	elif idNumber == '00000':
@@ -66,22 +72,27 @@ def get_metadata(idNumber,basename):
 			barcode = get_barcode_from_filename(basename)
 			# print(barcode)
 			if barcode == "000000000":
-				for key, value in metadataDict.items():
-					metadataDict[key] = ""
-				metadataDict['hasBAMPFAmetadata'] = False
-
+				print("ID AND BARCODE BOTH ZEROED OUT")
 				return metadataDict
 
 			else:
-				metadataDict = fmQuery.xml_query(barcode)
+				FMmetadata = fmQuery.xml_query(barcode)
+				# add any filemaker metadata to the dict
+				for k,v in FMmetadata.items():
+					if k in metadataDict:
+						metadataDict[k] = v
+				metadataDict['hasBAMPFAmetadata'] = True
 		except:
-			metadataDict['hasBAMPFAmetadata'] = False
-
+			print("Error searching FileMaker on ID and barcode")
 			return metadataDict
 	else:
 		try:
 			print('searching FileMaker on '+idNumber)
-			metadataDict = fmQuery.xml_query(idNumber)
+			FMmetadata = fmQuery.xml_query(idNumber)
+			# add any filemaker metadata to the dict
+			for k,v in FMmetadata.items():
+				if k in metadataDict:
+					metadataDict[k] = v
 			metadataDict['hasBAMPFAmetadata'] = True
 			# print(metadataDict)
 			# print('metadataDict')
@@ -89,15 +100,18 @@ def get_metadata(idNumber,basename):
 			# if no results, try padding with zeros
 			idNumber = "{0:0>5}".format(idNumber)
 			try:
-				metadataDict = fmQuery.xml_query(idNumber)
+				FMmetadata = fmQuery.xml_query(idNumber)
+				# add any filemaker metadata to the dict
+				for k,v in FMmetadata.items():
+					if k in metadataDict:
+						metadataDict[k] = v
 				metadataDict['hasBAMPFAmetadata'] = True
 			except:
 				# give up
-				metadataDict['hasBAMPFAmetadata'] = False
-				
 				return metadataDict
 
-	# print(metadataDict)
+	print('metadataDict')
+	print(metadataDict)
 	return(metadataDict)
 
 def grab_remote_files(targetFilepath):
@@ -139,11 +153,18 @@ def add_metadata(ingestDict):
 		# print(options)
 		metadataJson = {}
 		metadataJson[objectPath] = {}
+		# first check if there is user-supplied metadata
+		if 'userMetadata' in ingestDict[objectPath]:
+			metadataJson[objectPath]['metadata'] = ingestDict[objectPath]['userMetadata']
+		else:
+			# if not, init an empty dict
+			metadataJson[objectPath]['metadata'] = {}
 
 		basename = options['basename']
 		idNumber = get_acc_from_filename(basename)
+		intermediateMetadata = metadataJson[objectPath]['metadata']
 
-		metadata = get_metadata(idNumber,basename)
+		metadata = get_metadata(idNumber,basename,intermediateMetadata)
 		options['metadata'] = metadata
 
 		metadataJson[objectPath]['metadata'] = metadata
@@ -163,6 +184,11 @@ def main(ingestDict,user):
 	# GET THE PYMM PATH TO CALL IN A SEC
 	pymmPath = utils.get_pymm_path()
 	ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
+
+	# get rid of the userMetadata dict if all the values are empty
+	for _object,details in ingestDict.items():
+		if all(value=="" for value in ingestDict[_object]['userMetadata'].values()):
+			ingestDict[_object].pop('userMetadata')
 
 	print("INGEST DICT LOOKS LIKE THIS NOW")
 	for k,v in ingestDict.items():

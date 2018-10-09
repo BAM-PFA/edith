@@ -105,7 +105,7 @@ def status():
 		print(results)
 		# pass dict of files:options to ingestProcesses and get back
 		# a dict that includes metadata
-		#results = ingestProcesses.main(results,user)
+		results = ingestProcesses.main(results,user)
 
 	except:
 		flash("There was an error with your request. Try again. :(")

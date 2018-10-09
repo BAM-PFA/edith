@@ -210,6 +210,8 @@ def metadata_for_rs(metadataJSON):
 	rsMetaDict = {}
 
 	rsMetaDict[8] = metadataJSON['title']
+	rsMetaDict[29] = metadataJSON['nameSubjects']
+	rsMetaDict[73] = metadataJSON['topicalSubjects']
 	rsMetaDict[76] = metadataJSON['frameRateProxy']
 	rsMetaDict[84] = metadataJSON['altTitle']
 	rsMetaDict[85] = metadataJSON['releaseYear']

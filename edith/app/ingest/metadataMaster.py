@@ -37,5 +37,12 @@ metadata['copyrightStatement'] = ''
 metadata['restrictionsOnUse'] = ''
 metadata['generation'] = ''
 metadata['frameRateTRTdetails'] = ''
+metadata['nameSubjects'] = ''
+metadata['topicalSubjects'] = ''
+metadata['platformOutlet'] = ''
+metadata['editSequenceSettings'] = ''
+metadata['additionalCredits'] = ''
+metadata['postProcessing'] = ''
+metadata['exportPublishDate'] = ''
 
-metadata['hasBAMPFAmetadata'] = False
+metadata['hasBAMPFAmetadata'] = ""
