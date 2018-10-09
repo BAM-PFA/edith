@@ -70,8 +70,9 @@ def status():
 				doConcatYES.append(key.replace('doConcat-',''))
 			# start trawling for metadata entries
 			elif 'metadataForm' in key:
+				print(key)
 				# get the field label and object via regex
-				pattern = r'(metadataForm-)([a-zA-Z0-9]+)(-)(.*)'
+				pattern = r'(metadataForm-)([a-zA-Z0-9_]+)(-)(.*)'
 				fieldSearch = re.search(pattern,key)
 				# raw fields are formed as userMD_event_location
 				field = fieldSearch.group(2).replace('userMD_','')

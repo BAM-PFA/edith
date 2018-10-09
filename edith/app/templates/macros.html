@@ -31,8 +31,16 @@
 			{% elif childfield.type == "SelectField" %}
 				<div>
                                         <label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
-                                        {% set tempID = childfield.id+"-"+uniqueName %}
-					{{ childfield(id=tempID) }}
+					<select class="custom-select" name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}">
+					{% for _tuple in childfield.choices %}
+						{% if not _tuple[0] == "" %}
+							<option value="{{ _tuple[0] }}">{{ _tuple[1] }}</option>
+						{% else %}
+							<option value=""/>
+						{% endif %}
+					{% endfor %}
+					</select>
+
                                 </div>
                         {% endif %}
                         {% endif %}
