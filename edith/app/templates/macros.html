@@ -7,7 +7,12 @@
 		<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="checkbox" default=""/>
 	</div>
 
-{# {% elif field.name.startswith('metadata')  %}#}
+{% elif field.type == 'SelectField'  %}
+	<div class="form-group">
+                <label for="{{ field.id }}-{{ uniqueName }}">{{ field.label.text }}</label>
+		{{ field(id="{{ field.id }}-{{ uniqueName }}") }}
+        </div>
+
 {% elif field.name == 'metadataForm'  %}
 	<p>
 		<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#metadataGroup-{{ uniqueName }}" aria-expanded="false" aria-controls="metadataGroup-{{ uniqueName }}">
@@ -18,11 +23,19 @@
 	<div class="card card-body m-1">
 		{% for childfield in field %}
 			{% if not 'csrf_token' in childfield.name %}
+                        {% if childfield.type == "StringField" %}
+                                <div>
+                                        <label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
+                                        <input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
+                                </div>
+			{% elif childfield.type == "SelectField" %}
 				<div>
-					<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
-					<input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
-				</div>
-			{% endif %}
+                                        <label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
+                                        {% set tempID = childfield.id+"-"+uniqueName %}
+					{{ childfield(id=tempID) }}
+                                </div>
+                        {% endif %}
+                        {% endif %}
 		{% endfor %}
 	</div>
 	</div>

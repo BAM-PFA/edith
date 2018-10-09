@@ -10,6 +10,8 @@ def create_app(config_name):
 	app.config.from_object(app_config['production']) 
 	app.config.from_pyfile('config.py')
 
+	app.jinja_env.add_extension('jinja2.ext.do')
+
 	from .ingest import ingest as ingest_blueprint
 	app.register_blueprint(ingest_blueprint)
 
