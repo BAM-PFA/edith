@@ -165,11 +165,12 @@ def add_metadata(ingestDict):
 		intermediateMetadata = metadataJson[objectPath]['metadata']
 
 		metadata = get_metadata(idNumber,basename,intermediateMetadata)
+		del intermediateMetadata
 		options['metadata'] = metadata
 
 		metadataJson[objectPath]['metadata'] = metadata
 		metadataJson[objectPath]['basename'] = basename
-
+		del metadata
 		options['metadataFilepath'] = write_metadata_json(metadataJson,basename)
 
 	# print(ingestDict)
