@@ -23,7 +23,7 @@
 	<div class="card card-body m-1">
 		{% for childfield in field %}
 			{% if not 'csrf_token' in childfield.name %}
-				{% if childfield.name.startswith('userMD_1') %}
+				{% if childfield.name.startswith('metadataForm-userMD_1') %}
 	                {% if childfield.type == "StringField" %}
 	                    <div>
 	                            <label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
