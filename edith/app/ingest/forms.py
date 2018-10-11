@@ -30,7 +30,7 @@ class MetadataForm(FlaskForm):
         userMD_3_restrictionsOnUse = wtforms.StringField("Restrictions on use",default='')
         userMD_3_tags = wtforms.StringField("Tags (comma separated)",default='')
         userMD_3_topicalSubjects = wtforms.StringField("Subject(s): Topics",default='')
-        userMD_3_recordingDate = wtforms.StringField("Digitized or Born-digital?",default='',choices=[('',''),('digitized','Digitized'),('born digital','Born-digital')])
+        userMD_3_recordingDate = wtforms.SelectField("Digitized or Born-digital?",default='',choices=[('',''),('digitized','Digitized'),('born digital','Born-digital')])
         userMD_3_digitizer = wtforms.StringField("Name of digitizer",default='')
         userMD_3_locationOfRecording = wtforms.StringField("Location of recording or event",default='')
         userMD_3_speakerInterviewee = wtforms.StringField("Speaker/Interviewee",default='')

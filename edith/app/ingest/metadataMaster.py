@@ -4,7 +4,7 @@ metadata['tags'] = ''
 metadata['country'] = ''
 metadata['title'] = ''
 metadata['nameSubjects'] = ''
-metadata['frameRateProxy']
+metadata['frameRateProxy'] = ''
 metadata['altTitle'] = ''
 metadata['releaseYear'] = ''
 metadata['accPref'] = ''
