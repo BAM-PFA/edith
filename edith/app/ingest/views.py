@@ -74,8 +74,9 @@ def status():
 				# get the field label and object via regex
 				pattern = r'(metadataForm-)([a-zA-Z0-9_]+)(-)(.*)'
 				fieldSearch = re.search(pattern,key)
-				# raw fields are formed as userMD_event_location
-				field = fieldSearch.group(2).replace('userMD_','')
+				# raw fields are formed as userMD_1_eventLocation
+				# field = fieldSearch.group(2).replace('userMD_','')
+				field = re.sub(r"(userMD_)(\d)", '', field)
 				theObject = fieldSearch.group(4)
 				print(field,theObject)
 				if not theObject in  metadataEntries:

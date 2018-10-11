@@ -5,26 +5,30 @@ from wtforms.validators import DataRequired, Email
 class MetadataForm(FlaskForm):
         '''
         Fields for additional metadata
+        userMD_1 = Communications
+        userMD_2 = Event
+        userMD_3 = General
         '''
-        userMD_eventTitle = wtforms.StringField("Event title",default='')
-        userMD_eventYear = wtforms.StringField("Event year",default='')
-        userMD_eventFullDate = wtforms.StringField("Full date of event",default='')
-        userMD_eventSeries = wtforms.StringField("Event series",default='')
-        userMD_eventRelatedExhibition = wtforms.StringField("Related exhibition",default='')
-        userMD_eventLocation = wtforms.StringField("Event location",default='')
-        userMD_description = wtforms.StringField("Description",default='')
-        userMD_nameSubjects = wtforms.StringField("Name subjects",default='')
-        userMD_topicalSubjects = wtforms.StringField("Topical subjects",default='')
-        userMD_eventOrganizer = wtforms.StringField("Event organizer",default='')
-        userMD_assetExternalSource = wtforms.StringField("Source (if not BAMPFA staff)",default='')
-        userMD_copyrightStatement = wtforms.StringField("Copyright statement",default='')
-        userMD_restrictionsOnUse = wtforms.StringField("Restrictions on use",default='')
-        userMD_generation = wtforms.StringField("Generation",default='')
-        userMD_platformOutlet = wtforms.StringField("Media platform or outlet",default='')
-        userMD_editSequenceSettings = wtforms.StringField("Settings/framing of NLE sequence",default='')
-        userMD_postProcessing = wtforms.SelectField("Raw or post processed",default='',choices=[('',''),('raw','Raw'),('processed','Post processed')])
-        userMD_additionalCredits = wtforms.StringField("Additional credits",default='')
-        userMD_exportPublishDate = wtforms.StringField("Date of export or publishing",default='')
+        userMD_1_editSequenceSettings = wtforms.StringField("Settings/framing of NLE sequence",default='')
+        userMD_1_exportPublishDate = wtforms.StringField("Date of export or publishing",default='')
+        userMD_1_platformOutlet = wtforms.StringField("Media platform or outlet",default='')
+        userMD_2_eventFullDate = wtforms.StringField("Full date of event",default='')
+        userMD_2_eventLocation = wtforms.StringField("Event location",default='')
+        userMD_2_eventOrganizer = wtforms.StringField("Event organizer",default='')
+        userMD_2_eventRelatedExhibition = wtforms.StringField("Related exhibition",default='')
+        userMD_2_eventSeries = wtforms.StringField("Event series",default='')
+        userMD_2_eventTitle = wtforms.StringField("Event title",default='')
+        userMD_2_eventYear = wtforms.StringField("Event year",default='')
+        userMD_2_PFAfilmSeries = wtforms.StringField("Related PFA film series",default='')
+        userMD_3_additionalCredits = wtforms.StringField("Additional credits",default='')
+        userMD_3_assetExternalSource = wtforms.StringField("Source (if not BAMPFA staff)",default='')
+        userMD_3_copyrightStatement = wtforms.StringField("Copyright statement",default='')
+        userMD_3_description = wtforms.StringField("Description",default='')
+        userMD_3_generation = wtforms.StringField("Generation",default='')
+        userMD_3_nameSubjects = wtforms.StringField("Name subjects",default='')
+        userMD_3_postProcessing = wtforms.SelectField("Raw or post processed",default='',choices=[('',''),('raw','Raw'),('processed','Post processed')])
+        userMD_3_restrictionsOnUse = wtforms.StringField("Restrictions on use",default='')
+        userMD_3_topicalSubjects = wtforms.StringField("Topical subjects",default='')
         # userMD_ = wtforms.StringField("",default='')
 
 class ObjectForm(FlaskForm):

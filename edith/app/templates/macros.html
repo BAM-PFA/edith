@@ -23,27 +23,30 @@
 	<div class="card card-body m-1">
 		{% for childfield in field %}
 			{% if not 'csrf_token' in childfield.name %}
-                        {% if childfield.type == "StringField" %}
-                                <div>
-                                        <label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
-                                        <input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
-                                </div>
-			{% elif childfield.type == "SelectField" %}
-				<div>
-                                        <label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
-					<select class="custom-select" name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}">
-					{% for _tuple in childfield.choices %}
-						{% if not _tuple[0] == "" %}
-							<option value="{{ _tuple[0] }}">{{ _tuple[1] }}</option>
-						{% else %}
-							<option value=""/>
-						{% endif %}
-					{% endfor %}
-					</select>
-
-                                </div>
-                        {% endif %}
-                        {% endif %}
+				{% if childfield.name.startswith('userMD_1') %}
+	                {% if childfield.type == "StringField" %}
+	                    <div>
+	                            <label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
+	                            <input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
+	                    </div>
+					{% elif childfield.type == "SelectField" %}
+						<div>
+	                        <label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">
+	                        	{{ childfield.label.text }}
+	                        </label>
+							<select class="custom-select" name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}">
+							{% for _tuple in childfield.choices %}
+								{% if not _tuple[0] == "" %}
+									<option value="{{ _tuple[0] }}">{{ _tuple[1] }}</option>
+								{% else %}
+									<option value=""/>
+								{% endif %}
+							{% endfor %}
+							</select>
+	                    </div>
+	                {% endif %}
+	            {% endif %}
+            {% endif %}
 		{% endfor %}
 	</div>
 	</div>
