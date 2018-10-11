@@ -26,7 +26,7 @@
 				{% for field in vals %}
 					{{ macros.render_field(field,vals.targetBase.data) }}
 				{% endfor %}
-x		</div>
+		</div>
 		{%endfor%}
 	{{ form.user.label }}  {{ form.user() }}<br>
 	{{ form.submit(class="btn btn-primary") }}

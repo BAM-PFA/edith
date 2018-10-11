@@ -76,7 +76,7 @@ def status():
 				fieldSearch = re.search(pattern,key)
 				# raw fields are formed as userMD_1_eventLocation
 				# field = fieldSearch.group(2).replace('userMD_','')
-				field = re.sub(r"(userMD_)(\d)", '', field)
+				field = re.sub(r"(userMD_)(\d)(_)", '', fieldSearch.group(2))
 				theObject = fieldSearch.group(4)
 				print(field,theObject)
 				if not theObject in  metadataEntries:
