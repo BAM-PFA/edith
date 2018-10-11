@@ -209,9 +209,10 @@ def metadata_for_rs(metadataJSON):
 
 	rsMetaDict = {}
 
+	rsMetaDict[1] = metadataJSON['tags']
+	rsMetaDict[3] = metadataJSON['country']
 	rsMetaDict[8] = metadataJSON['title']
 	rsMetaDict[29] = metadataJSON['nameSubjects']
-	rsMetaDict[73] = metadataJSON['topicalSubjects']
 	rsMetaDict[76] = metadataJSON['frameRateProxy']
 	rsMetaDict[84] = metadataJSON['altTitle']
 	rsMetaDict[85] = metadataJSON['releaseYear']
@@ -220,7 +221,6 @@ def metadata_for_rs(metadataJSON):
 	rsMetaDict[88] = metadataJSON['accItem']
 	rsMetaDict[89] = metadataJSON['accFull']
 	rsMetaDict[90] = metadataJSON['projGrp']
-	rsMetaDict[3] = metadataJSON['country']
 	rsMetaDict[91] = metadataJSON['directorsNames']
 	rsMetaDict[92] = metadataJSON['credits']
 	rsMetaDict[93] = metadataJSON['generalNotes']
@@ -250,6 +250,19 @@ def metadata_for_rs(metadataJSON):
 	rsMetaDict[119] = metadataJSON['restrictionsOnUse']
 	rsMetaDict[120] = metadataJSON['generation']
 	rsMetaDict[121] = metadataJSON['frameRateTRTdetails']
+	rsMetaDict[122] = metadataJSON['platformOutlet']
+	rsMetaDict[123] = metadataJSON['editSequenceSettings']
+	rsMetaDict[124] = metadataJSON['additionalCredits']
+	rsMetaDict[125] = metadataJSON['postProcessing']
+	rsMetaDict[126] = metadataJSON['exportPublishDate']
+	rsMetaDict[127] = metadataJSON['PFAfilmSeries']
+	rsMetaDict[128] = metadataJSON['recordingDate']
+	rsMetaDict[129] = metadataJSON['digitizedBornDigital']
+	rsMetaDict[130] = metadataJSON['digitizer']
+	rsMetaDict[131] = metadataJSON['locationOfRecording']
+	rsMetaDict[132] = metadataJSON['speakerInterviewee']
+	rsMetaDict[133] = metadataJSON['filmTitleSubjects']
+	rsMetaDict[134] = metadataJSON['topicalSubjects']
 	# rsMetaDict[] = metadataJSON['']
 	
 	rsMetaJSON = json.dumps(rsMetaDict,ensure_ascii=False)
