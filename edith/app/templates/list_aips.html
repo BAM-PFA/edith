@@ -4,16 +4,16 @@
 
 {% block content %}
 	<h1>Here are Archival Information Packages to write to tape:</h1>
-	<div>
-		<p class="lead">Here is the space available on the mounted tapes:</p>
-		<table>
+	<div class="card bg-info m3">
+		<div class="card-header">Here is the space available on the mounted tapes:</div>
+		<ul class="list-group list-group-flush">
 			{% for tape, stats in spaceAvailable.items() %}
 			
-					<tr class='active'>
-						<td>Space avalable on {{ tape }} tape : <b>{{ stats['spaceAvailableHuman'] }}</b></td>
-					</tr>
+					<li class='list-group-item'>
+						Space avalable on {{ tape }} tape : <b>{{ stats['spaceAvailableHuman'] }}</b>
+					</li>
 			{% endfor %}
-		</table>
+		</ul>
 	</div>
 	<br>
 	<br>
@@ -22,15 +22,13 @@
 		{{ form.csrf_token }}
 		
 		{% for item,vals in form.suchChoices.items() %}
-		<div class="container">
-			<div class="form-group">
+		<div class="card border-primary m-1">
 				{% for field in vals %}
 					{{ macros.render_field(field,vals.targetBase.data) }}
 				{% endfor %}
-			</div>
-		</div>
+x		</div>
 		{%endfor%}
 	{{ form.user.label }}  {{ form.user() }}<br>
-	{{ form.submit() }}
+	{{ form.submit(class="btn btn-primary") }}
 	</form>
 {% endblock %}

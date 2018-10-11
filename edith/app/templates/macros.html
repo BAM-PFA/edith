@@ -15,15 +15,15 @@
 
 {% elif field.name == 'metadataForm'  %}
 	<p>
-		<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#metadataGroup-{{ uniqueName }}" aria-expanded="false" aria-controls="metadataGroup-{{ uniqueName }}">
+		<button class="btn btn-primary m-1" type="button" data-toggle="collapse" data-target="#metadataGroup-{{ uniqueName }}" aria-expanded="false" aria-controls="metadataGroup-{{ uniqueName }}">
 			ADD METADATA
 		</button>
 	</p>
 	<div class="collapse" id="metadataGroup-{{ uniqueName }}">
-	<div class="card card-body m-1">
+	<div class="card card-body border-warning m-1">
 		{% for childfield in field %}
 			{% if not 'csrf_token' in childfield.name %}
-				{% if childfield.name.startswith('metadataForm-userMD_1') %}
+				{# {% if childfield.name.startswith('metadataForm-userMD_1') %} #}
 	                {% if childfield.type == "StringField" %}
 	                    <div>
 	                            <label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
@@ -44,7 +44,7 @@
 							{% endfor %}
 							</select>
 	                    </div>
-	                {% endif %}
+	                {# {% endif %} #}
 	            {% endif %}
             {% endif %}
 		{% endfor %}
@@ -53,11 +53,11 @@
 {% elif field.name == 'targetPath' %}
 	<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="hidden" value="{{ field.data }}"/>
 {% elif field.name == 'targetBase' %}
-	<label for="{{ field.id }}-{{ uniqueName }}">{{ uniqueName }}</label>
+	<div class="card-header"><label for="{{ field.id }}-{{ uniqueName }}">{{ uniqueName }}</label></div>
 	<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="hidden" value="{{ field.data }}"/>
 {% elif field.name == 'aipHumanSize' %}
-	<div>
-		<label for="{{ field.id }}-{{ uniqueName }}">AIP SIZE: {{ field.data }}</label>
+	<div class="card-body">
+		<label for="{{ field.id }}-{{ uniqueName }}"><strong>Archival Package Size: {{ field.data }}</strong></label>
 		<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="hidden" value="{{ field.data }}"/>
 	</div>
 {% endif %}

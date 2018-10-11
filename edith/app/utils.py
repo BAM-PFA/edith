@@ -22,7 +22,7 @@ def get_shared_dir_stuff(dirType):
 		dirName = list(config["AIP_STAGING_DIR"].keys())[0]
 		hostName = config["AIP_STAGING_DIR"][dirName]['host name']
 		sourceDir = config["AIP_STAGING_DIR"][dirName]['directory full path']
-	
+
 	return dirName, hostName, sourceDir
 
 def get_remote_credentials():
@@ -183,7 +183,7 @@ def get_object_size(path):
 		if entry.is_file():
 			total += entry.stat().st_size
 		elif entry.is_dir():
-		   total += aip_size(entry.path)
+		   total += get_object_size(entry.path)
 	return total
 
 def get_proxy_framerate(proxyPath):
