@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h1>{{ title }}</h1>
+	<div class="card">
+		<div class="card-body">
+			<p>Here are some errors:</p>
+			{% if not errors == False %}
+				{% for error in errors %}
+					<a><strong>{{ error }}</strong></a>
+				{% endfor %}
+			{% endif %}
+		</div>
+	</div>
+	
+
+{% endblock %}

@@ -42,3 +42,10 @@ class write_to_LTO(FlaskForm):
 	suchChoices = wtforms.HiddenField(default='default choices')
 	user = wtforms.StringField('Please enter your email address:',validators=[DataRequired(), Email()])
 	submit = wtforms.SubmitField('WRITE TO LTO')
+
+# class unmount_lto(FlaskForm):
+# 	'''
+# 	Unmount LTO tapes
+# 	'''
+# 	tapeBarcodes = wtforms.HiddenField('tapeBarcodes')
+# 	submit = wtforms.SubmitField('MOUNT TAPES!!')

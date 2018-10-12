@@ -208,6 +208,7 @@ def mount_status():
 				error = "mountpoint dir exists and is not empty..."
 				statuses['errors'].append(error)
 				print(error)
+				flash(error)
 		else:
 			try:
 				os.mkdir(mountpoint)
@@ -217,6 +218,7 @@ def mount_status():
 				error = "can't make the mountpoint... check yr permissions"
 				statuses['errors'].append(error)
 				print(error)
+				flash(error)
 
 		details = [device,tempDir,mountpoint]
 		ltfsDetails.append(details)
@@ -244,7 +246,7 @@ def mount_status():
 			else:
 				pass
 		if not statuses[tapeID] == 'mounted, ready to go':
-			statuses['errors'].append("error mounting{}".format(tapeID))
+			statuses['errors'].append("error mounting {}".format(tapeID))
 			statuses[tapeID] = 'not mounted, there was an error'
 
 	if statuses['errors'] == []:
@@ -377,4 +379,16 @@ def write_status():
 		title="Write status",
 		writeResults=writeStatuses,
 		_data=_data
+		)
+
+@lto.route('/unmount_lto_status',methods=['GET','POST'])
+def unmount_lto_status():
+	# _data = request.form.to_dict(flat=False)
+	errors = ltoProcesses.unmount_tapes()
+
+	return render_template(
+		'unmount_lto_status.html',
+		title="Unmount tapes status",
+		errors=errors
+		# _data=_data
 		)
