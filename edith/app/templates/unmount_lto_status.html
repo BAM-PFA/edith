@@ -3,12 +3,17 @@
 {% block content %}
 	<h1>{{ title }}</h1>
 	<div class="card">
-		<div class="card-body">
+		<div class="card-header">
 			<p>Here are some errors:</p>
-			{% if not errors == False %}
+		</div>
+			{% if not errors == True %}
+				<ul class="list-group list-group-flush">
 				{% for error in errors %}
-					<a><strong>{{ error }}</strong></a>
+					<li class='list-group-item'><strong>{{ error }}</strong></li>
 				{% endfor %}
+				</ul>
+			{% else %}
+				<div class="card-body"><strong>No errors</strong></div>
 			{% endif %}
 		</div>
 	</div>
