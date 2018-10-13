@@ -43,6 +43,12 @@ The SIPs can then be written to [Linear Tape Open (LTO)](https://en.wikipedia.or
   * Make your selection and hit GO. 
 * Ideally this could be run as a (weekly?)  `cron` job, but the manual process provides details like total AIP size and available space left on a tape. It would also mean actively monitoring the process and storage available on each tape.
 
+Here's what the ingest and LTO menus look like now:
+
+![ingest screen](documentation/ingest_screen.png)
+
+![lto menu](documentation/lto_menu.png)
+
 ## Dependencies
 Tested on Ubuntu 16.04.
 * Runs on Python 3
@@ -128,3 +134,4 @@ Setting up `mod_wsgi` really sucks. You *have* to make sure to build it with the
 * Alert for an LTO tape that is getting full
   * CURRENTLY (5/22/18) THE TOTAL SIZE OF AIPS TO WRITE ARE TOTALLED. THIS TOTAL NUMBER OF BYTES SHOULD BE COMPARED TO THE NUMBER OF BYTES AVAILABLE ON THE TAPE AND ANY WRITES PREVENTED IF THERE'S INSUFFICIENT ROOM.
 * Explore a plugin to re-query Filemaker if the database record has changed
+
