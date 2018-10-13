@@ -49,6 +49,8 @@ Here's what the ingest and LTO menus look like now:
 
 ![lto menu](documentation/lto_menu.png)
 
+![aip write menu](documentation/aip_menu.png)
+
 ## Dependencies
 Tested on Ubuntu 16.04.
 * Runs on Python 3
