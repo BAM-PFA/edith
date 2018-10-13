@@ -445,27 +445,44 @@ def dip_status():
 	_data = request.form.to_dict(flat=False)
 
 	results = {}
-	toWrite = []
-	targetPaths = {}
-	aipSizes = []
+	pathList = []
+	# targetPaths = {}
+	# aipSizes = []
 	for key,value in _data.items():
 		if 'getIt' in key:
 			toWrite.append(key.replace('getIt-',''))
-		elif 'targetPath' in key:
-			# make a dict entry for {objectName:aipPath}
-			targetPaths[key.replace('targetPath-','')] = value[0]
-		elif 'aipSize' in key:
-			aipSizes.append(value[0])
-	for _object in toWrite:
-		# build a dict of AIPS to get
-		for objectName,aipPath in targetPaths.items():
-			if objectName == _object:
-				results[aipPath] = {'canonicalName' : objectName}
+	# 	elif 'targetPath' in key:
+	# 		# make a dict entry for {objectName:aipPath}
+	# 		targetPaths[key.replace('targetPath-','')] = value[0]
+	# 	elif 'aipSize' in key:
+	# 		aipSizes.append(value[0])
+	# for _object in toWrite:
+	# 	# build a dict of AIPS to get
+	# 	for objectName,aipPath in targetPaths.items():
+	# 		if objectName == _object:
+	# 			results[aipPath] = {'canonicalName' : objectName}
+
+
+
+	readResults = ltoProcesses.read_LTO(pathList)
+	print("LTO READ RESULTS:")
+	print(readResults)
+	for result in readResults:
+		print(result)
+		resultString = str(result)
+		print(resultString)
+		if "HASHDEEP" in resultString:
+			dip = result.decode().split('|')[1]
+			#print(sip)
+			dipStatus =  result.decode().split('|')[2].rstrip()
+			#print(aipStatus)
+			readStatuses[dip] = dipStatus
+	print(readStatuses)
 
 	return render_template(
 		'dip_status.html',
 		title="DIP transfer status",
-		# writeResults=writeStatuses,
-		# _data=_data,
-		results=results
+		readResults=readResults,
+		readStatuses=readStatuses
+		# results=results
 		)

@@ -146,6 +146,27 @@ def write_LTO(aipDict,user):
 	except:
 		return False
 
+def read_LTO(pathList):
+	'''
+	pathList should contain the full path to each selected AIP
+	on the mounted tape
+	'''
+	dip_out = utils.get_shared_dir_stuff('dip')
+	dipWriteTuples = []
+	for AIP in pathList:
+		details = [AIP,dip_out]
+		dipWriteTuples.append(details)
+
+	try:
+		pool = Pool(2)
+		poolresult = pool.starmap(run_moveNcopy,dipWriteTuples)
+		pool.close()
+		print(poolresult)
+		return poolresult
+	except:
+		return False
+
+
 def write_LTO_temp_stats():
 	'''
 	Save the stats on mounted tapes to a temp file for reading
