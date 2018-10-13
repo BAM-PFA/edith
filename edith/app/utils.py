@@ -22,6 +22,10 @@ def get_shared_dir_stuff(dirType):
 		dirName = list(config["AIP_STAGING_DIR"].keys())[0]
 		hostName = config["AIP_STAGING_DIR"][dirName]['host name']
 		sourceDir = config["AIP_STAGING_DIR"][dirName]['directory full path']
+	elif dirType == 'dip':
+		dirName = list(config["DIP_OUT_DIR"].keys())[0]
+		hostName = config["DIP_OUT_DIR"][dirName]['host name']
+		sourceDir = config["DIP_OUT_DIR"][dirName]['directory full path']
 
 	return dirName, hostName, sourceDir
 

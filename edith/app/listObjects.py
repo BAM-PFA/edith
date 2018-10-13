@@ -11,7 +11,7 @@ from . import utils
 
 def list_objects(dirType):
 	objects = {}
-	dirName, hostName, sourceDir = utils.get_shared_dir_stuff(dirType)
+	_, hostName, sourceDir = utils.get_shared_dir_stuff(dirType)
 	if not hostName == 'localhost':
 		sourceDir, remoteAddress, remoteUser, remotePassword, sshKeyfile = utils.get_remote_credentials()
 		try:

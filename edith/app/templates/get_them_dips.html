@@ -1,0 +1,28 @@
+{% import "macros.html" as macros %}
+
+{% extends "base.html" %}
+
+{% block content %}
+	<h1>Choose some Archival Information Packages to download from {{ deck }}:</h1>
+	
+	{% if not form == None %}
+		<form action="{{ url_for('lto.dip_status') }}" method='POST'>
+			{{ form.hidden_tag() }}
+			{{ form.csrf_token }}
+			
+			{% for item,vals in form.suchChoices.items() %}
+			<div class="card border-primary m-1">
+					{% for field in vals %}
+						{{ macros.render_field(field,vals.targetBase.data) }}
+					{% endfor %}
+			</div>
+			{%endfor%}
+		{{ form.submit(class="btn btn-primary") }}
+		</form>
+	{% else %}
+		<div class="card bg-warning m-3">
+			There was some kind of problem mounting or reading from the tape. Try again... 
+		</div>
+	{% endif %}
+
+{% endblock %}

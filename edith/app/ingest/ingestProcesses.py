@@ -196,7 +196,8 @@ def main(ingestDict,user):
 		print(k)
 		print(v)
 		print("------")
-	dirName, hostName, sourceDir = utils.get_shared_dir_stuff('shared')
+	# get the hostname of the shared dir:
+	_, hostName, _ = utils.get_shared_dir_stuff('shared')
 	# try to search filemaker for descriptive metadata
 	ingestDict = add_metadata(ingestDict)
 	#print(ingestDict)

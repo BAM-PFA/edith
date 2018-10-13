@@ -18,6 +18,9 @@ from . import ltoProcesses
 from .. import listObjects
 from .. import utils
 
+# base class for a single AIP
+	
+
 @lto.route('/lto_menu',methods=['GET','POST'])
 def lto_menu():
 	return render_template(
@@ -265,17 +268,18 @@ def mount_status():
 @lto.route('/list_aips',methods=['GET','POST'])
 def list_aips():
 	objects = listObjects.list_objects('aip')
-
 	# need to get a human readable targetBase:
 	# do a query (WHERE??) on the ingest UUID to retrieve the original filename
 	# options:
 	# the pymm database
 	# resourcespace
 	# drill into the AIP structure and look for the pbcore xml filename and parse that
+	# life is a terrible joke
 
-	class one_aip(forms.aip_object_form):
+	class one_aip(forms.aip_to_tape_form):
 		# http://wtforms.simplecodes.com/docs/1.0.1/specific_problems.html
 		pass
+
 	choices = {}
 	for path,_object in objects.items():
 		humanName = ltoProcesses.get_aip_human_name(path)
@@ -312,7 +316,7 @@ def list_aips():
 
 	else:
 		spaceAvailable = {}
-		spaceAvailable["NONE"] = {"spaceAvailableHuman":"NO TAPES FOUND, BUDDY!!"}
+		spaceAvailable["<strong>ERROR</strong>"] = {"spaceAvailableHuman":"NO TAPES FOUND, BUDDY!!"}
 
 	return render_template(
 		'list_aips.html',
@@ -385,10 +389,85 @@ def write_status():
 def unmount_lto_status():
 	# _data = request.form.to_dict(flat=False)
 	errors = ltoProcesses.unmount_tapes()
+	if errors == True:
+		# i.e., no errors!
+		utils.clean_temp_dir()
 
 	return render_template(
 		'unmount_lto_status.html',
 		title="Unmount tapes status",
 		errors=errors
-		# _data=_data
+		)
+
+@lto.route('choose_deck',methods=['GET','POST'])
+def choose_deck():
+	form = forms.choose_deck()
+
+	return render_template(
+		'choose_deck.html',
+		form=form
+		)
+
+@lto.route('get_them_dips',methods=['GET','POST'])
+def get_them_dips():
+	deck = request.form['deck']
+	contents = ltoProcesses.get_tape_contents(deck)
+	print("CONTENTS!")
+	print(contents)
+
+	class one_aip(forms.aip_from_tape_form):
+		# http://wtforms.simplecodes.com/docs/1.0.1/specific_problems.html
+		pass
+
+	if contents['status'] == True:
+		contents.pop('status')
+		choices = {}
+		for path, details in contents.items():
+			choices[path] = one_aip(
+				targetPath=path,
+				targetBase=path['humanName'],
+				aipSize=path['aipSize'],
+				aipHumanSize=path['aipHumanSize']
+				)
+		print(choices)
+		form = forms.choose_dips()
+		form.suchChoices = choices
+
+	else:
+		form = None
+
+	return render_template(
+		'get_them_dips.html',
+		deck=deck,
+		contents=contents,
+		form=form
+		)
+@lto.route('dip_status',methods=['GET','POST'])
+def dip_status():
+	_data = request.form.to_dict(flat=False)
+
+	results = {}
+	toWrite = []
+	targetPaths = {}
+	aipSizes = []
+	for key,value in _data.items():
+		if 'getIt' in key:
+			toWrite.append(key.replace('getIt-',''))
+		elif 'targetPath' in key:
+			# make a dict entry for {objectName:aipPath}
+			targetPaths[key.replace('targetPath-','')] = value[0]
+		elif 'aipSize' in key:
+			aipSizes.append(value[0])
+	for _object in toWrite:
+		# build a dict of AIPS to get
+		for objectName,aipPath in targetPaths.items():
+			if objectName == _object:
+				results[aipPath] = {'canonicalName' : objectName}
+
+	return render_template(
+		'dip_status.html',
+		title="DIP transfer status",
+		# writeResults=writeStatuses,
+		# _data=_data,
+		results=results
 		)

@@ -190,6 +190,38 @@ def write_LTO_temp_stats():
 		print("couldn't write the temp tape stats file")
 		return False
 
+def get_tape_contents(deck):
+	contents = {'status':False}
+	if 'A' in deck:
+		theDeck = "A"
+	elif 'B' in deck:
+		theDeck = "B"
+	aMount,bMount = ltoProcesses.get_tape_mountpoints()
+	if theDeck == "A":
+		contents = list_aips_on_tape(aMount,contents)
+	elif theDeck == 'B':
+		contents = list_aips_on_tape(bMount,contents)
+
+	return contents
+
+def list_aips_on_tape(mountpoint,contents):
+	if mountpoint == False:
+			contents['status'] = False
+	else:
+		contents['status'] = True
+		for item in os.listdir(mountpoint):
+			aipPath = os.path.join(mountpoint,item)
+			humanName = get_aip_human_name(aipPath)
+			size = utils.get_object_size(aipPath)
+			aipHumanSize = utils.humansize(size)
+			contents[path]= {}
+			contents[path]['humanName'] = humanName
+			contents[path]['size'] = size
+			contents[path]['humanSize'] = aipHumanSize
+
+	return contents
+
+
 def get_tape_stats():
 	tempDir = utils.get_temp_dir()
 	statsJsonPath = os.path.join(tempDir,"tempTapeStats.json")
@@ -262,8 +294,6 @@ def parse_index_schema_file(user):
 
 	else:
 		print("SCHEMA FILE DOESN'T EXIST?")
-
-
 
 def post_tape_id_to_rs(writeStatuses,user):
 	stats = get_tape_stats()

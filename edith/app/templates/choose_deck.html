@@ -1,0 +1,22 @@
+{% import "macros.html" as macros %}
+
+{% extends "base.html" %}
+
+{% block content %}
+	<h1>Do you want to get stuff from the A drive or B drive?:</h1>
+	<div class="card bg-info m3">
+		<!-- <div class="card-header">Choose one or the other to read from</div> -->
+		<div class="card-body">
+			First, you need to insert the right tape, then <a href="{{ url_for('lto.mount_lto') }}">mount</a> it. Then you can read the contents and choose the asset(s) you want to download to the output directory.
+		</div>
+		
+	</div>
+	<br>
+	<br>
+	<form action="{{ url_for('lto.get_them_dips') }}" method='POST'>
+		{{ form.hidden_tag() }}
+		{{ form.csrf_token }}
+		{{ form.drive() }}
+		{{ form.submit(class="btn btn-primary") }}
+	</form>
+{% endblock %}
