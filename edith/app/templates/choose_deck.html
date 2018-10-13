@@ -16,7 +16,12 @@
 	<form action="{{ url_for('lto.get_them_dips') }}" method='POST'>
 		{{ form.hidden_tag() }}
 		{{ form.csrf_token }}
-		{{ form.drive() }}
-		{{ form.submit(class="btn btn-primary") }}
+		<div class="form-row">
+			<div class="col-3">
+				{{ form.drive(class="custom-select") }}
+			</div>
+			{{ form.submit(class="btn btn-primary") }}
+		
+		</div>
 	</form>
 {% endblock %}

@@ -196,7 +196,7 @@ def get_tape_contents(deck):
 		theDeck = "A"
 	elif 'B' in deck:
 		theDeck = "B"
-	aMount,bMount = ltoProcesses.get_tape_mountpoints()
+	aMount,bMount = get_tape_mountpoints()
 	if theDeck == "A":
 		contents = list_aips_on_tape(aMount,contents)
 	elif theDeck == 'B':
@@ -212,12 +212,12 @@ def list_aips_on_tape(mountpoint,contents):
 		for item in os.listdir(mountpoint):
 			aipPath = os.path.join(mountpoint,item)
 			humanName = get_aip_human_name(aipPath)
-			size = utils.get_object_size(aipPath)
-			aipHumanSize = utils.humansize(size)
-			contents[path]= {}
-			contents[path]['humanName'] = humanName
-			contents[path]['size'] = size
-			contents[path]['humanSize'] = aipHumanSize
+			aipSize = utils.get_object_size(aipPath)
+			aipHumanSize = utils.humansize(aipSize)
+			contents[aipPath]= {}
+			contents[aipPath]['humanName'] = humanName
+			contents[aipPath]['aipSize'] = aipSize
+			contents[aipPath]['aipHumanSize'] = aipHumanSize
 
 	return contents
 

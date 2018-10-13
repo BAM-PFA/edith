@@ -18,9 +18,6 @@ from . import ltoProcesses
 from .. import listObjects
 from .. import utils
 
-# base class for a single AIP
-	
-
 @lto.route('/lto_menu',methods=['GET','POST'])
 def lto_menu():
 	return render_template(
@@ -370,7 +367,7 @@ def write_status():
 
 	# remove staged AIPs ~~THIS DOESN'T EXIST YET!~~
 	# ltoProcesses.remove_staged_AIPs(writeStatuses)
-	
+
 	ltoProcesses.post_tape_id_to_rs(writeStatuses,user)
 	ltoProcesses.unmount_tapes()
 	utils.clean_temp_dir()
@@ -399,7 +396,7 @@ def unmount_lto_status():
 		errors=errors
 		)
 
-@lto.route('choose_deck',methods=['GET','POST'])
+@lto.route('/choose_deck',methods=['GET','POST'])
 def choose_deck():
 	form = forms.choose_deck()
 
@@ -408,9 +405,9 @@ def choose_deck():
 		form=form
 		)
 
-@lto.route('get_them_dips',methods=['GET','POST'])
+@lto.route('/get_them_dips',methods=['GET','POST'])
 def get_them_dips():
-	deck = request.form['deck']
+	deck = request.form['drive']
 	contents = ltoProcesses.get_tape_contents(deck)
 	print("CONTENTS!")
 	print(contents)
@@ -425,9 +422,9 @@ def get_them_dips():
 		for path, details in contents.items():
 			choices[path] = one_aip(
 				targetPath=path,
-				targetBase=path['humanName'],
-				aipSize=path['aipSize'],
-				aipHumanSize=path['aipHumanSize']
+				targetBase=details['humanName'],
+				aipSize=details['aipSize'],
+				aipHumanSize=details['aipHumanSize']
 				)
 		print(choices)
 		form = forms.choose_dips()
@@ -442,7 +439,8 @@ def get_them_dips():
 		contents=contents,
 		form=form
 		)
-@lto.route('dip_status',methods=['GET','POST'])
+
+@lto.route('/dip_status',methods=['GET','POST'])
 def dip_status():
 	_data = request.form.to_dict(flat=False)
 

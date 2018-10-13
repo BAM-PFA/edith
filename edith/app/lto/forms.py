@@ -12,13 +12,13 @@ class LTO_id_form(FlaskForm):
 class format_form(FlaskForm):
 	"""
 	Action to format LTO tapes in A and B drives
-	"""	
+	"""
 	submit = wtforms.SubmitField('FORMAT TAPES!!')
 
 class mount(FlaskForm):
 	"""
 	Action to mount formatted LTO tapes in A and B drives
-	"""	
+	"""
 	tapeBarcodes = wtforms.HiddenField('tapeBarcodes')
 	submit = wtforms.SubmitField('MOUNT TAPES!!')
 
@@ -65,11 +65,11 @@ class choose_deck(FlaskForm):
 	'''
 	drive = wtforms.SelectField(
 		'Choose a drive:',
-		choices=['A DRIVE','B DRIVE'],
+		choices=[('A','A DRIVE'),('B','B DRIVE')],
 		default='',
 		validators=[DataRequired()]
 		)
-	submit = wtforms.SubmitField('WRITE TO LTO')
+	submit = wtforms.SubmitField('READ FROM LTO')
 
 class choose_dips(FlaskForm):
 	'''
