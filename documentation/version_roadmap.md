@@ -31,11 +31,8 @@ Release 10/11/2018
   * Records the WAV file and DPX folders as objects
   * Calculates the size of the DPX folder by summing all the component frames' `<length>` tags in the `.schema` file.
 
-#### v0.3.1
-* Separate fields for metadata entry per object into tabs or accordion display
-  * This is now (10/2018) just a big list of fields.
-
 ### v0.4
+Release 10/13/2018
 * Read LTO index file on tape unmount 
   * And add entries to the pymm database
 * Reading from LTO
@@ -44,8 +41,20 @@ Release 10/11/2018
 * Write files out to a directory on the server
 * Users can then FTP the files to a local machine (?)
 
+#### v0.4.1
+* Separate fields for metadata entry per object into tabs or accordion display
+  * This is now (10/2018) just a big list of fields.
+
+
 ### Version 0.5
-~~ ~~
+* improve UI/ feedback from various processes
+
+### Version 0.6
+* implement rsync daemon to get files to the `SHARED_DIR`
+
+### Version 0.7
+~~ ~~ ~~
+
 
 ## Version 1.x 
 ### v1.0:
@@ -54,7 +63,4 @@ Release 10/11/2018
 
 ## Version 2.x:
 ### v2.0
-* Add metadata form to ingest form per-object
-  * This creates a csv that is kept with pymm object
-  * To be used for non-pfa collection objects
-  * Pull code from piction metadoodler
+* meh
