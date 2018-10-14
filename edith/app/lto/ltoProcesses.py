@@ -109,7 +109,7 @@ def run_moveNcopy(aipPath,tapeMountpoint):
 		)
 
 	commandList = command.split()
-	# print(commandList)
+	print(commandList)
 	runit = subprocess.run(
 		commandList,
 		stdout=subprocess.PIPE,
@@ -151,12 +151,13 @@ def read_LTO(pathList):
 	pathList should contain the full path to each selected AIP
 	on the mounted tape
 	'''
-	dip_out = utils.get_shared_dir_stuff('dip')
+	_, _, dip_out = utils.get_shared_dir_stuff('dip')
 	dipWriteTuples = []
 	for AIP in pathList:
-		details = [AIP,dip_out]
-		dipWriteTuples.append(details)
+		inOut = [AIP,dip_out]
+		dipWriteTuples.append(inOut)
 
+	print(dipWriteTuples)
 	try:
 		pool = Pool(2)
 		poolresult = pool.starmap(run_moveNcopy,dipWriteTuples)

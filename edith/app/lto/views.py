@@ -450,7 +450,7 @@ def dip_status():
 	# aipSizes = []
 	for key,value in _data.items():
 		if 'getIt' in key:
-			toWrite.append(key.replace('getIt-',''))
+			pathList.append(key.replace('getIt-',''))
 	# 	elif 'targetPath' in key:
 	# 		# make a dict entry for {objectName:aipPath}
 	# 		targetPaths[key.replace('targetPath-','')] = value[0]
@@ -463,7 +463,7 @@ def dip_status():
 	# 			results[aipPath] = {'canonicalName' : objectName}
 
 
-
+	readStatuses = {}
 	readResults = ltoProcesses.read_LTO(pathList)
 	print("LTO READ RESULTS:")
 	print(readResults)
