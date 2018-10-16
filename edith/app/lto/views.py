@@ -313,7 +313,7 @@ def list_aips():
 
 	else:
 		spaceAvailable = {}
-		spaceAvailable["<strong>ERROR</strong>"] = {"spaceAvailableHuman":"NO TAPES FOUND, BUDDY!!"}
+		spaceAvailable["ERROR"] = {"spaceAvailableHuman":"NO TAPES FOUND, BUDDY!!"}
 
 	return render_template(
 		'list_aips.html',
