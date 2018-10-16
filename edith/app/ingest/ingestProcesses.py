@@ -89,6 +89,7 @@ def get_metadata(idNumber,basename,intermediateMetadata):
 		try:
 			print('searching FileMaker on '+idNumber)
 			FMmetadata = fmQuery.xml_query(idNumber)
+			# print(FMmetadata)
 			# add any filemaker metadata to the dict
 			for k,v in FMmetadata.items():
 				if k in metadataDict:
