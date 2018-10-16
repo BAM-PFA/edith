@@ -105,7 +105,7 @@ def xml_query(idNumber):
 	recordDict["runningTime"] = trtField[0].text
 
 	trtDescField = recordRoot.find("./filemaker:field[@name='RunningTimeDescription']",namespace)
-	recordDict["frameRateTRTdetails"] = RTdescField[0].text
+	recordDict["frameRateTRTdetails"] = trtDescField[0].text
 
 	mediumField = recordRoot.find("./filemaker:field[@name='m_245h_Medium']",namespace)
 	recordDict["medium"] = mediumField[0].text
@@ -119,7 +119,6 @@ def xml_query(idNumber):
 	vidstdField = recordRoot.find("./filemaker:field[@name='VideoStandard']",namespace)
 	recordDict["videoStandard"] = vidstdField[0].text
 
-	
 
 	for key,value in recordDict.items():
 		if value == None:
