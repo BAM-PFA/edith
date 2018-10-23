@@ -29,7 +29,7 @@ def edith():
 	form.suchChoices = choices
 
 	return render_template(
-		'edith.html',
+		'ingest/edith.html',
 		title='EDITH',
 		objects=objects,
 		form=form
