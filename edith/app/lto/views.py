@@ -21,7 +21,7 @@ from .. import utils
 @lto.route('/lto_menu',methods=['GET','POST'])
 def lto_menu():
 	return render_template(
-		'lto_menu.html',
+		'lto/lto_menu.html',
 		title='LTO MENU'
 		)
 
@@ -33,7 +33,7 @@ def format_lto():
 	formatLTO = forms.format_form()
 
 	return render_template(
-		'format_lto.html',
+		'lto/format_lto.html',
 		title="Format LTO",
 		formatForm=formatLTO,
 		currentLTOid=currentLTOid
@@ -83,7 +83,7 @@ def format_status():
 			statuses[device] = "There doesn't appear to be a valid ID in place for the A and/or B tapes."
 
 	return render_template(
-		'format_status.html',
+		'lto/format_status.html',
 		statuses=statuses
 		)
 
@@ -92,7 +92,7 @@ def lto_id():
 	newLTOid = forms.LTO_id_form()
 	currentLTOid = utils.get_current_LTO_id()
 	return render_template(
-		'lto_id.html',
+		'lto/lto_id.html',
 		title='Create LTO ID',
 		IDform=newLTOid,
 		currentLTOid=currentLTOid
@@ -118,7 +118,7 @@ def lto_id_status():
 		ltoID = 'there was an error'
 
 	return render_template(
-		'lto_id_status.html',
+		'lto/lto_id_status.html',
 		ltoID=ltoID,
 		title="LTO ID status",
 		ltoIDstatus = ltoIDstatus
@@ -169,7 +169,7 @@ def mount_lto():
 	mountEmUp.tapeBarcodes.data = barcodes
 
 	return render_template(
-		'mount_lto.html',
+		'lto/mount_lto.html',
 		title="Mount LTO tapes",
 		currentLTOid = utils.get_current_LTO_id(),
 		mountForm=mountEmUp,
@@ -257,7 +257,7 @@ def mount_status():
 			statuses['errors'] = 'No errors. :)'
 
 	return render_template(
-		'mount_status.html',
+		'lto/mount_status.html',
 		title="LTO Mount Status",
 		statuses=statuses
 		)
@@ -316,7 +316,7 @@ def list_aips():
 		spaceAvailable["ERROR"] = {"spaceAvailableHuman":"NO TAPES FOUND, BUDDY!!"}
 
 	return render_template(
-		'list_aips.html',
+		'lto/list_aips.html',
 		title="List AIPs available",
 		objects=objects,
 		spaceAvailable=spaceAvailable,
@@ -376,7 +376,7 @@ def write_status():
 
 
 	return render_template(
-		'write_status.html',
+		'lto/write_status.html',
 		title="Write status",
 		writeResults=writeStatuses,
 		_data=_data
@@ -391,7 +391,7 @@ def unmount_lto_status():
 		utils.clean_temp_dir()
 
 	return render_template(
-		'unmount_lto_status.html',
+		'lto/unmount_lto_status.html',
 		title="Unmount tapes status",
 		errors=errors
 		)
@@ -401,7 +401,7 @@ def choose_deck():
 	form = forms.choose_deck()
 
 	return render_template(
-		'choose_deck.html',
+		'lto/choose_deck.html',
 		form=form
 		)
 
@@ -434,7 +434,7 @@ def get_them_dips():
 		form = None
 
 	return render_template(
-		'get_them_dips.html',
+		'lto/get_them_dips.html',
 		deck=deck,
 		contents=contents,
 		form=form
@@ -482,7 +482,7 @@ def dip_status():
 	print(readStatuses)
 
 	return render_template(
-		'dip_status.html',
+		'lto/dip_status.html',
 		title="DIP transfer status",
 		readResults=readResults,
 		readStatuses=readStatuses,
