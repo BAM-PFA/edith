@@ -29,7 +29,7 @@ def edith():
 	form.suchChoices = choices
 
 	return render_template(
-		'edith.html',
+		'ingest/edith.html',
 		title='EDITH',
 		objects=objects,
 		form=form
@@ -47,7 +47,7 @@ def status():
 		user = request.form['user']
 
 		if not user in app.app_config['KNOWN_USERS']:
-			return render_template('RSerror.html',user=user)
+			return render_template('ingest/RSerror.html',user=user)
 
 		results = {}
 		toIngest =[]
@@ -116,7 +116,7 @@ def status():
 		results = {}
 
 	return render_template(
-		'status.html',
+		'ingest/status.html',
 		title='Ingest',
 		data=_data,
 		user=user,
