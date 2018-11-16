@@ -69,7 +69,7 @@ Tested on Ubuntu 16.04.
 
 ## Setup
 
-We are running Flask in production with Apache using the `mod_wsgi` module (see also the [Flask](flask-ui-notes) section). Honestly, this sucks to set up.
+We are running Flask in production with Apache using the `mod_wsgi` module (see also the [Flask](#flask-ui-notes) section). Honestly, this sucks to set up.
 
 `pymm` requires some configuration of input and output paths, database configuration (only need to do this once at setup). There are a couple of non standard Python 3 libraries used and a couple of additional programs (see below for a list).
 
