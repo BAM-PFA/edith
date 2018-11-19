@@ -1,5 +1,6 @@
 {% macro render_field(field, uniqueName) %}
 {# http://bear-z.com/python/render-bootstrap-3-forms-with-wtforms-and-jinja/ #}
+{# {% set content = caller(childfield="", uniqueName="", heading="") %} #}
 
 {% if field.type == 'BooleanField' %}
 	<div class="form-check">
@@ -25,16 +26,16 @@
 				{% for childfield in field %}
 					{% if not 'csrf_token' in childfield.name %}
 						{% if childfield.name.startswith('metadataForm-userMD_3') %}
-							{% set heading = "General metadata" %}
-							{% render_section(childfield, uniqueName, heading) %}
-			            {% elif childfield.name.startswith('metadataForm-userMD_2') %}
-			            	{% set heading = "Event metadata" %}
-							{% render_section(childfield, uniqueName, heading) %}
-			            {% elif childfield.name.startswith('metadataForm-userMD_1') %}
-			            	{% set heading = "Comms metadata" %}
-							{% render_section(childfield, uniqueName, heading) %}
-			            {% endif %}
-		            {% endif %}
+							{% set heading = "General-metadata" %}
+							{{ caller(childfield=childfield, uniqueName=uniquename, heading=heading) }}
+			            		{% elif childfield.name.startswith('metadataForm-userMD_2') %}
+			            			{% set heading = "Event-metadata" %}
+							{{ caller(childfield=childfield, uniqueName=uniquename, heading=heading) }}
+			        		{% elif childfield.name.startswith('metadataForm-userMD_1') %}
+			            			{% set heading = "Comms-metadata" %}
+							{{ caller(childfield=childfield, uniqueName=uniquename, heading=heading) }}
+			            		{% endif %}
+		            		{% endif %}
 				{% endfor %}
 			</div>
 		</div>
@@ -53,7 +54,7 @@
 
 {% endmacro %}
 
-{% macro render_section(childfield, uniqueName, heading) %}
+{% call(childfield, uniqueName, heading) render_field("","") %}
 <div class="card">
 	<div class="card-header" id="{{ heading }}-{{ uniqueName }}">
 		<h5 class="mb-0">
@@ -88,7 +89,4 @@
 		</div>
 	</div>
 </div>
-
-
-
-{% endmacro %}
+{% endcall %}
