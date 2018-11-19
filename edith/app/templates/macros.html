@@ -20,35 +20,24 @@
 		</button>
 	</p>
 	<div class="collapse" id="metadataGroup-{{ uniqueName }}">
-	<div class="card card-body border-warning m-1">
-		{% for childfield in field %}
-			{% if not 'csrf_token' in childfield.name %}
-				{# {% if childfield.name.startswith('metadataForm-userMD_1') %} #}
-	                {% if childfield.type == "StringField" %}
-	                    <div>
-	                            <label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
-	                            <input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
-	                    </div>
-					{% elif childfield.type == "SelectField" %}
-						<div>
-	                        <label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">
-	                        	{{ childfield.label.text }}
-	                        </label>
-							<select class="custom-select" name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}">
-							{% for _tuple in childfield.choices %}
-								{% if not _tuple[0] == "" %}
-									<option value="{{ _tuple[0] }}">{{ _tuple[1] }}</option>
-								{% else %}
-									<option value=""/>
-								{% endif %}
-							{% endfor %}
-							</select>
-	                    </div>
-	                {# {% endif %} #}
-	            {% endif %}
-            {% endif %}
-		{% endfor %}
-	</div>
+		<div class="card card-body border-warning m-1">
+			<div class="accordion" id="accordion-{{ uniqueName }}">
+				{% for childfield in field %}
+					{% if not 'csrf_token' in childfield.name %}
+						{% if childfield.name.startswith('metadataForm-userMD_3') %}
+							{% set heading = "General metadata" %}
+							{% render_section(childfield, uniqueName, heading) %}
+			            {% elif childfield.name.startswith('metadataForm-userMD_2') %}
+			            	{% set heading = "Event metadata" %}
+							{% render_section(childfield, uniqueName, heading) %}
+			            {% elif childfield.name.startswith('metadataForm-userMD_1') %}
+			            	{% set heading = "Comms metadata" %}
+							{% render_section(childfield, uniqueName, heading) %}
+			            {% endif %}
+		            {% endif %}
+				{% endfor %}
+			</div>
+		</div>
 	</div>
 {% elif field.name == 'targetPath' %}
 	<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="hidden" value="{{ field.data }}"/>
@@ -61,5 +50,45 @@
 		<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="hidden" value="{{ field.data }}"/>
 	</div>
 {% endif %}
+
+{% endmacro %}
+
+{% macro render_section(childfield, uniqueName, heading) %}
+<div class="card">
+	<div class="card-header" id="{{ heading }}-{{ uniqueName }}">
+		<h5 class="mb-0">
+			<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+				{{ heading }}
+			</button>
+		</h5>
+	</div>
+	<div id="collapse-{{ heading }}-{{ uniqueName }}" class="collapse show" aria-labelledby="{{ heading }}-{{ uniqueName }}" data-parent="#accordion-{{ uniqueName }}">
+		<div class="card-body">
+			{% if childfield.type == "StringField" %}
+			    <div>
+		            <label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
+		            <input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
+			    </div>
+			{% elif childfield.type == "SelectField" %}
+				<div>
+					<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">
+						{{ childfield.label.text }}
+					</label>
+					<select class="custom-select" name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}">
+					{% for _tuple in childfield.choices %}
+						{% if not _tuple[0] == "" %}
+							<option value="{{ _tuple[0] }}">{{ _tuple[1] }}</option>
+						{% else %}
+							<option value=""/>
+						{% endif %}
+					{% endfor %}
+					</select>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
+
+
 
 {% endmacro %}
