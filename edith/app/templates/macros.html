@@ -26,21 +26,64 @@
 	<div class="collapse" id="metadataGroup-{{ uniqueName }}">
 		<div class="card card-body border-warning m-1">
 			<div class="accordion" id="accordion-{{ uniqueName }}">
-				{% for childfield in field %}
-					{% if not 'csrf_token' in childfield.name %}
-						{% if childfield.name.startswith('metadataForm-userMD_3') %}
-							{% set heading = "General-metadata" %}
-							<!--General metadata accordion section-->
-							<div class="card">
-								<div class="card-header" id="{{ heading }}-{{ uniqueName }}">
-									<h5 class="mb-0">
-										<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ heading }}-{{ uniqueName }}" aria-expanded="true" aria-controls="collapse-{{ heading }}-{{ uniqueName }}">
-											{{ heading }}
-										</button>
-									</h5>
-								</div>
-								<div id="collapse-{{ heading }}-{{ uniqueName }}" class="collapse show" aria-labelledby="{{ heading }}-{{ uniqueName }}" data-parent="#accordion-{{ uniqueName }}">
-									<div class="card-body">
+				<!--General metadata accordion section-->
+				{% set heading = "General-metadata" %}
+				<div class="card">
+					<div class="card-header" id="{{ heading }}-{{ uniqueName }}">
+						<h5 class="mb-0">
+							<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ heading }}-{{ uniqueName }}" aria-expanded="true" aria-controls="collapse-{{ heading }}-{{ uniqueName }}">
+								{{ heading.replace("-","") }}
+							</button>
+						</h5>
+					</div>
+					<div id="collapse-{{ heading }}-{{ uniqueName }}" class="collapse show" aria-labelledby="{{ heading }}-{{ uniqueName }}" data-parent="#accordion-{{ uniqueName }}">
+						<div class="card-body">
+							{% for childfield in field %}
+								{% if not 'csrf_token' in childfield.name %}
+									{% if childfield.name.startswith('metadataForm-userMD_3') %}
+											{% if childfield.type == "StringField" %}
+												<div>
+													<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
+													<input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
+												</div>
+											{% elif childfield.type == "SelectField" %}
+												<div>
+													<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">
+														{{ childfield.label.text }}
+													</label>
+													<select class="custom-select" name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}">
+													{% for _tuple in childfield.choices %}
+														{% if not _tuple[0] == "" %}
+															<option value="{{ _tuple[0] }}">{{ _tuple[1] }}</option>
+														{% else %}
+															<option value=""/>
+														{% endif %}
+													{% endfor %}
+													</select>
+												</div>
+											{% endif %}
+									{% endif %}
+								{% endif %}
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+
+				<!--Event metadata accordion section-->
+				{% set heading = "Event-metadata" %}
+				<div class="card">
+					<div class="card-header" id="{{ heading }}-{{ uniqueName }}">
+						<h5 class="mb-0">
+							<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ heading }}-{{ uniqueName }}" aria-expanded="true" aria-controls="collapse-{{ heading }}-{{ uniqueName }}">
+								{{ heading.replace("-","") }}
+							</button>
+						</h5>
+					</div>
+					<div id="collapse-{{ heading }}-{{ uniqueName }}" class="collapse show" aria-labelledby="{{ heading }}-{{ uniqueName }}" data-parent="#accordion-{{ uniqueName }}">
+						<div class="card-body">
+							{% for childfield in field %}
+								{% if not 'csrf_token' in childfield.name %}
+									{% if childfield.name.startswith('metadataForm-userMD_2') %}
 										{% if childfield.type == "StringField" %}
 											<div>
 												<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
@@ -62,24 +105,28 @@
 												</select>
 											</div>
 										{% endif %}
-									</div>
-								</div>
-							</div>
-
-						{% elif childfield.name.startswith('metadataForm-userMD_2') %}
-							{% set heading = "Event-metadata" %}
-							<!--Event metadata accordion section-->
-							<!--General metadata accordion section-->
-							<div class="card">
-								<div class="card-header" id="{{ heading }}-{{ uniqueName }}">
-									<h5 class="mb-0">
-										<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ heading }}-{{ uniqueName }}" aria-expanded="true" aria-controls="collapse-{{ heading }}-{{ uniqueName }}">
-											{{ heading }}
-										</button>
-									</h5>
-								</div>
-								<div id="collapse-{{ heading }}-{{ uniqueName }}" class="collapse show" aria-labelledby="{{ heading }}-{{ uniqueName }}" data-parent="#accordion-{{ uniqueName }}">
-									<div class="card-body">
+									{% endif %}
+								{% endif %}
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+				
+				<!--Comms metadata accordion section-->
+				{% set heading = "Comms-metadata" %}
+				<div class="card">
+					<div class="card-header" id="{{ heading }}-{{ uniqueName }}">
+						<h5 class="mb-0">
+							<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ heading }}-{{ uniqueName }}" aria-expanded="true" aria-controls="collapse-{{ heading }}-{{ uniqueName }}">
+								{{ heading.replace("-","") }}
+							</button>
+						</h5>
+					</div>
+					<div id="collapse-{{ heading }}-{{ uniqueName }}" class="collapse show" aria-labelledby="{{ heading }}-{{ uniqueName }}" data-parent="#accordion-{{ uniqueName }}">
+						<div class="card-body">
+							{% for childfield in field %}
+								{% if not 'csrf_token' in childfield.name %}
+									{% if childfield.name.startswith('metadataForm-userMD_1') %}
 										{% if childfield.type == "StringField" %}
 											<div>
 												<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
@@ -101,52 +148,13 @@
 												</select>
 											</div>
 										{% endif %}
-									</div>
-								</div>
-							</div>
+									{% endif %}
+								{% endif %}
+							{% endfor %}
+						</div>
+					</div>
+				</div>
 
-						{% elif childfield.name.startswith('metadataForm-userMD_1') %}
-							{% set heading = "Comms-metadata" %}
-							<!--Comms metadata accordion section-->
-							<!--General metadata accordion section-->
-							<div class="card">
-								<div class="card-header" id="{{ heading }}-{{ uniqueName }}">
-									<h5 class="mb-0">
-										<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ heading }}-{{ uniqueName }}" aria-expanded="true" aria-controls="collapse-{{ heading }}-{{ uniqueName }}">
-											{{ heading }}
-										</button>
-									</h5>
-								</div>
-								<div id="collapse-{{ heading }}-{{ uniqueName }}" class="collapse show" aria-labelledby="{{ heading }}-{{ uniqueName }}" data-parent="#accordion-{{ uniqueName }}">
-									<div class="card-body">
-										{% if childfield.type == "StringField" %}
-											<div>
-												<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
-												<input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
-											</div>
-										{% elif childfield.type == "SelectField" %}
-											<div>
-												<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">
-													{{ childfield.label.text }}
-												</label>
-												<select class="custom-select" name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}">
-												{% for _tuple in childfield.choices %}
-													{% if not _tuple[0] == "" %}
-														<option value="{{ _tuple[0] }}">{{ _tuple[1] }}</option>
-													{% else %}
-														<option value=""/>
-													{% endif %}
-												{% endfor %}
-												</select>
-											</div>
-										{% endif %}
-									</div>
-								</div>
-							</div>
-
-						{% endif %}
-					{% endif %}
-				{% endfor %}
 			</div>
 		</div>
 	</div>
