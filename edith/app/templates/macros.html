@@ -1,6 +1,9 @@
 {% macro render_field(field, uniqueName) %}
 {# http://bear-z.com/python/render-bootstrap-3-forms-with-wtforms-and-jinja/ #}
+
 {# {% set content = caller(childfield="", uniqueName="", heading="") %} #}
+{# the above should be a way to make the metadata fields render w/o repeating per category #}
+{# but i couldn't get it to work/pass arguments to it. #}
 
 {% if field.type == 'BooleanField' %}
 	<div class="form-check">
@@ -10,9 +13,9 @@
 
 {% elif field.type == 'SelectField'  %}
 	<div class="form-group">
-                <label for="{{ field.id }}-{{ uniqueName }}">{{ field.label.text }}</label>
+				<label for="{{ field.id }}-{{ uniqueName }}">{{ field.label.text }}</label>
 		{{ field(id="{{ field.id }}-{{ uniqueName }}") }}
-        </div>
+		</div>
 
 {% elif field.name == 'metadataForm'  %}
 	<p>
@@ -27,15 +30,122 @@
 					{% if not 'csrf_token' in childfield.name %}
 						{% if childfield.name.startswith('metadataForm-userMD_3') %}
 							{% set heading = "General-metadata" %}
-							{{ caller(childfield=childfield, uniqueName=uniquename, heading=heading) }}
-			            		{% elif childfield.name.startswith('metadataForm-userMD_2') %}
-			            			{% set heading = "Event-metadata" %}
-							{{ caller(childfield=childfield, uniqueName=uniquename, heading=heading) }}
-			        		{% elif childfield.name.startswith('metadataForm-userMD_1') %}
-			            			{% set heading = "Comms-metadata" %}
-							{{ caller(childfield=childfield, uniqueName=uniquename, heading=heading) }}
-			            		{% endif %}
-		            		{% endif %}
+							<!--General metadata accordion section-->
+							<div class="card">
+								<div class="card-header" id="{{ heading }}-{{ uniqueName }}">
+									<h5 class="mb-0">
+										<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ heading }}-{{ uniqueName }}" aria-expanded="true" aria-controls="collapse-{{ heading }}-{{ uniqueName }}">
+											{{ heading }}
+										</button>
+									</h5>
+								</div>
+								<div id="collapse-{{ heading }}-{{ uniqueName }}" class="collapse show" aria-labelledby="{{ heading }}-{{ uniqueName }}" data-parent="#accordion-{{ uniqueName }}">
+									<div class="card-body">
+										{% if childfield.type == "StringField" %}
+											<div>
+												<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
+												<input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
+											</div>
+										{% elif childfield.type == "SelectField" %}
+											<div>
+												<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">
+													{{ childfield.label.text }}
+												</label>
+												<select class="custom-select" name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}">
+												{% for _tuple in childfield.choices %}
+													{% if not _tuple[0] == "" %}
+														<option value="{{ _tuple[0] }}">{{ _tuple[1] }}</option>
+													{% else %}
+														<option value=""/>
+													{% endif %}
+												{% endfor %}
+												</select>
+											</div>
+										{% endif %}
+									</div>
+								</div>
+							</div>
+
+						{% elif childfield.name.startswith('metadataForm-userMD_2') %}
+							{% set heading = "Event-metadata" %}
+							<!--Event metadata accordion section-->
+							<!--General metadata accordion section-->
+							<div class="card">
+								<div class="card-header" id="{{ heading }}-{{ uniqueName }}">
+									<h5 class="mb-0">
+										<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ heading }}-{{ uniqueName }}" aria-expanded="true" aria-controls="collapse-{{ heading }}-{{ uniqueName }}">
+											{{ heading }}
+										</button>
+									</h5>
+								</div>
+								<div id="collapse-{{ heading }}-{{ uniqueName }}" class="collapse show" aria-labelledby="{{ heading }}-{{ uniqueName }}" data-parent="#accordion-{{ uniqueName }}">
+									<div class="card-body">
+										{% if childfield.type == "StringField" %}
+											<div>
+												<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
+												<input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
+											</div>
+										{% elif childfield.type == "SelectField" %}
+											<div>
+												<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">
+													{{ childfield.label.text }}
+												</label>
+												<select class="custom-select" name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}">
+												{% for _tuple in childfield.choices %}
+													{% if not _tuple[0] == "" %}
+														<option value="{{ _tuple[0] }}">{{ _tuple[1] }}</option>
+													{% else %}
+														<option value=""/>
+													{% endif %}
+												{% endfor %}
+												</select>
+											</div>
+										{% endif %}
+									</div>
+								</div>
+							</div>
+
+						{% elif childfield.name.startswith('metadataForm-userMD_1') %}
+							{% set heading = "Comms-metadata" %}
+							<!--Comms metadata accordion section-->
+							<!--General metadata accordion section-->
+							<div class="card">
+								<div class="card-header" id="{{ heading }}-{{ uniqueName }}">
+									<h5 class="mb-0">
+										<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ heading }}-{{ uniqueName }}" aria-expanded="true" aria-controls="collapse-{{ heading }}-{{ uniqueName }}">
+											{{ heading }}
+										</button>
+									</h5>
+								</div>
+								<div id="collapse-{{ heading }}-{{ uniqueName }}" class="collapse show" aria-labelledby="{{ heading }}-{{ uniqueName }}" data-parent="#accordion-{{ uniqueName }}">
+									<div class="card-body">
+										{% if childfield.type == "StringField" %}
+											<div>
+												<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
+												<input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
+											</div>
+										{% elif childfield.type == "SelectField" %}
+											<div>
+												<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">
+													{{ childfield.label.text }}
+												</label>
+												<select class="custom-select" name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}">
+												{% for _tuple in childfield.choices %}
+													{% if not _tuple[0] == "" %}
+														<option value="{{ _tuple[0] }}">{{ _tuple[1] }}</option>
+													{% else %}
+														<option value=""/>
+													{% endif %}
+												{% endfor %}
+												</select>
+											</div>
+										{% endif %}
+									</div>
+								</div>
+							</div>
+
+						{% endif %}
+					{% endif %}
 				{% endfor %}
 			</div>
 		</div>
@@ -66,10 +176,10 @@
 	<div id="collapse-{{ heading }}-{{ uniqueName }}" class="collapse show" aria-labelledby="{{ heading }}-{{ uniqueName }}" data-parent="#accordion-{{ uniqueName }}">
 		<div class="card-body">
 			{% if childfield.type == "StringField" %}
-			    <div>
-		            <label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
-		            <input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
-			    </div>
+				<div>
+					<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
+					<input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
+				</div>
 			{% elif childfield.type == "SelectField" %}
 				<div>
 					<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">
