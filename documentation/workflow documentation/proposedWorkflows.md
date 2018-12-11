@@ -121,8 +121,9 @@ Questions:
 ----
 ## File formats in use
 Here are file formats in use as of 12/2018. Some of this will shift, particularly how we handle DPX output, and DCP & DCDM born-digital acquisitions. 
+
 | Type                   | Owning department(s) | Master file format(s)  | Access format |Notes|
-|------------------------|----------------------|------------------------|---------------|---|
+|------------------------|----------------------|------------------------|---------------|---------------|
 | Film scan              | Film Collection      | ProRes 4:2:2/DPX + PCM | H.264 in .mp4 ||
 | Video transfer         | Film Collection      | ProRes 4:2:2           | H.264 in .mp4 ||
 | DCP/DCDM                  | Film Collection      |                        |               |Not able to take in this format yet|
