@@ -42,12 +42,12 @@ Release 10/13/2018
 * Users can then FTP the files to a local machine (?)
 
 #### v0.4.1
+Release 11/19/2018
 * Separate fields for metadata entry per object into tabs or accordion display
-  * This is now (10/2018) just a big list of fields.
-
 
 ### Version 0.5
 * improve UI/ feedback from various processes
+* track error handling for flashing error messages
 
 ### Version 0.6
 * implement rsync daemon to get files to the `SHARED_DIR`

@@ -1,13 +1,15 @@
-# PROPOSED RESOURCESPACE WORKFLOWS
+# BETA EDITH WORKFLOWS
 
 ## Hi-level outline
 All ingests will work basically the same, except that depending on the type of file ingested and the required output, different derivatives will be created.
 
-1) Someone creates a source video file or a directory of files (video xfer or film scan)
-2) The file(s) is transferred over the local network to our ~~NAS (QNAP)~~ RAID array on the server.
-3) Through the RS interface someone chooses the files to ingest that are sitting on the ~~QNAP~~ server RAID
-4) Each ingest/SIP that is created gets a UUID (128-bit unique ID like `52cc5488-0ad8-11e8-ba89-0ed5f89f718b`)
-5) [`mediamicroservices`](https://github.com/mediamicroservices/mm) or [`pymm`](https://github.com/BAM-PFA/pymm) does this stuff:
+1) Someone creates a source video file or a directory of files (video transfer, film scan, digitized audio, born digital AV)
+2) The file(s) is transferred over the local network to our Enterprise QNAP NAS device.
+3) When filenames (and directory structures, for DPX output) are verified, the master asset is placed in a watched folder, also on the QNAP. An `rsync` process running as a daemon copies the asset(s) to the EDITH server, running `--chmod=+rwx` on them in the process. *[nb- this is under revision]*
+3) Through the RS interface someone chooses the files to ingest that are sitting on the server RAID
+4) As applicable, additional descriptive metadata can be added in the ingest menu.
+5) Each ingest/SIP that is created gets a UUID (128-bit unique ID like `52cc5488-0ad8-11e8-ba89-0ed5f89f718b`)
+6) [`pymm`](https://github.com/BAM-PFA/pymm) does this stuff:
 
  i) transcodes derivatives
 
@@ -22,20 +24,21 @@ All ingests will work basically the same, except that depending on the type of f
 &nbsp;&nbsp;&nbsp;&nbsp;logs/ <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;log.txt<br>
 
-4) If required, `mm` can send a ProRes copy back to the ~~QNAP~~ RAID for Dave to pick up and do post-processing on.
-4) [`ltopers`](https://github.com/amiaopensource/ltopers) writes SIPs to LTO on a regular basis. Think this is where you call a SIP an AIP
-6) All these steps are recorded as they happen to a MySQL database set up through `mm`.
+7) If required, `pymm` can send a ProRes copy back to the RAID for Dave to pick up and do post-processing on.
+8) Code taken from [`ltopers`](https://github.com/amiaopensource/ltopers) allows a user to write SIPs to LTO, as well as formatting or ejecting tapes, as well as retrieving data from tape.
+9) All these steps are recorded as they happen to a MySQL database created by `pymm`.
 
 ## (1) Film scan (prores master)
 
 ### one reel
-* Gibbs scans a single reel and outputs a single ProRes file 
+* Projectionist scans a single reel and outputs a single ProRes file 
 * It is an accessioned film so the filename includes a 5-digit sequence corresponding to the last section of the accession number (e.g. 1612-01-**12345**).
   * Or maybe it only has a barcode, so the filename includes the PM###### number  (example-title_00000_**pm001234**_R01-of-01.mov)
-* Gibbs transfers the correctly named file to the ~~QNAP~~ drive.
+* Projectionist transfers the correctly named file to the QNAP.
+* Jon performs basic QC/file existence check and changes filenames as needed. Moves correct file to QNAP watched folder.
+* EDITH syncs the folder to the server RAID and deletes the extra copy on the QNAP.
 * Jon goes to the ResourceSpace home screen and chooses the Ingest Files tab. He checks 'Run Ingest' for the files he wants to ingest and chooses the options that apply to each ingest:
   * Send a ProRes mezzanine to Dave's pick-up folder on the ~~QNAP~~
-  * 
 * then he hits *__INGEST__*.
 
 * `EDITH` does the following:
