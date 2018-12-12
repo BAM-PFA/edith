@@ -3,17 +3,18 @@
 ## Hi-level outline
 All ingests will work basically the same, except that depending on the type of file ingested and the required output, different derivatives will be created. The main computers involved are:
 
-* EDITH server (hosts ResourceSpace, does transcoding/packaging/checksumming, interfaces with LTO decks)
+* EDITH server (hosts ResourceSpace, does transcoding/packaging/checksumming, interfaces with LTO decks, has a 23TB internal RAID for temp storage/processing)
 * Lasergraphics station: film scans are done here
 * Video digitization rig: not currently on our network, just has huge storage and taxi drives
 * 16-bay QNAP: Network Attached Storage used as first delivery point for digitized stuff
+* various workstations on our internal network where staff can access EDITH/ResourceSpace
 
 Here's the basic workflow:
 
 1) Someone creates a source video file or a directory of files (video transfer, film scan, digitized audio, born digital AV)
 2) The file(s) is transferred over the local network to our Enterprise QNAP NAS device.
-3) When filenames (and directory structures, for DPX output) are verified manually, the master asset is copied into a watched folder, also on the QNAP. An `rsync` process running as a daemon copies the asset(s) to the EDITH server, running `--chmod=+rwx` on them in the process. *[nb- this is under revision ~12/2018]*
-3) Through the ResourceSpace interface a user chooses assets to ingest that are sitting on the server RAID
+3) When filenames (and directory structures, for DPX output) are verified manually, the master asset is copied into a watched folder, also on the QNAP. An `rsync` process running as a daemon copies the asset(s) to the EDITH server, running `--chmod=+rwx` on them in the process. The rsync job deletes the extra copy when it's done. *[nb- this is under revision ~12/2018]*
+3) Through the ResourceSpace interface a user chooses assets to ingest that are sitting on the EDITH RAID
 4) As applicable, additional descriptive metadata can be added in the ingest menu. Filenames are parsed and the film collection DB is queried when a matching accesison # is found.
 5) Each ingest/SIP that is created gets a UUID (128-bit unique ID like `52cc5488-0ad8-11e8-ba89-0ed5f89f718b`)
 6) [`pymm`](https://github.com/BAM-PFA/pymm) does this stuff:
@@ -31,10 +32,11 @@ Here's the basic workflow:
 &nbsp;&nbsp;&nbsp;&nbsp;logs/ <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;log.txt<br>
 
-7) If required, `pymm` can send a ProRes copy back to the RAID for Dave to pick up and do post-processing on.
+7) If required, `pymm` can send a ProRes copy back to the EDITH RAID for Dave to pick up and do post-processing on.
 8) Code taken from [`ltopers`](https://github.com/amiaopensource/ltopers) allows a user to write SIPs to LTO, as well as formatting or ejecting tapes, as well as retrieving data from tape.
-9) All these steps are recorded as they happen to a MySQL database created by `pymm`.
+9) All these steps are recorded as they happen to a MySQL database created by `pymm`, using [PREMIS](https://en.wikipedia.org/wiki/Preservation_Metadata:_Implementation_Strategies)-based terminology.
 
+# Format-specific workflows
 ## (1) Film scan (prores master)
 
 ### one reel
@@ -43,7 +45,7 @@ Here's the basic workflow:
   * Or maybe it only has a barcode, so the filename includes the PM###### number  (example-title_00000_**pm001234**_R01-of-01.mov)
 * Projectionist transfers the correctly named file to the QNAP.
 * Jon performs basic QC/file existence check and changes filenames as needed. Moves correct file to QNAP watched folder.
-* EDITH syncs the folder contents to the server RAID and deletes the extra copy on the QNAP.
+* EDITH syncs the folder contents to its RAID and deletes the extra copy on the QNAP.
 * Jon goes to the ResourceSpace home screen and chooses the Ingest Files tab. He checks 'Run Ingest' for the files he wants to ingest and chooses the options that apply to each ingest:
   * Send a ProRes mezzanine to Dave's pick-up folder on the ~~QNAP~~ EDITH RAID.
 * then he hits *__INGEST__*.
@@ -61,9 +63,9 @@ Here's the basic workflow:
 * later that week `writeLTO.py` uses `ltopers` to write to LTO and sends the LTO tape ID to the relevant RS record
 
 ### multiple reels
-* Gibbs outputs one ProRes file per reel, named as described above
+* Projectionist outputs one ProRes file per reel, named as described above
 * They go into a folder with the same naming convention, minus the reel-specific information such as barcode
-* He transfers the folder to the QNAP
+* Projectionist transfers the folder to the QNAP
 * Jon goes through RS interface to select folder that the projectionist created and selects options:
   * Do/don't concatenate reels to produce a single access file using [concatFiles.py](https://github.com/BAM-PFA/pymm/blob/master/concatFiles.py)
   * Do/Don't create a ProRes mezzanine file
@@ -83,7 +85,7 @@ Basically the same as above ~~except that DPX can be transcoded to lossless FFV1
 [read this blog post](https://kieranjol.wordpress.com/2016/10/07/introduction-to-ffv1-and-matroska-for-film-scans/) for some add'l info about FFV1 for film scans
 Or we could keep the DPX as-is and output a ProRes for Dave. Or don't make a mezzanine by default... ?~~
 
-We're considering options to reduce the transfer of so many small files. Top choices are TAR wrapping or RAWcooked, if funding and post-production workflows make sense. 
+We're considering options to reduce the transfer of so many small files. Top choices are TAR/Zip wrapping or RAWcooked, if funding and post-production workflows make sense. 
 
 ## (3) Video Transfer (ProRes master)
 
@@ -128,9 +130,9 @@ Here are file formats in use as of 12/2018. Some of this will shift, particularl
 | Video transfer         | Film Collection      | ProRes 4:2:2           | H.264 in .mp4 ||
 | DCP/DCDM                  | Film Collection      |                        |               |Not able to take in this format yet|
 | Digitized cassette     | Library              | BWF                    | mp3           ||
-| Event videorecording   | Digital Media/Comms? | ProRes 422             | H.264 in .mp4 ||
-| Lecture videorecording | Digital Media        | ?                      |               ||
-| Artist interview       | Comms?               | ProRes 422             | H.264 in .mp4 ||
-| Promo video            | Comms?               |                        | H.264 in .mp4 ||
+| Event videorecording   | Digital Media/Comms | ProRes 422             | H.264 in .mp4 ||
+| Lecture videorecording | Digital Media        | ProRes (specs?)                     |               ||
+| Artist interview       | Communications       | ProRes 422             | H.264 in .mp4 ||
+| Promo video            | Commmunications      |                        | H.264 in .mp4 ||
 | PFA speaker recording  | Library              | BWF                    | mp3           ||
-| Event audio recording  | Comms                | mp3                    | mp3           ||
+| Event audio recording  | Commmunications      | mp3                    | mp3           ||
