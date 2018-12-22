@@ -4,6 +4,7 @@ PYMM_PATH = '/path/to/pymm'
 PYTHON3_BINARY_PATH = '/usr/bin/python3'
 RESOURCESPACE_PROXY_DIR = '/path/to/rs/proxies'
 RS_BASE_URL = 'http://base_url_for_RS'
+DATA_BACKUP_PATH = '~/Documents/edithDataBackups'
 
 # there can only be one entry for shared directory. 
 # 'my host' should either be localhost or 
