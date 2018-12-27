@@ -23,14 +23,14 @@ def create_app(config_name):
 	# instance_relative_config gets instance-specific config stuff
 	app = Flask(__name__, instance_relative_config=True)
 	# or really, config_name var should be read from os.getenv, but that's beyond my powers
-	app.config.from_object(app_config['production']) 
+	app.config.from_object(app_config[config_name]) 
 	app.config.from_pyfile('config.py')
 
 	app.jinja_env.add_extension('jinja2.ext.do')
 
 	# I wish I knew what this does...
 	Bootstrap(app)
-	# init the db ... ? 
+	# init the db communication... ? 
 	db.init_app(app)
 
 	login_manager.init_app(app)
