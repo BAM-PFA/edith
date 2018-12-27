@@ -16,10 +16,11 @@
 	<body>
 		<nav class="navbar navbar-light bg-light">
 			<a class="navbar-brand">HELLO, I'M EDITH</a>
-			<ul class="nav navbar-nav navbar-right">
+			<ul class="nav navbar-nav">
 				{% if current_user.is_authenticated %}
 				  <li><a href="{{ url_for('ingest.edith') }}">Ingest Stuff</a></li>
 				  <li><a href="{{ url_for('lto.lto_menu') }}">LTO Stuff</a></li>
+				  <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
 				  <li><a><i class="fa fa-user"></i>  Hi, {{ current_user.first_name }}!</a></li>
 				{% else %}
 				  <li><a href="{{ url_for('auth.login') }}">Login</a></li>
@@ -27,7 +28,7 @@
 			</ul>
 		</nav>
 		<div class="container my-1">
-			{% with messages = get_flashed_messages() %}
+			<!-- {% with messages = get_flashed_messages() %}
 			  {% if messages %}
 			    <ul class=flashes>
 			    {% for message in messages %}
@@ -35,8 +36,10 @@
 			    {% endfor %}
 			    </ul>
 			  {% endif %}
-			{% endwith %}
-  			{% block content %}{% endblock %}
+			{% endwith %} -->
+  			{% block content %}
+  			<!-- DYNAMIC STUFF GOES HERE -->
+  			{% endblock %}
 		</div>
 		
 	</body>

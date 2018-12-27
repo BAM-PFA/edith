@@ -3,6 +3,7 @@
 import re
 # non-standard libraries
 from flask import render_template, request, flash, url_for
+from flask_login import login_required
 import wtforms
 # local modules
 import app
@@ -14,6 +15,7 @@ from . import forms
 from .. import listObjects
 
 @ingest.route('/edith',methods=['GET','POST'])
+@login_required
 def edith():
 	objects = listObjects.list_objects('shared')
 
@@ -36,6 +38,7 @@ def edith():
 		)
 
 @ingest.route('/status',methods=['GET','POST'])
+@login_required
 def status():
 	status = 'form submitted ok'
 	error = None

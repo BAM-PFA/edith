@@ -9,6 +9,7 @@ import sys
 from time import sleep
 # non-standard libraries
 from flask import render_template, request
+from flask_login import login_required
 import wtforms
 # local modules
 from . import forms
