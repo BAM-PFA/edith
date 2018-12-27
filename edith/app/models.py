@@ -107,7 +107,16 @@ class Data_Source(db.Model):
 	__tablename__ = 'data_sources'
 
 	id = db.Column(db.Integer, primary_key=True)
+	# dsn (data source name)
+	dbName = db.Column(db.String(60), unique=True)
+	# layout name for filemaker
+	fmpLayout = db.Column(db.String(60), unique=True)
+	# server address
 	IPaddress = db.Column(db.String(60), unique=True)
+	# account with access 
+	name = db.Column(db.String(60), unique=True)
+	# account credentials
+	credentials = db.Column(db.String(60), unique=True)
 	description = db.Column(db.String(200))
 
 

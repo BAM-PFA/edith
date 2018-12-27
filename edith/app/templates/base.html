@@ -7,6 +7,7 @@
 	  <title>EDITH</title>
 	  {% endif %}
 	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 	  <!--<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='icons.css') }}">-->
 	  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
@@ -14,7 +15,16 @@
 	</head>
 	<body>
 		<nav class="navbar navbar-light bg-light">
-		  <a class="navbar-brand">HELLO, I'M EDITH</a><a href="/edith">Ingest Stuff</a><a href="/lto_menu">LTO Stuff</a>
+			<a class="navbar-brand">HELLO, I'M EDITH</a>
+			<ul class="nav navbar-nav navbar-right">
+				{% if current_user.is_authenticated %}
+				  <li><a href="{{ url_for('ingest.edith') }}">Ingest Stuff</a></li>
+				  <li><a href="{{ url_for('lto.lto_menu') }}">LTO Stuff</a></li>
+				  <li><a><i class="fa fa-user"></i>  Hi, {{ current_user.first_name }}!</a></li>
+				{% else %}
+				  <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+				{% endif %}
+			</ul>
 		</nav>
 		<div class="container my-1">
 			{% with messages = get_flashed_messages() %}

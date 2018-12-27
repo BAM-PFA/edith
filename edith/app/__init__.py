@@ -7,6 +7,7 @@ the blueprints used by the various modules.
 
 # Flask imports
 from flask import Flask
+from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -27,6 +28,8 @@ def create_app(config_name):
 
 	app.jinja_env.add_extension('jinja2.ext.do')
 
+	# I wish I knew what this does...
+	Bootstrap(app)
 	# init the db ... ? 
 	db.init_app(app)
 
@@ -35,7 +38,13 @@ def create_app(config_name):
 	login_manager.login_view = "auth.login"
 	migrate = Migrate(app, db)
 
-	 from app import models
+	from app import models
+
+	from .admin import admin as admin_blueprint
+	app.register_blueprint(admin_blueprint, url_prefix='/admin')
+
+	from .auth import auth as auth_blueprint
+	app.register_blueprint(auth_blueprint)
 
 	from .ingest import ingest as ingest_blueprint
 	app.register_blueprint(ingest_blueprint)
