@@ -44,6 +44,7 @@ KNOWN_USERS = {
 		}
 	}
 
+# the DB_CONNECTIONS variable is for the pymm db
 DB_CONNECTIONS = {
 	'my_database':{
 		'dsn':'my_db_dsn',
@@ -53,6 +54,9 @@ DB_CONNECTIONS = {
 		'password':'my_ingest_user_pass'
 		}
 	}
+
+# the SQLALCHEMY_DATABASE_URI variable is for the app db
+SQLALCHEMY_DATABASE_URI = 'mysql://edith_admin:password@localhost/edith'
 
 REMOTE_CONNECTIONS = {
 	'my server':{

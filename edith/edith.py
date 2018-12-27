@@ -1,3 +1,10 @@
+'''
+This is the FLASK_APP that runs the show.
+
+First it inits the app based on the __init__.py file,
+then runs the thing.
+'''
+
 import os
 
 # local stuff

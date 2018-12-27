@@ -66,6 +66,9 @@ Tested on Ubuntu 16.04.
 * Flask-specific dependencies: 
   * Flask (pip3 install Flask; gets core Flask dependencies automatically: wtforms, werkzeug)
   * flask_wtf (pip3 install flask_wtf)
+  * flask-migrate (pip3 install flask-migrate)
+  * flask-login (pip3 install flask-login)
+  * SQLAlchemy (pip3 install flask-sqlalchemy)
 
 ## Setup
 
