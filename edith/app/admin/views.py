@@ -259,3 +259,125 @@ def delete_user(id):
 	return redirect(url_for('admin.list_users'))
 
 	return render_template(title="Delete User")
+
+####################
+# Data Sources Views
+@admin.route('/data_sources')
+@login_required
+def list_data_sources():
+    """
+    List all data_sources
+    """
+    check_admin()
+
+    data_sources = Data_Source.query.all()
+    return render_template('admin/data_sources/data_sources.html',
+                           data_sources=data_sources, title='Data_Sources')
+
+@admin.route('/data_sources/add', methods=['GET', 'POST'])
+@login_required
+def add_data_source():
+	"""
+	Add a data_source to the database
+	"""
+	check_admin()
+
+	add_data_source = True
+
+	form = DataSourceForm()
+	if form.validate_on_submit():
+		data_source = Data_Source(
+			dbName = form.dbName.data,
+			fmpLayout = form.fmpLayout.data,
+			IPaddress = form.IPaddress.data,
+			username = form.username.data,
+			credentials = form.credentials.data,
+			description = form.description.data
+			)
+		try:
+			# add department to the database
+			db.session.add(data_source)
+			# print(data_source)
+			db.session.commit()
+			flash('You have successfully added a new data_source.')
+		except Exception as e:
+			# in case department name already exists
+			# print(str(e))
+			flash('Error adding data source. {}'.format(e))
+
+		# redirect to departments page
+		return redirect(url_for('admin.list_data_sources'))
+
+	# load department template
+	return render_template(
+		'admin/data_sources/data_source.html',
+		action="Add",
+		add_data_source=add_data_source,
+		form=form,
+		title="Add Data Source"
+		)
+
+@admin.route('/data_sources/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_data_source(id):
+	"""
+	Edit a data_source
+	""" 
+	check_admin()
+
+	add_data_source = False
+
+	data_source = Data_Source.query.get_or_404(id)
+	form = DataSourceForm(obj=data_source)
+	if form.validate_on_submit():
+		# print(form.data)
+		data_source.dbName= form.dbName.data,
+		data_source.fmpLayout = form.fmpLayout.data
+		data_source.IPaddress = form.IPaddress.data
+		data_source.username = form.username.data
+		data_source.credentials = form.credentials.data
+		data_source.description = form.description.data
+		try:
+			db.session.commit()
+			flash('You have successfully edited the data_source.')
+
+			# redirect to the users page
+			return redirect(url_for('admin.list_data_sources'))
+		except Exception as e:
+			print(e)
+			flash('Error editing the data_source. {}'.format(e))
+			return redirect(url_for('admin.list_data_sources'))
+
+	# this pre-populates the form with existing data from the db
+	form.dbName.data = data_source.dbName
+	form.fmpLayout.data = data_source.fmpLayout
+	form.IPaddress.data = data_source.IPaddress
+	form.username.data = data_source.username 
+	form.credentials.data = data_source.credentials
+	form.description.data = data_source.description
+	return render_template(
+		'admin/data_sources/data_source.html', 
+		action="Edit",
+		add_data_source=add_data_source, 
+		form=form,
+		data_source=data_source,
+		title="Edit Data Source"
+		)
+
+@admin.route('/data_sources/delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def delete_data_source(id):
+	"""
+	Delete a data_source from the database
+	"""
+	check_admin()
+
+	data_source = Data_Source.query.get_or_404(id)
+	db.session.delete(data_source)
+	db.session.commit()
+	flash('You have successfully deleted the data_source.')
+
+	# redirect to the data_sources page
+	return redirect(url_for('admin.list_data_sources'))
+
+	return render_template(title="Delete Data Source")

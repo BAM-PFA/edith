@@ -7,12 +7,16 @@
                     <h1>WELCOME TO EDITH</h1>
                     <h3>start doing digipres</h3>
                     <hr class="intro-divider">
-                    </ul>
             </div>
-            <a href="{{ url_for('ingest.ingest_stuff') }}">Ingest Stuff</a>
-		    <a href="{{ url_for('lto.lto_menu') }}">LTO Stuff</a>
-            <a href="{{ url_for('admin.list_departments') }}">Departments</a>
-            <a href="{{ url_for('admin.list_users') }}">Users</a>
+            <div class="card">
+            <ul>
+                <li><a href="{{ url_for('ingest.ingest_stuff') }}">Ingest Stuff</a></li>
+                <li><a href="{{ url_for('lto.lto_menu') }}">LTO Stuff</a></li>
+                <li><a href="{{ url_for('admin.list_departments') }}">Departments</a></li>
+                <li><a href="{{ url_for('admin.list_users') }}">Users</a></li>
+                <li><a href="{{ url_for('admin.list_data_sources') }}">Data Sources</a></li>
+            </ul>
+            </div>
     </div>
 </div>
 {% endblock %}

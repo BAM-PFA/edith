@@ -114,7 +114,7 @@ class Data_Source(db.Model):
 	# server address
 	IPaddress = db.Column(db.String(60), unique=True)
 	# account with access 
-	name = db.Column(db.String(60), unique=True)
+	username = db.Column(db.String(60), unique=True)
 	# account credentials
 	credentials = db.Column(db.String(60), unique=True)
 	description = db.Column(db.String(200))
