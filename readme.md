@@ -69,10 +69,13 @@ Tested on Ubuntu 16.04.
   * flask-migrate (pip3 install flask-migrate)
   * flask-login (pip3 install flask-login)
   * SQLAlchemy (pip3 install flask-sqlalchemy)
+  * flask-bootstrap (pip3 install flask-bootstrap)
 
-## Setup
+## Setup overview
 
 We are running Flask in production with Apache using the `mod_wsgi` module (see also the [Flask](#flask-ui-notes) section). Honestly, this sucks to set up.
+
+WIP 12/2018 on a backend database to support user authentication. It's not as complex as I would have thought and will also support task scheduling/queues/error tracking which should improve UX.
 
 `pymm` requires some configuration of input and output paths, database configuration (only need to do this once at setup). There are a couple of non standard Python 3 libraries used and a couple of additional programs (see below for a list).
 
@@ -133,6 +136,25 @@ On mounting a tape, there's also a temp .json file that is created listing the t
 The structure of the app is pretty basic. I have a lot (all) of the 'secret stuff' and all the configurable paths set up in an 'instance-specific' `config.py` file. This stuff could be stored in a database, along with an actual authentication module for staff. For the moment though, we only have a handful of users and making a database would be overkill.
 
 Setting up `mod_wsgi` really sucks. You *have* to make sure to build it with the same install of Python being used in the system. This would probably be easier with a virtual environment but at the moment I'm running directly on the system default python3. Also, make sure the nonstandard python modules required are installed system wide and not to a specific user (again, probably less of a chance to f* up with a venv...).
+
+### Flask DB setup [WIP]
+* Create an empty mysql database called `edith` and a user with admin privileges:
+  * `GRANT ALL PRIVILEGES ON edith.* TO 'user'@'localhost' IDENTIFIED BY 'password';`
+* Add these user details to the *instance* config SQLALCHEMY_DATABASE_URI variable (see the exmple_config.py)
+* run 
+```
+flask db init
+flask db migrate
+flask db upgrade
+```
+* Run `flask shell` from within the edith repository and make an admin user for the app:
+```
+>>> from app.models import User
+>>> from app import db
+>>> admin = User(email="admin@example.com",username="admin",password="admin2016",is_admin=True)
+>>> db.session.add(admin)
+>>> db.session.commit()
+```
 
 ## Some major unknowns/ to-dos
 * Searching the `pymm` database. This could probably be built into the Flask app but... yeah. I think we will mirror the `pymm` db on our FileMaker server instance since it's already in use.
