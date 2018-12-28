@@ -179,7 +179,7 @@ def add_metadata(ingestDict):
 	print("HELLO THERE WE ADDED METADATA!")
 	return ingestDict
 
-def main(ingestDict,user):
+def main(ingestDict):
 	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
 	# run `pymm` on ingest objects
 	# post access copies to resourcespace
