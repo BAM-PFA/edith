@@ -17,9 +17,9 @@ from .. models import User
 
 from .. import listObjects
 
-@ingest.route('/edith',methods=['GET','POST'])
+@ingest.route('/ingest_stuff',methods=['GET','POST'])
 @login_required
-def edith():
+def ingest_stuff():
 	objects = listObjects.list_objects('shared')
 
 	class OneObject(forms.ObjectForm):
@@ -34,7 +34,7 @@ def edith():
 	form.suchChoices = choices
 
 	return render_template(
-		'ingest/edith.html',
+		'ingest/ingest.html',
 		title='EDITH',
 		objects=objects,
 		form=form

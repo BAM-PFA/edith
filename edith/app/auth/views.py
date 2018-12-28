@@ -36,7 +36,7 @@ def login():
 			login_user(user)
 
 			# redirect to the dashboard page after login
-			return redirect(url_for('ingest.edith'))
+			return redirect(url_for('home.dashboard'))
 
 		# when login details are incorrect
 		else:

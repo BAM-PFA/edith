@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div class="intro-header">
+    <div class="container">
+            <div class="col-lg-12">
+                    <h1>WELCOME TO EDITH</h1>
+                    <h3>start doing digipres</h3>
+                    <hr class="intro-divider">
+                    </ul>
+            </div>
+            <a href="{{ url_for('ingest.ingest_stuff') }}">Ingest Stuff</a>
+		    <a href="{{ url_for('lto.lto_menu') }}">LTO Stuff</a>
+            <a href="{{ url_for('admin.list_departments') }}">LTO Stuff</a>
+    </div>
+</div>
+{% endblock %}
