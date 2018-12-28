@@ -15,17 +15,28 @@
 	</head>
 	<body>
 		<nav class="navbar navbar-light bg-light">
-			<a class="navbar-brand">HELLO, I'M EDITH</a>
-			<ul class="nav navbar-nav navbar-right">
-				{% if current_user.is_authenticated %}
-				  <li><a href="{{ url_for('ingest.edith') }}">Ingest Stuff</a></li>
-				  <li><a href="{{ url_for('lto.lto_menu') }}">LTO Stuff</a></li>
-				  <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-				  <li><a><i class="fa fa-user"></i>  Hi, {{ current_user.first_name }}!</a></li>
-				{% else %}
-				  <li><a href="{{ url_for('auth.login') }}">Login</a></li>
-				{% endif %}
-			</ul>
+			<div class="container topnav">
+				<div class="navbar-header">
+					<a class="navbar-brand topnav">HELLO, I'M EDITH</a>
+				</div>
+				<div class="nav navbar-nav navbar-right">
+					<ul class="list-inline">
+						{% if current_user.is_authenticated %}
+							{% if current_user.is_admin %}
+								<li><a href="{{ url_for('home.admin_dashboard') }}">Dashboard</a></li>
+							{% else %}
+								<li><a href="{{ url_for('home.admin_dashboard') }}">Dashboard</a></li>
+							{% endif %}
+							<li><a href="{{ url_for('ingest.ingest_stuff') }}">Ingest Stuff</a></li>
+							<li><a href="{{ url_for('lto.lto_menu') }}">LTO Stuff</a></li>
+							<li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+							<li><a><i class="fa fa-user"></i>  Hi, {{ current_user.first_name }}!</a></li>
+						{% else %}
+							<li><a href="{{ url_for('auth.login') }}">Login</a></li>
+						{% endif %}
+					</ul>
+				</div>
+			</div>
 		</nav>
 		<div class="container my-1">
 			<!-- {% with messages = get_flashed_messages() %}
