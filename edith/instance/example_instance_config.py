@@ -57,6 +57,8 @@ DB_CONNECTIONS = {
 
 # the SQLALCHEMY_DATABASE_URI variable is for the app db
 SQLALCHEMY_DATABASE_URI = 'mysql://edith_admin:password@localhost/edith'
+# If the above throws a MySQLDb module error try this syntax:
+# SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://edith_admin:edith1234@localhost/edith'
 
 REMOTE_CONNECTIONS = {
 	'my server':{
