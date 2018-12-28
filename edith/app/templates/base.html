@@ -16,7 +16,7 @@
 	<body>
 		<nav class="navbar navbar-light bg-light">
 			<a class="navbar-brand">HELLO, I'M EDITH</a>
-			<ul class="nav navbar-nav">
+			<ul class="nav navbar-nav navbar-right">
 				{% if current_user.is_authenticated %}
 				  <li><a href="{{ url_for('ingest.edith') }}">Ingest Stuff</a></li>
 				  <li><a href="{{ url_for('lto.lto_menu') }}">LTO Stuff</a></li>

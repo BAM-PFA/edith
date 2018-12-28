@@ -3,7 +3,7 @@
 import re
 # non-standard libraries
 from flask import render_template, request, flash, url_for
-from flask_login import login_required
+from flask_login import login_required, current_user
 import wtforms
 # local modules
 import app
@@ -11,6 +11,9 @@ from . import ingest
 from . import ingestProcesses
 from . import fmQuery
 from . import forms
+
+from .. import db
+from .. models import User
 
 from .. import listObjects
 
@@ -43,14 +46,10 @@ def status():
 	status = 'form submitted ok'
 	error = None
 	print(status)
-
+	
 	try:
 		_data = request.form.to_dict(flat=False)
 		print(_data)
-		user = request.form['user']
-
-		if not user in app.app_config['KNOWN_USERS']:
-			return render_template('ingest/RSerror.html',user=user)
 
 		results = {}
 		toIngest =[]
@@ -109,12 +108,11 @@ def status():
 		print(results)
 		# pass dict of files:options to ingestProcesses and get back
 		# a dict that includes metadata
-		results = ingestProcesses.main(results,user)
+		results = ingestProcesses.main(results)
 
 	except:
 		flash("There was an error with your request. Try again. :(")
 		_data = "no data"
-		user = "no user"
 		toIngest = []
 		results = {}
 
@@ -122,7 +120,6 @@ def status():
 		'ingest/status.html',
 		title='Ingest',
 		data=_data,
-		user=user,
 		toIngest=toIngest,
 		results=results
 		)

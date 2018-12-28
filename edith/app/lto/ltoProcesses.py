@@ -123,7 +123,7 @@ def run_moveNcopy(aipPath,tapeMountpoint):
 	return runit.stdout
 
 
-def write_LTO(aipDict,user):
+def write_LTO(aipDict):
 	aMount,bMount = get_tape_mountpoints()
 	sipWriteTuples = []
 	if not False in (aMount,bMount):
@@ -272,7 +272,7 @@ def get_tape_mountpoints():
 	return aMount,bMount
 
 def unmount_tapes():
-	# apahce user added to sudoers overrides for `umount`
+	# apache user added to sudoers overrides for `umount`
 	aMount,bMount = get_tape_mountpoints()
 	errors = []
 	if not False in (aMount,bMount):
@@ -291,8 +291,9 @@ def unmount_tapes():
 	else:
 		return True
 
-def parse_index_schema_file(user):
-	print("PAARRRSSSIINNGG")
+def parse_index_schema_file():
+	user = utils.construct_user_name()
+	print("PARSING LTFS SCHEMA FILE")
 	pythonBinary = utils.get_python_path()
 	pymmPath = utils.get_pymm_path()
 	ltfsSchemaParserPath = os.path.join(pymmPath,'ltfsSchemaParser.py')
@@ -317,9 +318,9 @@ def parse_index_schema_file(user):
 	else:
 		print("SCHEMA FILE DOESN'T EXIST?")
 
-def post_tape_id_to_rs(writeStatuses,user):
+def post_tape_id_to_rs(writeStatuses):
 	stats = get_tape_stats()
 	ltoID = os.path.basename(stats["A"]["mountpoint"])
 	for AIP, status in writeStatuses.items():
 		if "True" in status:
-			resourcespaceFunctions.post_LTO_id(AIP,ltoID,user)
+			resourcespaceFunctions.post_LTO_id(AIP,ltoID)

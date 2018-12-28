@@ -10,7 +10,8 @@ import sys
 import time
 import urllib
 
-# import Levenshtein
+# non-standard modules
+from flask_login import current_user
 
 # local modules
 from . import fmQuery
@@ -183,6 +184,16 @@ def main(ingestDict,user):
 	# run `pymm` on ingest objects
 	# post access copies to resourcespace
 
+	userFirstName = current_user.first_name
+	userLastName = current_user.last_name
+	# Construct the user's full name, unless the user is missing
+	# one of these values (they shouldn't be...)
+	if not any(x in (userFirstName,userLastName) for x in ("None",None)):
+		user = "{} {}".format(userFirstName,userLastName)
+	else:
+		# otherwise default to the user's email address
+		user = current_user.email
+
 	# GET THE PYMM PATH TO CALL IN A SEC
 	pymmPath = utils.get_pymm_path()
 	ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
@@ -280,7 +291,7 @@ def main(ingestDict,user):
 			if os.path.exists(rsProxyPath):
 				print("WOOOT")
 				rsStatus = resourcespaceFunctions.do_resourcespace(
-					user,
+					# user,
 					rsProxyPath,
 					metadataFilepath
 					)

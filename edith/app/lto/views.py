@@ -329,7 +329,6 @@ def write_status():
 	# raw data from the form
 	_data = request.form.to_dict(flat=False)
 	# print(_data)
-	user = request.form['user']
 
 	results = {}
 	toWrite = []
@@ -351,7 +350,7 @@ def write_status():
 
 	print(results)
 	writeStatuses = {}
-	writeResults = ltoProcesses.write_LTO(results,user)
+	writeResults = ltoProcesses.write_LTO(results)
 	print("LTO WRITE RESULTS:")
 	print(writeResults)
 	for result in writeResults:
@@ -369,11 +368,11 @@ def write_status():
 	# remove staged AIPs ~~THIS DOESN'T EXIST YET!~~
 	# ltoProcesses.remove_staged_AIPs(writeStatuses)
 
-	ltoProcesses.post_tape_id_to_rs(writeStatuses,user)
+	ltoProcesses.post_tape_id_to_rs(writeStatuses)
 	ltoProcesses.unmount_tapes()
 	utils.clean_temp_dir()
 	# PARSE THE UPDATED SCHEMA FILE
-	ltoProcesses.parse_index_schema_file(user)
+	ltoProcesses.parse_index_schema_file()
 
 
 	return render_template(
