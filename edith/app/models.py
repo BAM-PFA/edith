@@ -72,13 +72,13 @@ class Department(db.Model):
 	__tablename__ = 'departments'
 
 	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(60), unique=True)
+	deptname = db.Column(db.String(60), unique=True)
 	description = db.Column(db.String(200))
 	users = db.relationship('User', backref='department',
 								lazy='dynamic')
 
 	def __repr__(self):
-		return '<Department: {}>'.format(self.name)
+		return '<Department: {}>'.format(self.deptname)
 
 class Path(db.Model):
 	'''
