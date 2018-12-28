@@ -9,9 +9,9 @@ from flask import abort, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
 
 from . import admin
-from .forms import DepartmentForm, AddUserForm, EditUserForm
+from .forms import DepartmentForm, AddUserForm, EditUserForm, DataSourceForm
 from .. import db
-from ..models import Department, User
+from ..models import Department, User, Data_Source
 
 
 def check_admin():
@@ -339,7 +339,7 @@ def edit_data_source(id):
 		data_source.description = form.description.data
 		try:
 			db.session.commit()
-			flash('You have successfully edited the data_source.')
+			flash('You have successfully edited the data source.')
 
 			# redirect to the users page
 			return redirect(url_for('admin.list_data_sources'))
@@ -375,7 +375,7 @@ def delete_data_source(id):
 	data_source = Data_Source.query.get_or_404(id)
 	db.session.delete(data_source)
 	db.session.commit()
-	flash('You have successfully deleted the data_source.')
+	flash('You have successfully deleted the data source.')
 
 	# redirect to the data_sources page
 	return redirect(url_for('admin.list_data_sources'))
