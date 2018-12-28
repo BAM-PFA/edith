@@ -8,6 +8,8 @@ import os
 import shutil
 import subprocess
 import time
+# non-standard modules
+from flask_login import current_user
 # local modules
 import app
 
@@ -215,3 +217,16 @@ def get_proxy_framerate(proxyPath):
 	framerate = out.stdout.decode().rstrip()
 
 	return framerate
+
+def construct_user_name():
+	userFirstName = current_user.first_name
+	userLastName = current_user.last_name
+	# Construct the user's full name, unless the user is missing
+	# one of these values (they shouldn't be...)
+	if not any(x in (userFirstName,userLastName) for x in ("None",None)):
+		user = "{} {}".format(userFirstName,userLastName)
+	else:
+		# otherwise default to the user's email address
+		user = current_user.email
+
+	return user

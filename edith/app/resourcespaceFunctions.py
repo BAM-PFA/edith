@@ -10,11 +10,12 @@ import sys
 import time
 import urllib.parse
 # nonstandard libraries
+from flask_login import current_user
 import requests
 # local modules
 from . import utils
 
-def do_resourcespace(user,proxyPath,metadataFilepath=None):
+def do_resourcespace(proxyPath,metadataFilepath=None):
 	'''
 	take in the object(s) and process them according to file/dir status
 	'''
@@ -39,7 +40,6 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 		urlMetadata = metadata_for_rs(metadata)
 		quotedPath = urllib.parse.quote(proxyPath, safe='')	
 		result = resourcespace_API_call(
-				user,
 				urlMetadata,
 				quotedPath,
 				proxyPath
@@ -64,7 +64,6 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 		# print(quotedPath)
 		# post the first/primary to RS and get its record ID
 		primaryRecord = resourcespace_API_call(
-			user,
 			urlMetadata,
 			quotedPath,
 			primaryItem
@@ -80,7 +79,6 @@ def do_resourcespace(user,proxyPath,metadataFilepath=None):
 				# print(coolItems)
 				quotedPath = urllib.parse.quote(alt, safe='')
 				result = rs_alt_file_API_call(
-					user,
 					primaryRecord,
 					quotedPath,
 					alt
@@ -134,11 +132,12 @@ def make_RS_API_call(completePOST):
 	else:
 		return httpStatus,None
 
-def resourcespace_API_call(user,metadata,quotedPath,filePath):
+def resourcespace_API_call(metadata,quotedPath,filePath):
 	'''
 	make a call to the RS create_resource() function
 	'''
-	rsUser,APIkey = utils.get_rs_credentials(user)
+	rsUser = current_user.RSusername
+	APIkey = current_user.RSkey
 	RSquery = (
 		"user={}"
 		"&function=create_resource"
@@ -164,11 +163,12 @@ def resourcespace_API_call(user,metadata,quotedPath,filePath):
 		utils.delete_it(filePath)
 	return RSrecordID
 
-def rs_alt_file_API_call(user,primaryRecord,quotedPath,filePath):
+def rs_alt_file_API_call(primaryRecord,quotedPath,filePath):
 	'''
 	post any alternative files to the rs record for the primary object
 	'''
-	rsUser,APIkey = utils.get_rs_credentials(user)
+	rsUser = current_user.RSusername
+	APIkey = current_user.RSkey
 	basename = os.path.basename(filePath)
 	extension = utils.get_extension(basename).strip('.')
 	size = str(os.stat(filePath).st_size)
@@ -274,11 +274,12 @@ def metadata_for_rs(metadataJSON):
 
 	return quotedJSON
 
-def getRSid(AIP,user):
+def getRSid(AIP):
 	'''
 	Search for a resource record by its ingest UUID
 	'''
-	rsUser,APIkey = utils.get_rs_credentials(user)
+	rsUser = current_user.RSusername
+	APIkey = current_user.RSkey
 	RSquery = (
 		"user={}"
 		"&function=do_search"
@@ -309,15 +310,15 @@ def getRSid(AIP,user):
 	print(RSid)
 	return RSid
 
-def post_LTO_id(AIP,ltoID,user):
+def post_LTO_id(AIP,ltoID):
 	'''
 	Search RS for the record pertaining to the AIP object.
 	Post the LTO id to the record.
 	'''
 	postStatus = False
-
-	rsUser,APIkey = utils.get_rs_credentials(user)
-	RSid = getRSid(AIP,user)
+	rsUser = current_user.RSusername
+	APIkey = current_user.RSkey
+	RSid = getRSid(AIP)
 	if RSid:
 		RSquery = (
 			"user={}"
