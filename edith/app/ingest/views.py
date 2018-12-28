@@ -72,7 +72,7 @@ def status():
 				doConcatYES.append(key.replace('doConcat-',''))
 			# start trawling for metadata entries
 			elif 'metadataForm' in key:
-				print(key)
+				# print(key)
 				# get the field label and object via regex
 				pattern = r'(metadataForm-)([a-zA-Z0-9_]+)(-)(.*)'
 				fieldSearch = re.search(pattern,key)
@@ -80,7 +80,7 @@ def status():
 				# field = fieldSearch.group(2).replace('userMD_','')
 				field = re.sub(r"(userMD_)(\d)(_)", '', fieldSearch.group(2))
 				theObject = fieldSearch.group(4)
-				print(field,theObject)
+				# print(field,theObject)
 				if not theObject in  metadataEntries:
 					metadataEntries[theObject] = {}
 					# `value` here is returned as a list from the metadata FormField
@@ -105,7 +105,7 @@ def status():
 			if results[path]['basename'] in doConcatYES:
 				results[path]['concat reels'] = 'True'
 
-		print(results)
+		# print(results)
 		# pass dict of files:options to ingestProcesses and get back
 		# a dict that includes metadata
 		results = ingestProcesses.main(results)

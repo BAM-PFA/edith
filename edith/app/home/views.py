@@ -10,7 +10,7 @@ def homepage():
 	"""
 	Render the homepage template on the / route
 	"""
-	return render_template('home/index.html', title="Welcome")
+	return render_template('home/index.html', title="Welcome", current_user=current_user)
 
 @home.route('/dashboard')
 @login_required
