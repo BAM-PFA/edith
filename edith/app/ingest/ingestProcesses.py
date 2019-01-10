@@ -55,10 +55,10 @@ def get_metadata(idNumber,basename,intermediateMetadata):
 		if not v == "":
 			if k in metadataDict:
 				metadataDict[k] = v
-	if not all(value=="" for value in metadataDict.values()):
-		metadataDict['hasBAMPFAmetadata'] = True
-	else:
+	if all(value=="" for value in metadataDict.values()):
 		metadataDict['hasBAMPFAmetadata'] = False
+	else:
+		metadataDict['hasBAMPFAmetadata'] = True
 
 	if idNumber == "--":
 		print("NO PFA ID NUMBER")
