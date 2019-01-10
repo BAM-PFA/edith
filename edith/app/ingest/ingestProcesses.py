@@ -238,6 +238,7 @@ def main(ingestDict):
 
 	else:
 		for _object in ingestDict.keys():
+			ingestStatus = []
 			pythonBinary = utils.get_python_path()
 			pymmPath = utils.get_pymm_path()
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
@@ -258,16 +259,18 @@ def main(ingestDict):
 			try:
 				pymmOut = subprocess.check_output(
 					pymmCommand
-				)
+					)
 				# the last thing printed is the status dict....
 				# get the pymm result dict via this highly hack-y method
 				pymmOut = pymmOut.decode().split('\n')
 				pymmResult = ast.literal_eval(pymmOut[-2])
 
 				print(pymmResult)
+				ingestStatus.append('Archival information package creation succeeeded')
 
 			except subprocess.CalledProcessError as e:
 				print(e)
+				igestStatus.append('Archival information package creation failed')
 
 			# print('hey')
 			# add the UUID to the metadata file
@@ -295,10 +298,10 @@ def main(ingestDict):
 					rsProxyPath,
 					metadataFilepath
 					)
-				# utils.clean_temp_dir('ingest')
-
-				#print(rsStatus)
+				ingestStatus = True
 			else:
-				print("PATH PROBLEMO")
+				print("PROXY FILE PATH PROBLEMO")
+			ingestDict[_object]['ingestStatus'] = ingestStatus
+
 	utils.clean_temp_dir('ingest')
 	return(ingestDict)
