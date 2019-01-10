@@ -1,6 +1,12 @@
+# non-standard libraries
 from flask_wtf import FlaskForm
 import wtforms
 from wtforms.validators import DataRequired, Email
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
+
+# local imports
+from ..models import Data_Source
+
 
 class MetadataForm(FlaskForm):
 	'''
@@ -51,7 +57,15 @@ class ObjectForm(FlaskForm):
 	#doProres = wtforms.BooleanField("make prores?",default='')
 	#proresToDave = wtforms.BooleanField("deliver prores to dave?",default='')
 	doConcat = wtforms.BooleanField("Concatenate reels?",default='')
+	metadataSource = QuerySelectField(
+		query_factory=lambda: Data_Source.query.all(),
+		get_pk=lambda x: x.id,
+		get_label="dbName",
+		allow_blank=True,
+		blank_text=u''
+		)
 	metadataForm = wtforms.FormField(MetadataForm)
+	
 	#metadataFields = wtforms.FieldList(StringField('metadata1'))
 
 class IngestForm(FlaskForm):
@@ -59,5 +73,4 @@ class IngestForm(FlaskForm):
 	General input form
 	'''
 	suchChoices = wtforms.HiddenField(default='default choices')
-	# user = wtforms.StringField('Please enter your email address:',validators=[DataRequired(), Email()])
 	submit = wtforms.SubmitField('Submit')
