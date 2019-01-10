@@ -43,8 +43,6 @@ def get_barcode_from_filename(basename):
 		barcode = "000000000"
 	return barcode
 
-
-
 def get_metadata(idNumber,basename,intermediateMetadata):
 	# added in multiple return statements
 	# somehow if there was no metadata, the variable 
@@ -238,11 +236,14 @@ def main(ingestDict):
 
 	else:
 		for _object in ingestDict.keys():
+			# ingestStatus is a set of messages that will be flashed to
+			# the user. Compiling it as a list for now... seems simplest?
 			ingestStatus = []
 			pythonBinary = utils.get_python_path()
 			pymmPath = utils.get_pymm_path()
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 			pymmCommand = [pythonBinary,ingestSipPath,'-i',_object,'-u',user,'-dz']
+			pymmResult = None
 			metadataFilepath = ingestDict[_object]['metadataFilepath']
 			#print(metadataFilepath)
 
@@ -270,37 +271,53 @@ def main(ingestDict):
 
 			except subprocess.CalledProcessError as e:
 				print(e)
-				igestStatus.append('Archival information package creation failed')
+				ingestStatus.append('Archival information package creation failed')
 
 			# print('hey')
 			# add the UUID to the metadata file
 			ingestUUID = pymmResult['ingestUUID']
 
-			with open(metadataFilepath,'r+') as mdread:
-				print('opened')
-				data = json.load(mdread)
-				print(data)
-				key = list(data.keys())[0]
-				data[key]['metadata']['ingestUUID'] = ingestUUID
-				theGoods = data[key]['metadata']
-				print(data)
-			with open(metadataFilepath,'w+') as mdwrite:
-				json.dump(theGoods,mdwrite)
+			try:
+				with open(metadataFilepath,'r+') as mdread:
+					print('opened')
+					data = json.load(mdread)
+					# print(data)
+					key = list(data.keys())[0]
+					data[key]['metadata']['ingestUUID'] = ingestUUID
+					theGoods = data[key]['metadata']
+					print(data)
+				with open(metadataFilepath,'w+') as mdwrite:
+					json.dump(theGoods,mdwrite)
+				ingestStatus.append('Added metadata to sidecar JSON file')
+			except:
+				ingestStatus.append('Problem writing to JSON metadata file. Check file/fodler permissions.')
+
 			rsDir = utils.get_rs_dir()
-			rsProxyPath = pymmResult['accessPath']
-			basename = ingestDict[_object]['basename']
-			#print(rsProxyPath)
-			#print(os.path.exists(rsProxyPath))
-			if os.path.exists(rsProxyPath):
-				print("WOOOT")
-				rsStatus = resourcespaceFunctions.do_resourcespace(
-					# user,
-					rsProxyPath,
-					metadataFilepath
-					)
-				ingestStatus = True
-			else:
-				print("PROXY FILE PATH PROBLEMO")
+			if pymmResult:
+				rsProxyPath = pymmResult['accessPath']
+				basename = ingestDict[_object]['basename']
+				#print(rsProxyPath)
+				#print(os.path.exists(rsProxyPath))
+				if os.path.exists(rsProxyPath):
+					print("WOOOT")
+					# rsStatus is True/False result
+					rsStatus = resourcespaceFunctions.do_resourcespace(
+						# user,
+						rsProxyPath,
+						metadataFilepath
+						)
+					if rsStatus:
+						ingestStatus.append('Added proxy file(s) and metadata to resourcespace')
+					else:
+						ingestStatus.append('Problem sending file or metadata or both to resourcespace.')
+
+				else:
+					print("PROXY FILE PATH PROBLEMO")
+					ingestStatus.append(
+						"Problem accessing the resourcespace proxy file."\
+						"Maybe it didn't get created? Maybe check folder permissions."
+						)
+
 			ingestDict[_object]['ingestStatus'] = ingestStatus
 
 	utils.clean_temp_dir('ingest')

@@ -110,17 +110,14 @@ def status():
 		if results[path]['basename'] in doConcatYES:
 			results[path]['concat reels'] = 'True'
 
-	try:
+	# try:
 		# pass dict of files:options to ingestProcesses.main() and get back
 		# a dict that includes metadata
-		results = ingestProcesses.main(results)
+	results = ingestProcesses.main(results)
 
-	except:
-		flash("There was an error with your request. Try again. :(")
-		_data = _data
-		toIngest = toIngest
-		results = {}
-
+	# except:
+		# flash("There was an error with your request. Try again. :(")
+	print(results)
 	return render_template(
 		'ingest/status.html',
 		title='Ingest',
