@@ -6,18 +6,23 @@
 		<br/>
 		{{ utils.flashed_messages() }}
 		{% if data != "no data" %}
-			<table>
+			<table class="table table-striped">
+				<tr>
+					<th scope="col">Object</th>
+					<th scope="col">Object name</th>
+					<th scope="col">Ingest Status</th>
+				</tr>
 			{% for path, details in results.items() %}
 				<tr>
-					<th>FILE</th>
-					<th>METADATA</th>
-				</tr>
-				<tr>
+					<th scope="row">{{ loop.index }}</th>
 					<td>{{ details['basename'] }}</td>
 					<td>
-						{% for key, value in details['metadata'].items() %}
-							{{ key }} : {{ value }} <br>
+						{% for item in details['ingestStatus'] %}
+							{{ item }}<br/>
 						{% endfor %}
+						{% if not details['metadata']['hasBAMPFAmetadata'] %}
+							Note: did not retrieve metadata from any BAMPFA database (collection or audio)
+						{% endif %}
 					</td>
 				</tr>
 			{% endfor %}
