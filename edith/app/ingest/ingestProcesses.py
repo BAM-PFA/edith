@@ -284,9 +284,10 @@ def main(ingestDict,user):
 					rsProxyPath,
 					metadataFilepath
 					)
-				utils.clean_temp_dir('ingest')
+				# utils.clean_temp_dir('ingest')
 
 				#print(rsStatus)
 			else:
 				print("PATH PROBLEMO")
+	utils.clean_temp_dir('ingest')
 	return(ingestDict)
