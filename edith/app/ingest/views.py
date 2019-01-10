@@ -20,6 +20,7 @@ from .. import listObjects
 @ingest.route('/ingest_stuff',methods=['GET','POST'])
 @login_required
 def ingest_stuff():
+	# `objects` is a dict of {fullpath:basename} pairs
 	objects = listObjects.list_objects('shared')
 
 	class OneObject(forms.ObjectForm):
@@ -62,6 +63,7 @@ def status():
 			# get names/paths of files we actually want to process
 			if 'runIngest' in key:
 				toIngest.append(key.replace('runIngest-',''))
+			# targetPath is the path of the item coming from the form
 			elif 'targetPath' in key:
 				targetPaths.append(value[0])
 			elif 'doProres' in key:
@@ -70,6 +72,8 @@ def status():
 				proresToDaveYES.append(key.replace('proresToDave-',''))
 			elif 'doConcat' in key:
 				doConcatYES.append(key.replace('doConcat-',''))
+			# elif 'metadataSource' in key:
+			# 	doConcatYES.append(key.replace('doConcat-',''))
 			# start trawling for metadata entries
 			elif 'metadataForm' in key:
 				# print(key)
@@ -87,6 +91,7 @@ def status():
 					metadataEntries[theObject][field] = value[0]
 				else:
 					metadataEntries[theObject][field] = value[0]
+
 		for _object in toIngest:
 			# build a dict of files:options
 			for path in targetPaths:

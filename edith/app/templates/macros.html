@@ -1,3 +1,4 @@
+{% import "bootstrap/wtf.html" as wtf %}
 {% macro render_field(field, uniqueName) %}
 {# http://bear-z.com/python/render-bootstrap-3-forms-with-wtforms-and-jinja/ #}
 
@@ -13,9 +14,15 @@
 
 {% elif field.type == 'SelectField'  %}
 	<div class="form-group">
-				<label for="{{ field.id }}-{{ uniqueName }}">{{ field.label.text }}</label>
+		<label for="{{ field.id }}-{{ uniqueName }}">{{ field.label.text }}</label>
 		{{ field(id="{{ field.id }}-{{ uniqueName }}") }}
-		</div>
+	</div>
+
+{% elif field.type == 'QuerySelectField'  %}
+	<div class="form-group">
+		<label for="{{ field.id }}-{{ uniqueName }}">{{ field.label.text }}</label>
+		{{ field(id="{{ field.id }}-{{ uniqueName }}",class="custom-select") }}
+	</div>
 
 {% elif field.name == 'metadataForm'  %}
 	<p>
