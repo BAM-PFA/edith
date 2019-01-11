@@ -5,33 +5,33 @@
 	<div>
 		<br/>
 		{{ utils.flashed_messages() }}
-		{% if data != "no data" %}
-			<table class="table table-striped">
-				<tr>
-					<th scope="col">Object</th>
-					<th scope="col">Object name</th>
-					<th scope="col">Ingest Status</th>
-					<th scope="col">Note</th>
-				</tr>
-			{% for path, details in results.items() %}
-				<tr>
-					<th scope="row">{{ loop.index }}</th>
-					<td>{{ details['basename'] }}</td>
-					<td>
-						{% for item in details['ingestStatus'] %}
-							{{ item }}<br/>
+		<table class="table table-striped">
+			<tr>
+				<th scope="col"></th>
+				<th scope="col">Object name</th>
+				<th scope="col">Ingest Notes</th>
+				<th scope="col">Warnings</th>
+			</tr>
+		{% for _object, details in statusMessages.items() %}
+			<tr>
+				<th scope="row">{{ loop.index }}</th>
+				<td>{{ _object }}</td>
+				<td>
+					{% for item in details['Messages'] %}
+						{{ item }}<br/>
+					{% endfor %}
+				</td>
+				{% if not details['Warnings'] == [] %}
+					<td class="table-danger">
+						{% for warning in details['Warnings'] %}
+							{{ warning }} <br/>
 						{% endfor %}
 					</td>
-					{% if not details['metadata']['hasBAMPFAmetadata'] in (True,'True') %}
-						<td class="table-danger">
-							Alert: did not retrieve metadata from any BAMPFA database (collection or audio).
-						</td>
-					{% endif %}
-					
-				</tr>
-			{% endfor %}
-			</table>
-			<!-- <p>{{ user }}</p> -->
-		{% endif %}
+				{% else %}
+				<td>:)</td>
+				{% endif %}
+			</tr>
+		{% endfor %}
+		</table>
 	</div>
 {% endblock %}

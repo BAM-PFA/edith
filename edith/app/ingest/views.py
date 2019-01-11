@@ -119,13 +119,30 @@ def status():
 		# a dict that includes metadata
 	results = ingestProcesses.main(results)
 
+	# start building a dict of messages and warnings to display
+	# from the results of ingestProcesses.main()
+	statusMessages = {}
+	for _object, objectOptions in results.items():
+		anObject = objectOptions['basename']
+		statusMessages[anObject] = {}
+		statusMessages[anObject]['Warnings'] = []
+		statusMessages[anObject]['Messages'] = []
+		for message in objectOptions['ingestStatus']:
+			if message.startswith("Warning"):
+				statusMessages[anObject]['Warnings'].append(message)
+			else:
+				statusMessages[anObject]['Messages'].append(message)
+		if objectOptions['metadata']['hasBAMPFAmetadata'] in ("False",False):
+			statusMessages[anObject]['Warnings'].append(
+				"Note: we did not retrieve metadata from any BAMPFA "\
+				"database (collection or audio)."
+				)
+
 	# except:
 		# flash("There was an error with your request. Try again. :(")
 	print(results)
 	return render_template(
 		'ingest/status.html',
 		title='Ingest',
-		data=_data,
-		toIngest=toIngest,
-		results=results
+		statusMessages=statusMessages
 		)
