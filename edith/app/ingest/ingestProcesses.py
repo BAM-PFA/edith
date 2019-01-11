@@ -333,8 +333,8 @@ def main(ingestDict):
 							)
 					else:
 						ingestStatus.append(
-							'Problem sending file or metadata '\
-							'or both to resourcespace.'
+							'Warning: Problem sending file or metadata '\
+							'or both to ResourceSpace.'
 							)
 				else:
 					print("PROXY FILE PATH PROBLEMO")
