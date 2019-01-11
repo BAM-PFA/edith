@@ -119,4 +119,21 @@ class Data_Source(db.Model):
 	credentials = db.Column(db.String(60), unique=True)
 	description = db.Column(db.String(200))
 
+class Metadata_Field(db.Model):
+	'''
+	Define metadata fields:
+	- with values from external databases
+	- with values from user form input
+	'''
+	__tablename__ = 'metadata_fields'
 
+	id = db.Column(db.Integer, primary_key=True)
+	# User-visible field name (e.g. Record ID)
+	fieldName = db.Column(db.String(100))
+	# field unique name (e.g. recordID)
+	fieldUniqueName = db.Column(db.String(60), unique=True)
+	# data source
+	dataSource = db.Column(db.String(60))
+	# resourceSpace field ID # 
+	rsFieldID = db.Column(db.Integer, unique=True)
+	description = db.Column(db.String(200))
