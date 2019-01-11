@@ -15,7 +15,7 @@ from flask_login import current_user
 
 # local modules
 from . import fmQuery
-from . import metadataMaster
+from .metadataMaster import metadataMasterDict
 from .. import resourcespaceFunctions
 from .. import sshStuff
 from .. import utils
@@ -44,25 +44,30 @@ def get_barcode_from_filename(basename):
 	return barcode
 
 def get_metadata(idNumber,basename,intermediateMetadata):
-	# added in multiple return statements
-	# somehow if there was no metadata, the variable 
-	# remembered the previous assignment and gave the current
-	# file the same metadata. still have no idea how that happens.
-	# -- Get the metadata master dict from metadataMaster.py
-	metadataDict = metadataMaster.metadata
+	# Init an empty dict for each item
+	metadataDict = {}
+	# Get the metadata master dict from metadataMaster.py
+	# have to build up the metadataDict w each loop 
+	# to avoid persisting metadata in subsequent loops
+	for tag,mdValue in metadataMasterDict.items():
+		metadataDict[tag] = mdValue
+
 	# -- Add any existing field values to the blank dict
-	for k,v in intermediateMetadata.items():
-		if not v == "":
-			if k in metadataDict:
-				metadataDict[k] = v
-	if all(value=="" for value in metadataDict.values()):
+	if not intermediateMetadata == {}:
+		for tag,mdValue in intermediateMetadata.items():
+			if not mdValue == "":
+				if tag in metadataDict:
+					metadataDict[tag] = mdValue
+	else:
+		pass
+
+	if all(value in ("",None) for value in metadataDict.values()):
 		metadataDict['hasBAMPFAmetadata'] = False
 	else:
 		metadataDict['hasBAMPFAmetadata'] = True
 
 	if idNumber == "--":
 		print("NO PFA ID NUMBER")
-		return metadataDict
 
 	elif idNumber == '00000':
 		# if the acc item number is zeroed out,
@@ -72,46 +77,47 @@ def get_metadata(idNumber,basename,intermediateMetadata):
 			# print(barcode)
 			if barcode == "000000000":
 				print("ID AND BARCODE BOTH ZEROED OUT")
-				return metadataDict
+				# return metadataDict
 
 			else:
 				FMmetadata = fmQuery.xml_query(barcode)
-				# add any filemaker metadata to the dict
-				for k,v in FMmetadata.items():
-					if k in metadataDict:
-						metadataDict[k] = v
-				metadataDict['hasBAMPFAmetadata'] = True
+				if FMmetadata:
+					# add any filemaker metadata to the dict
+					for k,v in FMmetadata.items():
+						if k in metadataDict:
+							metadataDict[k] = v
+					metadataDict['hasBAMPFAmetadata'] = True
 		except:
 			print("Error searching FileMaker on ID and barcode")
-			return metadataDict
+			# return metadataDict
 	else:
 		try:
 			print('searching FileMaker on '+idNumber)
 			FMmetadata = fmQuery.xml_query(idNumber)
 			# print(FMmetadata)
-			# add any filemaker metadata to the dict
-			for k,v in FMmetadata.items():
-				if k in metadataDict:
-					metadataDict[k] = v
-			metadataDict['hasBAMPFAmetadata'] = True
-			# print(metadataDict)
-			# print('metadataDict')
+			if FMmetadata:
+				# add any filemaker metadata to the dict
+				for k,v in FMmetadata.items():
+					if k in metadataDict:
+						metadataDict[k] = v
+				metadataDict['hasBAMPFAmetadata'] = True
 		except:
 			# if no results, try padding with zeros
 			idNumber = "{0:0>5}".format(idNumber)
 			try:
 				FMmetadata = fmQuery.xml_query(idNumber)
 				# add any filemaker metadata to the dict
-				for k,v in FMmetadata.items():
-					if k in metadataDict:
-						metadataDict[k] = v
-				metadataDict['hasBAMPFAmetadata'] = True
+				if FMmetadata:
+					for k,v in FMmetadata.items():
+						if k in metadataDict:
+							metadataDict[k] = v
+					metadataDict['hasBAMPFAmetadata'] = True
 			except:
 				# give up
-				return metadataDict
+				pass
 
-	print('metadataDict')
-	print(metadataDict)
+	# print('metadataDict')
+	# print(metadataDict)
 	return(metadataDict)
 
 def grab_remote_files(targetFilepath):
@@ -149,8 +155,9 @@ def write_metadata_json(metadata,basename):
 	return jsonPath
 
 def add_metadata(ingestDict):
-	for objectPath, options in ingestDict.items():
-		# print(options)
+	for objectPath, objectOptions in ingestDict.items():
+		# print(objectOptions)
+		# print(barf)
 		metadataJson = {}
 		metadataJson[objectPath] = {}
 		# first check if there is user-supplied metadata
@@ -160,21 +167,22 @@ def add_metadata(ingestDict):
 			# if not, init an empty dict
 			metadataJson[objectPath]['metadata'] = {}
 
-		basename = options['basename']
+		basename = objectOptions['basename']
 		idNumber = get_acc_from_filename(basename)
 		intermediateMetadata = metadataJson[objectPath]['metadata']
 
+		# go get some metadata
 		metadata = get_metadata(idNumber,basename,intermediateMetadata)
-		del intermediateMetadata
-		options['metadata'] = metadata
+
+		objectOptions['metadata'] = metadata
 
 		metadataJson[objectPath]['metadata'] = metadata
 		metadataJson[objectPath]['basename'] = basename
-		del metadata
-		options['metadataFilepath'] = write_metadata_json(metadataJson,basename)
+		objectOptions['metadataFilepath'] = write_metadata_json(metadataJson,basename)
 
 	# print(ingestDict)
 	print("HELLO THERE WE ADDED METADATA!")
+	# print(barf)
 	return ingestDict
 
 def main(ingestDict):
@@ -198,8 +206,9 @@ def main(ingestDict):
 
 	# get rid of the userMetadata dict if all the values are empty
 	for _object,details in ingestDict.items():
-		if all(value=="" for value in ingestDict[_object]['userMetadata'].values()):
-			ingestDict[_object].pop('userMetadata')
+		if 'userMetadata' in ingestDict[_object]:
+			if all(value=="" for value in ingestDict[_object]['userMetadata'].values()):
+				ingestDict[_object].pop('userMetadata')
 
 	print("INGEST DICT LOOKS LIKE THIS NOW")
 	for k,v in ingestDict.items():
@@ -208,9 +217,11 @@ def main(ingestDict):
 		print("------")
 	# get the hostname of the shared dir:
 	_, hostName, _ = utils.get_shared_dir_stuff('shared')
-	# try to search filemaker for descriptive metadata
+
+	# look for descriptive metadata and also 
+	# add in fields from the master field list
 	ingestDict = add_metadata(ingestDict)
-	#print(ingestDict)
+
 	if not hostName == 'localhost':
 		'''
 		THIS SECTION IS ACTUALLY DEAD... WOULD NEED TO BE REVISED!
