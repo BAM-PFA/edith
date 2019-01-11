@@ -52,7 +52,7 @@ def get_metadata(idNumber,basename,intermediateMetadata):
 	for tag,mdValue in metadataMasterDict.items():
 		metadataDict[tag] = mdValue
 
-	# -- Add any existing field values to the blank dict
+	# Add any existing field values to the blank dict
 	if not intermediateMetadata == {}:
 		for tag,mdValue in intermediateMetadata.items():
 			if not mdValue == "":
@@ -162,12 +162,14 @@ def add_metadata(ingestDict):
 		metadataJson[objectPath] = {}
 		# first check if there is user-supplied metadata
 		if 'userMetadata' in ingestDict[objectPath]:
-			metadataJson[objectPath]['metadata'] = ingestDict[objectPath]['userMetadata']
+			metadataJson[objectPath]['metadata'] = \
+				ingestDict[objectPath]['userMetadata']
 		else:
 			# if not, init an empty dict
 			metadataJson[objectPath]['metadata'] = {}
 
 		basename = objectOptions['basename']
+		# try to parse an ID number
 		idNumber = get_acc_from_filename(basename)
 		intermediateMetadata = metadataJson[objectPath]['metadata']
 
@@ -178,7 +180,8 @@ def add_metadata(ingestDict):
 
 		metadataJson[objectPath]['metadata'] = metadata
 		metadataJson[objectPath]['basename'] = basename
-		objectOptions['metadataFilepath'] = write_metadata_json(metadataJson,basename)
+		objectOptions['metadataFilepath'] = \
+			write_metadata_json(metadataJson,basename)
 
 	# print(ingestDict)
 	print("HELLO THERE WE ADDED METADATA!")
@@ -205,6 +208,7 @@ def main(ingestDict):
 	ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 
 	# get rid of the userMetadata dict if all the values are empty
+	# it shouldn't be here but just in case....
 	for _object,details in ingestDict.items():
 		if 'userMetadata' in ingestDict[_object]:
 			if all(value=="" for value in ingestDict[_object]['userMetadata'].values()):
@@ -218,46 +222,45 @@ def main(ingestDict):
 	# get the hostname of the shared dir:
 	_, hostName, _ = utils.get_shared_dir_stuff('shared')
 
-	# look for descriptive metadata and also 
-	# add in fields from the master field list
+	####################
+	##### FETCH METADATA 
+	####################
 	ingestDict = add_metadata(ingestDict)
 
+	##############
+	#### CALL PYMM
+	##############
 	if not hostName == 'localhost':
 		'''
-		THIS SECTION IS ACTUALLY DEAD... WOULD NEED TO BE REVISED!
-		'''
+		THIS SECTION IS DEAD... WOULD NEED TO BE REVISED
+		IF IT EVER SEEMED LIKE WE WANT TO MESS WITH REMOTE SHARED DIR
 		for objectPath in ingestDict.keys():
 			try:
 				grab_remote_files(objectPath)
 			except:
 				print("no dice.")
-		for _object in os.listdir(utils.get_temp_dir()):
-			objectPath = os.path.join(utils.get_temp_dir(),_object)
-			pythonBinary = utils.get_python_path()
-			# pymmPath = utils.get_pymm_path()
-			# ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
-			pymmCommand = [pythonBinary,ingestSipPath,'-i',objectPath,'-u',user]
-			metadataFilepath = ingestDict[_object]['metadataFilepath']
-			if metadataFilepath != '':
-				pymmCommand.extend(['-j',metadataFilepath])
-			else:
-				pass
-
-			subprocess.call(pymmCommand)
-
+		'''
 	else:
 		for _object in ingestDict.keys():
 			# ingestStatus is a set of messages that will be flashed to
 			# the user. Compiling it as a list for now... seems simplest?
 			ingestStatus = []
+
+			# prep a pymm command
+			pymmResult = None
 			pythonBinary = utils.get_python_path()
 			pymmPath = utils.get_pymm_path()
 			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
-			pymmCommand = [pythonBinary,ingestSipPath,'-i',_object,'-u',user,'-dz']
-			pymmResult = None
+			pymmCommand = [
+				pythonBinary,	# path to python3 executable
+				ingestSipPath,	# path to pymm folder
+				'-i',_object,	# input path
+				'-u',user,		# user gets recorded
+				'-dz'			# report to db and delete originals
+				]
 			metadataFilepath = ingestDict[_object]['metadataFilepath']
-			#print(metadataFilepath)
 
+			# IMPORTANT call to `777` the JSON file so pymm can read it
 			os.chmod(metadataFilepath,0o777)
 			if ingestDict[_object]['metadata']['hasBAMPFAmetadata'] != False:
 				pymmCommand.extend(['-j',metadataFilepath])
@@ -276,33 +279,39 @@ def main(ingestDict):
 				# get the pymm result dict via this highly hack-y method
 				pymmOut = pymmOut.decode().split('\n')
 				pymmResult = ast.literal_eval(pymmOut[-2])
-
 				print(pymmResult)
-				ingestStatus.append('Archival information package creation succeeeded')
+				# get the UUID which we'll add to the metadata file in a sec
+				ingestUUID = pymmResult['ingestUUID']
 
+				ingestStatus.append(
+					'Archival information package creation succeeeded'
+					)
 			except subprocess.CalledProcessError as e:
 				print(e)
-				ingestStatus.append('Archival information package creation failed')
-
-			# print('hey')
-			# add the UUID to the metadata file
-			ingestUUID = pymmResult['ingestUUID']
+				ingestStatus.append(
+					'Warning: Archival information package'\
+					' creation failed'
+					)
 
 			try:
 				with open(metadataFilepath,'r+') as mdread:
-					print('opened')
+					print('opened the md file')
 					data = json.load(mdread)
-					# print(data)
 					key = list(data.keys())[0]
 					data[key]['metadata']['ingestUUID'] = ingestUUID
 					theGoods = data[key]['metadata']
-					print(data)
 				with open(metadataFilepath,'w+') as mdwrite:
 					json.dump(theGoods,mdwrite)
+					print('wrote to the md file')
 				ingestStatus.append('Added metadata to sidecar JSON file')
 			except:
-				ingestStatus.append('Problem writing to JSON metadata file. Check file/fodler permissions.')
-
+				ingestStatus.append(
+					'Warning: Problem writing to JSON metadata file.'\
+					' Check file/folder permissions.'
+					)
+			########################
+			#### RESOURCESPACE STUFF
+			########################
 			rsDir = utils.get_rs_dir()
 			if pymmResult:
 				rsProxyPath = pymmResult['accessPath']
@@ -318,15 +327,21 @@ def main(ingestDict):
 						metadataFilepath
 						)
 					if rsStatus:
-						ingestStatus.append('Added proxy file(s) and metadata to resourcespace')
+						ingestStatus.append(
+							'Added proxy file(s) '\
+							'and metadata to resourcespace'
+							)
 					else:
-						ingestStatus.append('Problem sending file or metadata or both to resourcespace.')
-
+						ingestStatus.append(
+							'Problem sending file or metadata '\
+							'or both to resourcespace.'
+							)
 				else:
 					print("PROXY FILE PATH PROBLEMO")
 					ingestStatus.append(
 						"Problem accessing the resourcespace proxy file."\
-						"Maybe it didn't get created? Maybe check folder permissions."
+						"Maybe it didn't get created?"\
+						"Maybe check folder permissions."
 						)
 
 			ingestDict[_object]['ingestStatus'] = ingestStatus
