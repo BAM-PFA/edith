@@ -10,7 +10,7 @@ class DepartmentForm(FlaskForm):
 	"""
 	Form for admin to add or edit a department
 	"""
-	deptname = StringField('Name', validators=[DataRequired()])
+	deptname = StringField('Department name', validators=[DataRequired()])
 	description = StringField('Description', validators=[DataRequired()])
 	submit = SubmitField('Submit')
 
@@ -21,7 +21,9 @@ class AddUserForm(FlaskForm):
 	department_id = QuerySelectField(
 		query_factory=lambda: Department.query.all(),
 		get_pk=lambda x: x.id,
-		get_label="deptname"
+		get_label="deptname",
+		allow_blank=True,
+		blank_text=''
 		)
 	email = StringField('email address', validators=[DataRequired(),Email()])
 	username = StringField('username', validators=[DataRequired()])
@@ -48,7 +50,10 @@ class EditUserForm(FlaskForm):
 	"""
 	department_id = QuerySelectField(
 		query_factory=lambda: Department.query.all(),
-		get_label="deptname"
+		get_pk=lambda x: x.id,
+		get_label="deptname",
+		allow_blank=True,
+		blank_text=u'Select a department'
 		)
 	email = StringField('email address', validators=[DataRequired(),Email()])
 	username = StringField('username', validators=[DataRequired()])

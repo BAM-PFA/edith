@@ -52,7 +52,7 @@ def add_department():
 	form = DepartmentForm()
 	if form.validate_on_submit():
 		department = Department(
-			name=form.deptname.data,
+			deptname=form.deptname.data,
 			description=form.description.data
 			)
 		try:
@@ -68,10 +68,13 @@ def add_department():
 		return redirect(url_for('admin.list_departments'))
 
 	# load department template
-	return render_template('admin/departments/department.html', action="Add",
-						   add_department=add_department, form=form,
-						   title="Add Department")
-
+	return render_template(
+		'admin/departments/department.html', 
+		action="Add",
+		add_department=add_department,
+		form=form,
+		title="Add Department"
+		)
 
 @admin.route('/departments/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -129,14 +132,17 @@ def delete_department(id):
 @admin.route('/users')
 @login_required
 def list_users():
-    """
-    List all users
-    """
-    check_admin()
+	"""
+	List all users
+	"""
+	check_admin()
 
-    users = User.query.all()
-    return render_template('admin/users/users.html',
-                           users=users, title='Users')
+	users = User.query.all()
+	return render_template(
+		'admin/users/users.html',
+		users=users, 
+		title='Users'
+		)
 
 @admin.route('/users/add', methods=['GET', 'POST'])
 @login_required
@@ -202,8 +208,9 @@ def edit_user(id):
 	user = User.query.get_or_404(id)
 	form = EditUserForm(obj=user)
 	if form.validate_on_submit():
-		print(form.data)
-		user.department_id=form.department_id.data.id,
+		# print(form.data)
+		if not form.department_id.data == None:
+			user.department_id=form.department_id.data.id
 		user.email = form.email.data
 		user.username = form.username.data
 		user.first_name = form.first_name.data
@@ -215,7 +222,7 @@ def edit_user(id):
 			user.password = form.password.data
 		try:
 			db.session.commit()
-			print(form.data)
+			# print(form.data)
 			flash('You have successfully edited the user.')
 
 			# redirect to the users page
@@ -226,6 +233,10 @@ def edit_user(id):
 			return redirect(url_for('admin.list_users'))
 
 	# this pre-populates the form with existing data from the db
+	deptID = Department.query.get(user.department_id).id
+	print(deptID)
+	if not deptID in ('',None,"Null"):
+		form.department_id=deptID
 	form.email.data = user.email
 	form.username.data = user.username
 	form.first_name.data = user.first_name
@@ -265,14 +276,14 @@ def delete_user(id):
 @admin.route('/data_sources')
 @login_required
 def list_data_sources():
-    """
-    List all data_sources
-    """
-    check_admin()
+	"""
+	List all data_sources
+	"""
+	check_admin()
 
-    data_sources = Data_Source.query.all()
-    return render_template('admin/data_sources/data_sources.html',
-                           data_sources=data_sources, title='Data_Sources')
+	data_sources = Data_Source.query.all()
+	return render_template('admin/data_sources/data_sources.html',
+						   data_sources=data_sources, title='Data_Sources')
 
 @admin.route('/data_sources/add', methods=['GET', 'POST'])
 @login_required
