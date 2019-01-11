@@ -50,6 +50,7 @@ def status():
 	
 	_data = request.form.to_dict(flat=False)
 	print(_data)
+	# sys.exit
 
 	results = {}
 	toIngest =[]
@@ -72,10 +73,11 @@ def status():
 			proresToDaveYES.append(key.replace('proresToDave-',''))
 		elif 'doConcat' in key:
 			doConcatYES.append(key.replace('doConcat-',''))
-		# elif 'metadataSource' in key:
-		# 	doConcatYES.append(key.replace('doConcat-',''))
 		# start trawling for metadata entries
-		elif 'metadataForm' in key:
+		# skip entries that are blank
+		# -> n.b. this should result in no userMetadata dict 
+		#    if there isn't any user md
+		elif 'metadataForm' in key and not value == ['']:
 			# print(key)
 			# get the field label and object via regex
 			pattern = r'(metadataForm-)([a-zA-Z0-9_]+)(-)(.*)'
@@ -110,6 +112,8 @@ def status():
 		if results[path]['basename'] in doConcatYES:
 			results[path]['concat reels'] = 'True'
 
+	print(results)
+	# sys.exit
 	# try:
 		# pass dict of files:options to ingestProcesses.main() and get back
 		# a dict that includes metadata
