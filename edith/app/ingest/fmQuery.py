@@ -26,7 +26,7 @@ def xml_query(idNumber):
 		requestURL = (
 		"http://{0}/fmi/xml/fmresultset.xml?"
 		"-db={1}&-lay={2}"
-		"&AccessionNumberItemNumber={3}"
+		"&AccessionNumberItemNumber=={3}"
 		"&-find".format(server, dsn, layout,idNumber)
 		)
 		# print(requestURL)
