@@ -19,9 +19,11 @@
 	</div>
 
 {% elif field.type == 'QuerySelectField'  %}
+	{% set fieldName = [field.id,uniqueName]|join('-') %}
+	<p> {{field.name }} </p>
 	<div class="form-group">
 		<label for="{{ field.id }}-{{ uniqueName }}">{{ field.label.text }}</label>
-		{{ field(id="{{ field.id }}-{{ uniqueName }}",class="custom-select") }}
+		{{ field(id=fieldName,class="custom-select") }}
 	</div>
 
 {% elif field.name == 'metadataForm'  %}
