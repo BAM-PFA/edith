@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+'''
+This function queries defined external metadata source(s)
+and builds out a dict of fields and values that maps to Bampfa
+ResourceSpace and PBCore mappings.
+'''
 # standard libraries
 import hashlib
 import json
@@ -13,6 +18,8 @@ from lxml import etree
 # local imports
 from . import metadataMaster
 import app
+
+
 
 def xml_query(idNumber):
 	namespace = {"filemaker":"http://www.filemaker.com/xml/fmresultset"}

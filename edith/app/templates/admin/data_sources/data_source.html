@@ -2,9 +2,9 @@
 {% extends "base.html" %}
 {% block title %}
     {% if add_data_source %}
-        Add Data Source
+        Add Metadata Source
     {% else %}
-        Edit Data Source
+        Edit Metadata Source
     {% endif %}
 {% endblock %}
 {% block content %}
@@ -14,9 +14,9 @@
       <div class="inner">
         <div class="center">
             {% if add_data_source %}
-                <h1>Add Data Source</h1>
+                <h1>Add Metadata Source</h1>
             {% else %}
-                <h1>Edit Data Source</h1>
+                <h1>Edit Metadwata Source</h1>
             {% endif %}
             <br/>
             {{ wtf.quick_form(form) }}

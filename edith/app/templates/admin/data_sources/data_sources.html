@@ -1,6 +1,6 @@
 {% import "bootstrap/utils.html" as utils %}
 {% extends "base.html" %}
-{% block title %}Data Sources{% endblock %}
+{% block title %}Metadata Sources{% endblock %}
 {% block content %}
 <div class="content-section">
   <div class="outer">
@@ -9,7 +9,7 @@
         <br/>
         {{ utils.flashed_messages() }}
         <br/>
-        <h1 style="text-align:center;">Data Sources</h1>
+        <h1 style="text-align:center;">Metadata Sources</h1>
         {% if data_sources %}
           <hr class="intro-divider">
           <div class="center">
@@ -47,12 +47,12 @@
           <div style="text-align: center">
         {% else %}
           <div style="text-align: center">
-            <h3> No data_sources have been added. </h3>
+            <h3> No metadata sources have been added. </h3>
             <hr class="intro-divider">
         {% endif %}
           <a href="{{ url_for('admin.add_data_source') }}" class="btn btn-default btn-lg">
             <i class="fa fa-plus"></i>
-            Add Data Source
+            Add Metadata Source
           </a>
         </div>
       </div>
