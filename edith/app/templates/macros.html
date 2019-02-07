@@ -17,27 +17,10 @@
 	</div>
 
 {% elif field.type == 'SelectField'  %}
-	{% if not field.name.startswith('metadataSource') %}
-		<div class="form-group">
+		<div class="form-group m-1">
 			<label for="{{ field.id }}-{{ uniqueName}}">{{ field.label.text }}</label>
-			{{ field(id="{{ field.id }}-{{ uniqueName}}") }}
+			{{ field(id="{{ field.id }}-{{ uniqueName}}", class="custom-select") }}
 		</div>
-	{% else %}
-		
-		<div class="form-group">
-			<label for="{{ field.id }}-{{ uniqueName}}">{{ field.label.text }}</label>
-			<p>{{ field.choices }}</p>
-			<select class="custom-select" name="{{ field.id }}-{{ uniqueName}}" id="{{ field.id }}-{{ uniqueName}}">
-				{% for _tuple in field.choices %}
-					{% if not _tuple[0] == "" %}
-						<option value="{{ _tuple[0] }}">{{ _tuple[1] }}</option>
-					{% else %}
-						<option value=""/>
-					{% endif %}
-				{% endfor %}
-			</select>
-		</div>
-	{% endif %}
 
 {% elif field.type == 'QuerySelectField'  %}
 	<div class="form-group">

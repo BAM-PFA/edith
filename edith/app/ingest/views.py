@@ -36,6 +36,10 @@ def ingest_stuff():
 	metadataSource_list = [
 		(i.id, i.dbName) for i in available_metadataSources
 		]
+	# set the default sourceID to `0` which will be handled later
+	# as a null value
+	# https://stackoverflow.com/questions/46820042/trying-to-insert-blank-option-in-dynamic-wtform-field
+	metadataSource_list.insert(0,(0,'Please select a metadata source:'))
 
 	for path,_object in objects.items():
 		# this section creates a per-object sub form that is used to 

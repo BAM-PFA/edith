@@ -56,7 +56,7 @@ class ObjectForm(FlaskForm):
 	doConcat = wtforms.BooleanField("Concatenate reels?",default='')
 
 	# https://stackoverflow.com/questions/46921823/dynamic-choices-wtforms-flask-selectfield?rq=1
-	metadataSource = wtforms.SelectField('Metadata Source', coerce=int)
+	metadataSource = wtforms.SelectField('Metadata Source',coerce=int,default='')
 	metadataForm = wtforms.FormField(MetadataForm)
 	
 

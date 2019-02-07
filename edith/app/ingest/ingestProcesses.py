@@ -15,6 +15,7 @@ from flask_login import current_user
 
 # local modules
 from . import fmQuery
+from . import dataSourceAccess
 from .metadataMaster import metadataMasterDict
 from .. import resourcespaceFunctions
 from .. import sshStuff
@@ -156,8 +157,11 @@ def write_metadata_json(metadata,basename):
 
 def add_metadata(ingestDict):
 	for objectPath, objectOptions in ingestDict.items():
-		# print(objectOptions)
-		# print(barf)
+		
+		metadataSourceID = int(ingestDict[objectPath]['metadataSource'])
+		if not metadataSourceID == 0:
+			dataSourceAccessDetails = dataSourceAccess.main(metadataSourceID)
+			
 		metadataJson = {}
 		metadataJson[objectPath] = {}
 		# first check if there is user-supplied metadata
@@ -275,7 +279,7 @@ def main(ingestDict):
 			pymmResult = None
 			pymmCommand,metadataFilepath = make_pymm_command(user,_object,ingestDict)
 			print(pymmCommand)
-			
+
 			try:
 				pymmOut = subprocess.check_output(
 					pymmCommand
