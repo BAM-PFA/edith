@@ -29,6 +29,9 @@ def ingest_stuff():
 		pass
 
 	choices = {}
+
+	# query the db for the available metadata sources
+	# https://stackoverflow.com/questions/46921823/dynamic-choices-wtforms-flask-selectfield?rq=1
 	available_metadataSources = db.session.query(Data_Source).all()
 	metadataSource_list = [
 		(i.id, i.dbName) for i in available_metadataSources
@@ -67,6 +70,7 @@ def status():
 	doProresYES = []
 	proresToDaveYES = []
 	doConcatYES =[]
+	metadataSourceSelection = {}
 	metadataEntries = {}
 
 	for key, value in _data.items():
@@ -82,6 +86,11 @@ def status():
 			proresToDaveYES.append(key.replace('proresToDave-',''))
 		elif 'doConcat' in key:
 			doConcatYES.append(key.replace('doConcat-',''))
+		elif 'metadataSource' in key:
+			pattern = r'(metadataSource-)(.*)'
+			mySearch = re.search(pattern,key)
+			theObject = mySearch.group(2)
+			metadataSourceSelection[theObject] = value[0]
 		# start trawling for metadata entries
 		# skip entries that are blank
 		# -> n.b. this should result in no userMetadata dict 
@@ -92,7 +101,6 @@ def status():
 			pattern = r'(metadataForm-)([a-zA-Z0-9_]+)(-)(.*)'
 			fieldSearch = re.search(pattern,key)
 			# raw fields are formed as userMD_1_eventLocation
-			# field = fieldSearch.group(2).replace('userMD_','')
 			field = re.sub(r"(userMD_)(\d)(_)", '', fieldSearch.group(2))
 			theObject = fieldSearch.group(4)
 			# print(field,theObject)
@@ -111,6 +119,8 @@ def status():
 				results[path] = {'basename' : _object}
 				if _object in metadataEntries:
 					results[path]['userMetadata'] = metadataEntries[_object]
+				if _object in metadataSourceSelection:
+					results[path]['metadataSource'] = metadataSourceSelection[_object]
 
 	# add boolean options to dict
 	for path,sub in results.items():
