@@ -53,20 +53,11 @@ class ObjectForm(FlaskForm):
 	targetPath = wtforms.HiddenField('objectPath')
 	targetBase = wtforms.HiddenField('objectBase')
 	runIngest = wtforms.BooleanField('Ingest?',default='')
-	#testselect = wtforms.SelectField("Raw or post processed",default='',choices=[('raw','Raw'),('processed','Post processed')])
-	#doProres = wtforms.BooleanField("make prores?",default='')
-	#proresToDave = wtforms.BooleanField("deliver prores to dave?",default='')
 	doConcat = wtforms.BooleanField("Concatenate reels?",default='')
-	metadataSource = QuerySelectField(
-		query_factory=lambda: Data_Source.query.all(),
-		get_pk=lambda x: x.id,
-		get_label="dbName",
-		allow_blank=True,
-		blank_text=u''
-		)
+
+	metadataSource = wtforms.SelectField('Metadata Source', coerce=int)
 	metadataForm = wtforms.FormField(MetadataForm)
 	
-	#metadataFields = wtforms.FieldList(StringField('metadata1'))
 
 class IngestForm(FlaskForm):
 	'''

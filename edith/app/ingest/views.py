@@ -13,7 +13,7 @@ from . import fmQuery
 from . import forms
 
 from .. import db
-from .. models import User
+from .. models import User, Data_Source
 
 from .. import listObjects
 
@@ -24,13 +24,22 @@ def ingest_stuff():
 	objects = listObjects.list_objects('shared')
 
 	class OneObject(forms.ObjectForm):
-		# http://wtforms.simplecodes.com/docs/1.0.1/specific_problems.html
+		# init a form that can be instantiated per-object
+		# http://wtforms.simplecodes.com/docs/1.0.1/specific_problems.html			
 		pass
+
 	choices = {}
+	available_metadataSources = db.session.query(Data_Source).all()
+	metadataSource_list = [
+		(i.id, i.dbName) for i in available_metadataSources
+		]
 
 	for path,_object in objects.items():
+		# this section creates a per-object sub form that is used to 
+		# pass the choices for each object
 		choices[path] = OneObject(targetPath=path,targetBase=_object)
-
+		choices[path].metadataSource.choices = metadataSource_list
+	
 	form = forms.IngestForm()
 	form.suchChoices = choices
 

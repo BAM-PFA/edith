@@ -6,23 +6,43 @@
 {# the above should be a way to make the metadata fields render w/o repeating per category #}
 {# but i couldn't get it to work/pass arguments to it. #}
 
+{# set the dynamic field name that captures the unique name of an asset #}
+{# so we can dynamically construct a form that returns values tied to each asset #}
+{% set fieldName = [field.id,uniqueName]|join('-') %}
+
 {% if field.type == 'BooleanField' %}
 	<div class="form-check">
-		<label for="{{ field.id }}-{{ uniqueName }}">{{ field.label.text }}</label>
-		<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="checkbox" default=""/>
+		<label for="{{ field.id }}-{{ uniqueName}}">{{ field.label.text }}</label>
+		<input name="{{ field.id }}-{{ uniqueName}}" id="{{ field.id }}-{{ uniqueName}}" type="checkbox" default=""/>
 	</div>
 
 {% elif field.type == 'SelectField'  %}
-	<div class="form-group">
-		<label for="{{ field.id }}-{{ uniqueName }}">{{ field.label.text }}</label>
-		{{ field(id="{{ field.id }}-{{ uniqueName }}") }}
-	</div>
+	{% if not field.name.startswith('metadataSource') %}
+		<div class="form-group">
+			<label for="{{ field.id }}-{{ uniqueName}}">{{ field.label.text }}</label>
+			{{ field(id="{{ field.id }}-{{ uniqueName}}") }}
+		</div>
+	{% else %}
+		
+		<div class="form-group">
+			<label for="{{ field.id }}-{{ uniqueName}}">{{ field.label.text }}</label>
+			<p>{{ field.choices }}</p>
+			<select class="custom-select" name="{{ field.id }}-{{ uniqueName}}" id="{{ field.id }}-{{ uniqueName}}">
+				{% for _tuple in field.choices %}
+					{% if not _tuple[0] == "" %}
+						<option value="{{ _tuple[0] }}">{{ _tuple[1] }}</option>
+					{% else %}
+						<option value=""/>
+					{% endif %}
+				{% endfor %}
+			</select>
+		</div>
+	{% endif %}
 
 {% elif field.type == 'QuerySelectField'  %}
-	{% set fieldName = [field.id,uniqueName]|join('-') %}
-	<p> {{field.name }} </p>
 	<div class="form-group">
-		<label for="{{ field.id }}-{{ uniqueName }}">{{ field.label.text }}</label>
+		<label for="{{ field.id }}-{{ uniqueName}}">{{ field.label.text }}</label>
+		{% set fieldName = [field.id,uniqueName]|join('-') %}
 		{{ field(id=fieldName,class="custom-select") }}
 	</div>
 
@@ -168,14 +188,14 @@
 		</div>
 	</div>
 {% elif field.name == 'targetPath' %}
-	<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="hidden" value="{{ field.data }}"/>
+	<input name="{{ field.id }}-{{ uniqueName}}" id="{{ field.id }}-{{ uniqueName}}" type="hidden" value="{{ field.data }}"/>
 {% elif field.name == 'targetBase' %}
-	<div class="card-header"><label for="{{ field.id }}-{{ uniqueName }}">{{ uniqueName }}</label></div>
-	<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="hidden" value="{{ field.data }}"/>
+	<div class="card-header"><label for="{{ field.id }}-{{ uniqueName}}">{{ uniqueName }}</label></div>
+	<input name="{{ field.id }}-{{ uniqueName}}" id="{{ field.id }}-{{ uniqueName}}" type="hidden" value="{{ field.data }}"/>
 {% elif field.name == 'aipHumanSize' %}
 	<div class="card-body">
-		<label for="{{ field.id }}-{{ uniqueName }}"><strong>Archival Package Size: {{ field.data }}</strong></label>
-		<input name="{{ field.id }}-{{ uniqueName }}" id="{{ field.id }}-{{ uniqueName }}" type="hidden" value="{{ field.data }}"/>
+		<label for="{{ field.id }}-{{ uniqueName}}"><strong>Archival Package Size: {{ field.data }}</strong></label>
+		<input name="{{ field.id }}-{{ uniqueName}}" id="{{ field.id }}-{{ uniqueName}}" type="hidden" value="{{ field.data }}"/>
 	</div>
 {% endif %}
 
