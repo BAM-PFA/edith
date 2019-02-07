@@ -156,10 +156,10 @@ def add_user():
 
 	form = AddUserForm()
 	# print(form.data)
-	print("HIIHII")
+	# print("HIIHII")
 	if form.validate_on_submit():
-		print(form.department_id.data.id)
-		print(type(form.department_id.data))
+		# print(form.department_id.data.id)
+		# print(type(form.department_id.data))
 
 		user = User(
 			department_id=form.department_id.data.id,
@@ -175,7 +175,7 @@ def add_user():
 		try:
 			# add department to the database
 			db.session.add(user)
-			print(user)
+			# print(user)
 			db.session.commit()
 			flash('You have successfully added a new user.')
 		except Exception as e:
