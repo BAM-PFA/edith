@@ -188,6 +188,31 @@ def add_metadata(ingestDict):
 	# print(barf)
 	return ingestDict
 
+def make_pymm_command(user,_object,ingestDict):
+	pythonBinary = utils.get_python_path()
+	pymmPath = utils.get_pymm_path()
+	ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
+	pymmCommand = [
+		pythonBinary,	# path to python3 executable
+		ingestSipPath,	# path to pymm folder
+		'-i',_object,	# input path
+		'-u',user,		# user gets recorded
+		'-dz'			# report to db and delete originals
+		]
+	metadataFilepath = ingestDict[_object]['metadataFilepath']
+
+	# IMPORTANT call to `777` the JSON file so pymm can read it
+	os.chmod(metadataFilepath,0o777)
+	if ingestDict[_object]['metadata']['hasBAMPFAmetadata'] != False:
+		pymmCommand.extend(['-j',metadataFilepath])
+	else:
+		pass
+	if 'concat reels' in ingestDict[_object].keys():
+		if ingestDict[_object]['concat reels']:
+			pymmCommand.extend(['-c'])
+
+	return pymmCommand,metadataFilepath
+
 def main(ingestDict):
 	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
 	# run `pymm` on ingest objects
@@ -248,29 +273,9 @@ def main(ingestDict):
 
 			# prep a pymm command
 			pymmResult = None
-			pythonBinary = utils.get_python_path()
-			pymmPath = utils.get_pymm_path()
-			ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
-			pymmCommand = [
-				pythonBinary,	# path to python3 executable
-				ingestSipPath,	# path to pymm folder
-				'-i',_object,	# input path
-				'-u',user,		# user gets recorded
-				'-dz'			# report to db and delete originals
-				]
-			metadataFilepath = ingestDict[_object]['metadataFilepath']
-
-			# IMPORTANT call to `777` the JSON file so pymm can read it
-			os.chmod(metadataFilepath,0o777)
-			if ingestDict[_object]['metadata']['hasBAMPFAmetadata'] != False:
-				pymmCommand.extend(['-j',metadataFilepath])
-			else:
-				pass
-			if 'concat reels' in ingestDict[_object].keys():
-				if ingestDict[_object]['concat reels']:
-					pymmCommand.extend(['-c'])
-
+			pymmCommand,metadataFilepath = make_pymm_command(user,_object,ingestDict)
 			print(pymmCommand)
+			
 			try:
 				pymmOut = subprocess.check_output(
 					pymmCommand
