@@ -10,5 +10,6 @@ __pycache__
 env.sh
 migrations
 htmlcov
-edith.wsgi
+*.wsgi
+!sample_edith.wsgi
 pymm*

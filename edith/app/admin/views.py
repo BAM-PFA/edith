@@ -233,9 +233,8 @@ def edit_user(id):
 			return redirect(url_for('admin.list_users'))
 
 	# this pre-populates the form with existing data from the db
-	deptID = Department.query.get(user.department_id).id
-	print(deptID)
-	if not deptID in ('',None,"Null"):
+	if not user.department_id in ('',None,"Null"):
+		deptID = Department.query.get(user.department_id).id
 		form.department_id=deptID
 	form.email.data = user.email
 	form.username.data = user.username
