@@ -4,13 +4,17 @@
 <div class="intro-header">
     <div class="container">
             <div class="col-lg-12">
-                    <h1>WELCOME TO EDITH</h1>
-                    <h3>start doing digipres</h3>
-                    <hr class="intro-divider">
-                    </ul>
+                <h1>WELCOME TO EDITH</h1>
+                <h3>let's preserve some stuff!</h3>
+                <hr class="intro-divider">
+                </ul>
             </div>
-            <a href="{{ url_for('ingest.ingest_stuff') }}">Ingest Stuff</a>
-		    <a href="{{ url_for('lto.lto_menu') }}">LTO Stuff</a>
+            <div class="card">
+                <ul>
+                    <li><a href="{{ url_for('ingest.ingest_stuff') }}">Ingest Stuff</a></li>
+                    <li><a href="{{ url_for('lto.lto_menu') }}">LTO Stuff</a></li>
+                </ul>
+            </div>
     </div>
 </div>
 {% endblock %}
