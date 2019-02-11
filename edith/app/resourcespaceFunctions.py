@@ -44,6 +44,8 @@ def do_resourcespace(proxyPath,metadataFilepath=None):
 				quotedPath,
 				proxyPath
 				)
+		if result not in (None,'','Invalid signature'):
+			success = True
 
 	elif os.path.isdir(proxyPath):
 		print("the input object is a directory")

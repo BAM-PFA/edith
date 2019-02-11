@@ -53,7 +53,7 @@ def xml_query(idNumber,dataSourceAccessDetails):
 
 	# print(requestURL)
 	xml = requests.get(requestURL,auth=(user,password))
-	recordDict = metadataMaster.metadata
+	recordDict = metadataMaster.metadataMasterDict
 	root = etree.fromstring(xml.text.encode())
 	#print(root)
 	# THERE SHOULD ONLY EVER BE ONE RECORD IN A RESULTSET SINCE ITEM NUMBERS SHOULD BE UNIQUE
