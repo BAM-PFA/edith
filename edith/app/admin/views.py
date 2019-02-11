@@ -341,7 +341,7 @@ def edit_data_source(id):
 	form = DataSourceForm(obj=data_source)
 	if form.validate_on_submit():
 		# print(form.data)
-		data_source.dbName= form.dbName.data,
+		data_source.dbName= form.dbName.data
 		data_source.fmpLayout = form.fmpLayout.data
 		data_source.IPaddress = form.IPaddress.data
 		data_source.username = form.username.data

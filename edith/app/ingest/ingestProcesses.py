@@ -44,7 +44,7 @@ def get_barcode_from_filename(basename):
 		barcode = "000000000"
 	return barcode
 
-def get_metadata(idNumber,basename,intermediateMetadata):
+def get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails):
 	# Init an empty dict for each item
 	metadataDict = {}
 	# Get the metadata master dict from metadataMaster.py
@@ -81,7 +81,7 @@ def get_metadata(idNumber,basename,intermediateMetadata):
 				# return metadataDict
 
 			else:
-				FMmetadata = fmQuery.xml_query(barcode)
+				FMmetadata = fmQuery.xml_query(barcode,dataSourceAccessDetails)
 				if FMmetadata:
 					# add any filemaker metadata to the dict
 					for k,v in FMmetadata.items():
@@ -94,7 +94,7 @@ def get_metadata(idNumber,basename,intermediateMetadata):
 	else:
 		try:
 			print('searching FileMaker on '+idNumber)
-			FMmetadata = fmQuery.xml_query(idNumber)
+			FMmetadata = fmQuery.xml_query(idNumber,dataSourceAccessDetails)
 			# print(FMmetadata)
 			if FMmetadata:
 				# add any filemaker metadata to the dict
@@ -106,7 +106,7 @@ def get_metadata(idNumber,basename,intermediateMetadata):
 			# if no results, try padding with zeros
 			idNumber = "{0:0>5}".format(idNumber)
 			try:
-				FMmetadata = fmQuery.xml_query(idNumber)
+				FMmetadata = fmQuery.xml_query(idNumber,dataSourceAccessDetails)
 				# add any filemaker metadata to the dict
 				if FMmetadata:
 					for k,v in FMmetadata.items():
@@ -178,7 +178,7 @@ def add_metadata(ingestDict):
 		intermediateMetadata = metadataJson[objectPath]['metadata']
 
 		# go get some metadata
-		metadata = get_metadata(idNumber,basename,intermediateMetadata)
+		metadata = get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
 
 		objectOptions['metadata'] = metadata
 
