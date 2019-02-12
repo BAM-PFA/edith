@@ -112,9 +112,9 @@ class Data_Source(db.Model):
 	# layout name for filemaker
 	fmpLayout = db.Column(db.String(60), unique=True)
 	# server address
-	IPaddress = db.Column(db.String(60), unique=True)
+	IPaddress = db.Column(db.String(60))
 	# account with access 
-	username = db.Column(db.String(60), unique=True)
+	username = db.Column(db.String(60))
 	# account credentials
 	credentials = db.Column(db.String(60), unique=True)
 	description = db.Column(db.String(200))
