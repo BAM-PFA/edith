@@ -21,11 +21,6 @@ import app
 
 def xml_query(idNumber,dataSourceAccessDetails):
 	namespace = {"filemaker":"http://www.filemaker.com/xml/fmresultset"}
-	# dsn = app.app_config["DB_CONNECTIONS"]["filemaker"]["dsn"]
-	# layout = app.app_config["DB_CONNECTIONS"]["filemaker"]["layout"]
-	# server = app.app_config["DB_CONNECTIONS"]["filemaker"]["server"]
-	# user = app.app_config["DB_CONNECTIONS"]["filemaker"]["accountName"]
-	# password = app.app_config["DB_CONNECTIONS"]["filemaker"]["password"]
 
 	dsn = dataSourceAccessDetails['dataSourceName']
 	layout = dataSourceAccessDetails['dataSourceLayout']

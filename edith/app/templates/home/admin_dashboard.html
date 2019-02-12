@@ -1,22 +1,21 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-<div class="intro-header">
-    <div class="container">
-            <div class="col-lg-12">
-                <h1>WELCOME TO EDITH</h1>
-                <h3>let's preserve some stuff!</h3>
-                <hr class="intro-divider">
-            </div>
-            <div class="card">
-            <ul>
-                <li><a href="{{ url_for('ingest.ingest_stuff') }}">Ingest Stuff</a></li>
-                <li><a href="{{ url_for('lto.lto_menu') }}">LTO Stuff</a></li>
-                <li><a href="{{ url_for('admin.list_departments') }}">Departments</a></li>
-                <li><a href="{{ url_for('admin.list_users') }}">Users</a></li>
-                <li><a href="{{ url_for('admin.list_data_sources') }}">Data Sources</a></li>
-            </ul>
-            </div>
+<div class="jumbotron">
+    <h1 class="display-3">WELCOME TO EDITH</h1>
+    <p class="lead">let's preserve some stuff!</p>
+    <hr class="intro-divider">
+</div>
+<div class="container">
+    <div class="card">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><a href="{{ url_for('ingest.ingest_stuff') }}">Ingest Stuff</a></li>
+            <li class="list-group-item"><a href="{{ url_for('lto.lto_menu') }}">LTO Stuff</a></li>
+            <li class="list-group-item"><a href="{{ url_for('admin.list_departments') }}">Departments</a></li>
+            <li class="list-group-item"><a href="{{ url_for('admin.list_users') }}">Users</a></li>
+            <li class="list-group-item"><a href="{{ url_for('admin.list_data_sources') }}">Data Sources</a></li>
+        </ul>
     </div>
 </div>
+
 {% endblock %}

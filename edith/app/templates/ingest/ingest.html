@@ -3,7 +3,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<!--<button type="button" class="btn btn-primary-md"><div><svg-icon class="glyph-icon"><src href="{{ url_for('static', filename='si-glyph-arrow-reload.svg') }}"/></svg></div></button>-->
+<div class="container my-1">
 	<a class="btn btn-primary" href="{{ url_for('ingest.ingest_stuff') }}" role="button">REFRESH PAGE</a>
 	<h1>Here are assets ready to ingest:</h1>
 	<form action="{{ url_for('ingest.status') }}" method='POST'>
@@ -20,4 +20,5 @@
 
 	{{ form.submit(class="btn btn-primary my-3") }}
 	</form>
+</div>
 {% endblock %}
