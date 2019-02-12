@@ -17,15 +17,14 @@ import urllib.parse
 from lxml import etree
 # local imports
 from . import metadataMaster
-import app
+from config import app_config
 
 def xml_query(idNumber,dataSourceAccessDetails):
-	metadataMappings = app.app_config.METADATA_MAPPINGS
-	# namespace = {"filemaker":"http://www.filemaker.com/xml/fmresultset"}
+	metadataMappings = app_config['METADATA_MAPPINGS']
 
 	dsn = dataSourceAccessDetails['dataSourceName']
 	namespace = metadataMappings[dsn]['NAMESPACE']
-	print(namespace)
+	# namespace = {"filemaker":"http://www.filemaker.com/xml/fmresultset"}
 	layout = dataSourceAccessDetails['dataSourceLayout']
 	server = dataSourceAccessDetails['dataSourceIP']
 	user = dataSourceAccessDetails['dataSourceUsername']
@@ -38,7 +37,7 @@ def xml_query(idNumber,dataSourceAccessDetails):
 		"&AccessionNumberItemNumber=={3}"
 		"&-find".format(server, dsn, layout,idNumber)
 		)
-		# print(requestURL)
+		print(requestURL)
 	elif len(idNumber) == 9:
 		requestURL = (
 		"http://{0}/fmi/xml/fmresultset.xml?"
