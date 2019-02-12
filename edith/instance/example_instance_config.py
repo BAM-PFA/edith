@@ -1,3 +1,6 @@
+from instance import metadataMappings
+
+METADATA_MAPPINGS = metadataMappings.metadataMaps
 SECRET_KEY = 'bloop'
 WTF_CSRF_SECRET_KEY= "bleep"
 PYMM_PATH = '/path/to/pymm'

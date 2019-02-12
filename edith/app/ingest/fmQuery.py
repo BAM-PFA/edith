@@ -25,6 +25,7 @@ def xml_query(idNumber,dataSourceAccessDetails):
 
 	dsn = dataSourceAccessDetails['dataSourceName']
 	namespace = metadataMappings[dsn]['NAMESPACE']
+	print(namespace)
 	layout = dataSourceAccessDetails['dataSourceLayout']
 	server = dataSourceAccessDetails['dataSourceIP']
 	user = dataSourceAccessDetails['dataSourceUsername']
