@@ -20,9 +20,11 @@ from . import metadataMaster
 import app
 
 def xml_query(idNumber,dataSourceAccessDetails):
-	namespace = {"filemaker":"http://www.filemaker.com/xml/fmresultset"}
+	metadataMappings = app.app_config.METADATA_MAPPINGS
+	# namespace = {"filemaker":"http://www.filemaker.com/xml/fmresultset"}
 
 	dsn = dataSourceAccessDetails['dataSourceName']
+	namespace = metadataMappings[dsn]['NAMESPACE']
 	layout = dataSourceAccessDetails['dataSourceLayout']
 	server = dataSourceAccessDetails['dataSourceIP']
 	user = dataSourceAccessDetails['dataSourceUsername']
