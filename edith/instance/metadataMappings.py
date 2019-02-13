@@ -15,70 +15,92 @@ metadataMaps = {
 		"NAMESPACE": {"filemaker":"http://www.filemaker.com/xml/fmresultset"},
 		"FIELDS": {
 			"title" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='m_245a_CompleteTitle']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "m_245a_CompleteTitle"
 				},
 			"altTitle" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='AlternativeTitle']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "AlternativeTitle"
 				},
 			"accPref" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='AccessionNumberPrefix']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "AccessionNumberPrefix"
 				},
 			"accDepos" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='AccessionNumberDepositorNumber']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "AccessionNumberDepositorNumber"
 				},
 			"accItem" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='AccessionNumberItemNumber']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "AccessionNumberItemNumber"
 				},
 			"projGrp" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='ProjectGroupTitle']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "ProjectGroupTitle"
 				},
 			"country" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='m_257a_Country']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "m_257a_Country"
 				},
 			"releaseYear" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='m_260c_ReleaseYear']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "m_260c_ReleaseYear"
 				},
 			"directorsNames" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='ct_DirectorsNames']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "ct_DirectorsNames"
 				},
 			"credits" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='Credits']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "Credits"
 				},
 			"generalNotes" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='GeneralNotes']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "GeneralNotes"
 				},
 			"conditionNote" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='m_945z_GeneralConditionNotes']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "m_945z_GeneralConditionNotes"
 				},
 			"Barcode" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='Barcode']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "Barcode"
 				},
 			"language" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='m_546a_Language']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "m_546a_Language"
 				},
 			"soundCharacteristics" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='SoundCharacteristics']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "SoundCharacteristics"
 				},
 			"color" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='ColorCharacteristics']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "ColorCharacteristics"
 				},
 			"runningTime" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='RunningTime']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "RunningTime"
 				},
 			"frameRateTRTdetails" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='RunningTimeDescription']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "RunningTimeDescription"
 				},
 			"medium" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='m_245h_Medium']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "m_245h_Medium"
 				},
 			"dimensions" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='m_300c_Dimensions']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "m_300c_Dimensions"
 				},
 			"videoFormat" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='VideoFormat']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "VideoFormat"
 				},
 			"videoStandard" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='VideoStandard']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "VideoStandard"
 				}
 			}
 		},
@@ -86,53 +108,69 @@ metadataMaps = {
 		"NAMESPACE" : {"filemaker":"http://www.filemaker.com/xml/fmresultset"},
 		"FIELDS": {
 			"PFAfilmSeries" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='recordingPFASeries']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "recordingPFASeries"
 				},
 			"recordingDigitalStatus" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='recordingDigitalStatusValue']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "recordingDigitalStatusValue"
 				},
 			"digitizer" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='recordingIDPadded']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "recordingIDPadded"
 				},
 			"locationOfRecording" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='recordingIDPadded']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "recordingIDPadded"
 				},
 			"speakerInterviewee" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='ct_Speakers']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "ct_Speakers"
 				},
 			"filmTitleSubjects" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='ct_FilmTitles']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "ct_FilmTitles"
 				},
 			"restrictionsOnUse" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='recordingPermissions']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "recordingPermissions"
 				},
 			"description" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='recordingEventNotes']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "recordingEventNotes"
 				},
 			"eventTitle" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='recordingEventTitle']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "recordingEventTitle"
 				},
 			"restrictionsOnUse" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='recordingPermissions']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "recordingPermissions"
 				},
 			# BELOW HERE STILL NEEDS TO BE ADDED TO RESOURCESPACE & PBCORE MAP
 			"recordingAnalogTechnicalNotes" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='recordingEventRecordingNotes']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "recordingEventRecordingNotes"
 				},
 			"audioRecordingID" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='recordingIDPadded']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "recordingIDPadded"
 				},
 			"recordingPermissionsNotes" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='recordingPermissionsNotes']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "recordingPermissionsNotes"
 				},
 			"analogTapeNumber" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='recordingTapeNumber']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "recordingTapeNumber"
 				},
 			"analogTapeSide" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='recordingTapeSide']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "recordingTapeSide"
 				},
 			"digitizationQCNotes" : {
-				"XPATH_EXPRESSION" : "./filemaker:field[@name='Digitization Notes']"
+				"RS_FIELD_ID" : "",
+				"SOURCE_FIELD_NAME" : "Digitization Notes"
 				}
 			}
 		}
