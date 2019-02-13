@@ -119,6 +119,9 @@ class Data_Source(db.Model):
 	credentials = db.Column(db.String(60), unique=True)
 	description = db.Column(db.String(200))
 
+	fields = db.relationship('Metadata_Field', backref='datasource',
+								lazy='dynamic')
+
 class Metadata_Field(db.Model):
 	'''
 	Define metadata fields:
@@ -132,8 +135,10 @@ class Metadata_Field(db.Model):
 	fieldName = db.Column(db.String(100))
 	# field unique name (e.g. recordID)
 	fieldUniqueName = db.Column(db.String(60), unique=True)
+	# field name in the data source
+	fieldSourceName = db.Column(db.String(60))
 	# data source
-	dataSource = db.Column(db.String(60))
+	dataSource_id = db.Column(db.Integer, db.ForeignKey('data_sources.id'))
 	# resourceSpace field ID # 
 	rsFieldID = db.Column(db.Integer, unique=True)
 	description = db.Column(db.String(200))
