@@ -14,7 +14,7 @@ import urllib
 from flask_login import current_user
 
 # local modules
-from . import fmQuery
+from . import metadataQuery
 from . import dataSourceAccess
 from .metadataMaster import metadataMasterDict
 from .. import resourcespaceFunctions
@@ -81,7 +81,7 @@ def get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
 				# return metadataDict
 
 			else:
-				FMmetadata = fmQuery.xml_query(barcode,dataSourceAccessDetails)
+				FMmetadata = metadataQuery.xml_query(barcode,dataSourceAccessDetails)
 				if FMmetadata:
 					# add any filemaker metadata to the dict
 					for k,v in FMmetadata.items():
@@ -94,7 +94,7 @@ def get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
 	else:
 		try:
 			print('searching FileMaker on '+idNumber)
-			FMmetadata = fmQuery.xml_query(idNumber,dataSourceAccessDetails)
+			FMmetadata = metadataQuery.xml_query(idNumber,dataSourceAccessDetails)
 			# print(FMmetadata)
 			if FMmetadata:
 				# add any filemaker metadata to the dict
@@ -106,7 +106,7 @@ def get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
 			# if no results, try padding with zeros
 			idNumber = "{0:0>5}".format(idNumber)
 			try:
-				FMmetadata = fmQuery.xml_query(idNumber,dataSourceAccessDetails)
+				FMmetadata = metadataQuery.xml_query(idNumber,dataSourceAccessDetails)
 				# add any filemaker metadata to the dict
 				if FMmetadata:
 					for k,v in FMmetadata.items():
