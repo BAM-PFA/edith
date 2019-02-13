@@ -9,7 +9,7 @@ import wtforms
 import app
 from . import ingest
 from . import ingestProcesses
-from . import fmQuery
+from . import metadataQuery
 from . import forms
 
 from .. import db
