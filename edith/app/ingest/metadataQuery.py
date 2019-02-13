@@ -61,7 +61,7 @@ def xml_query(idNumber,dataSourceAccessDetails):
 	recordRoot = etree.fromstring(recordString)
 
 	for fieldName, details in metadataMappings[dsn]['FIELDS'].items():
-		for _,xpathExpression in details.items:
+		for _,xpathExpression in details.items():
 			fieldResult = recordRoot.find(xpathExpression,namespace)
 			recordDict[fieldName] = fieldResult[0].text
 
