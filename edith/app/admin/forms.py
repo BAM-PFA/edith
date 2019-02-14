@@ -77,5 +77,7 @@ class DataSourceForm(FlaskForm):
 	username = StringField("Database user's username", validators=[DataRequired()])
 	credentials = StringField('Database user password', validators=[DataRequired()])
 	description = StringField('Database description')
+	primaryAssetID = StringField('Field name for primary ID of an asset')
+	secondaryAssetID = StringField('Field name for secondary ID of an asset')
 
 	submit = SubmitField('Submit')

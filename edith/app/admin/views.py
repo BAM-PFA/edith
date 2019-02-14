@@ -302,7 +302,9 @@ def add_data_source():
 			IPaddress = form.IPaddress.data,
 			username = form.username.data,
 			credentials = form.credentials.data,
-			description = form.description.data
+			description = form.description.data,
+			primaryAssetID = form.primaryAssetID.data,
+			secondaryAssetID = form.secondaryAssetID.data
 			)
 		try:
 			# add department to the database
@@ -347,6 +349,8 @@ def edit_data_source(id):
 		data_source.username = form.username.data
 		data_source.credentials = form.credentials.data
 		data_source.description = form.description.data
+		data_source.primaryAssetID = form.primaryAssetID.data
+		data_source.secondaryAssetID = form.secondaryAssetID.data
 		try:
 			db.session.commit()
 			flash('You have successfully edited the data source.')
@@ -365,6 +369,8 @@ def edit_data_source(id):
 	form.username.data = data_source.username 
 	form.credentials.data = data_source.credentials
 	form.description.data = data_source.description
+	data_source.primaryAssetID = form.primaryAssetID.data
+	data_source.secondaryAssetID = form.secondaryAssetID.data
 	return render_template(
 		'admin/data_sources/data_source.html', 
 		action="Edit",
