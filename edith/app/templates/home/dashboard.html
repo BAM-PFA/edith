@@ -3,14 +3,14 @@
 {% block content %}
 <div class="jumbotron">
     <h1 class="display-3">WELCOME TO EDITH</h1>
-    <p class="lead">let's preserve some stuff!</p>
+    <h3 class="lead">let's preserve some stuff!</h3>
 </div>
 <div class="container">
     <div class="card">
-	    <ul class="list-group">
-	        <li class="list-group-item"><a href="{{ url_for('ingest.ingest_stuff') }}">Ingest Stuff</a></li>
-	        <li class="list-group-item"><a href="{{ url_for('lto.lto_menu') }}">LTO Stuff</a></li>
-	    </ul>
+	    <div class="list-group list-group-flush">
+            <a class="list-group-item" href="{{ url_for('ingest.ingest_stuff') }}">Ingest Stuff</a>
+            <a class="list-group-item" href="{{ url_for('lto.lto_menu') }}">LTO Stuff</a>
+        </div>
     </div>
 </div>
 {% endblock %}

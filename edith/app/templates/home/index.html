@@ -2,9 +2,8 @@
 {% block title %}Home{% endblock %}
 {% block content %}
     <div class="jumbotron">
-            <h1>WELCOME TO EDITH</h1>
-            <h3>let's preserve some stuff!</h3>
-            <hr class="intro-divider">
+        <h1 class="display-3">WELCOME TO EDITH</h1>
+        <h3 class="lead">let's preserve some stuff!</h3>
     </div>
     {% if not current_user.is_authenticated %}
         <div class="card">

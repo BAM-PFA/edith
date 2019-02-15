@@ -13,7 +13,9 @@
 	{{ utils.flashed_messages() }}
 	<h1>Log in to your account</h1>
 	<br/>
-	{{ wtf.quick_form(form) }}
+	<div class="card-body">
+		{{ wtf.quick_form(form) }}
+	</div>
 </div>
 
 {% endblock %}
