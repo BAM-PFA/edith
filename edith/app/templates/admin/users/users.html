@@ -2,61 +2,52 @@
 {% extends "base.html" %}
 {% block title %}Users{% endblock %}
 {% block content %}
-<div class="content-section">
-  <div class="outer">
-    <div class="middle">
-      <div class="inner">
-        <br/>
-        {{ utils.flashed_messages() }}
-        <br/>
-        <h1 style="text-align:center;">Users</h1>
-        {% if users %}
-          <hr class="intro-divider">
-          <div class="center">
-            <table class="table table-striped table-bordered">
-              <thead>
-                <tr>
-                  <th width="15%"> Name </th>
-                  <th width="40%"> RS username </th>
-                  <th width="15%"> RS API Key</th>
-                  <th width="15%"> Edit </th>
-                  <th width="15%"> Delete </th>
-                </tr>
-              </thead>
-              <tbody>
-              {% for user in users %}
-                <tr>
-                  <td> {{ user.username }} </td>
-                  <td> {{ user.RSusername }} </td>
-                  <td> {{ user.RSkey }} </td>
-                  <td>
-                    <a href="{{ url_for('admin.edit_user', id=user.id) }}">
-                      <i class="fa fa-pencil"></i> Edit 
-                    </a>
-                  </td>
-                  <td>
-                    <a href="{{ url_for('admin.delete_user', id=user.id) }}">
-                      <i class="fa fa-trash"></i> Delete 
-                    </a>
-                  </td>
-                </tr>
-              {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          <div style="text-align: center">
-        {% else %}
-          <div style="text-align: center">
-            <h3> No users have been added. </h3>
-            <hr class="intro-divider">
-        {% endif %}
-          <a href="{{ url_for('admin.add_user') }}" class="btn btn-default btn-lg">
-            <i class="fa fa-plus"></i>
-            Add User
-          </a>
-        </div>
-      </div>
-    </div>
+<div class="card">
+  <div class="card-body text-center">
+    <br/>
+    {{ utils.flashed_messages() }}
+    <br/>
+    <h1>Users</h1>
+    {% if users %}
+      <hr>
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th width="15%"> Name </th>
+              <th width="40%"> RS username </th>
+              <th width="15%"> RS API Key</th>
+              <th width="15%"> Edit </th>
+              <th width="15%"> Delete </th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for user in users %}
+            <tr>
+              <td> {{ user.username }} </td>
+              <td> {{ user.RSusername }} </td>
+              <td> {{ user.RSkey }} </td>
+              <td>
+                <a href="{{ url_for('admin.edit_user', id=user.id) }}">
+                  <i class="fa fa-pencil"></i> Edit 
+                </a>
+              </td>
+              <td>
+                <a href="{{ url_for('admin.delete_user', id=user.id) }}">
+                  <i class="fa fa-trash"></i> Delete 
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+    {% else %}
+        <h3> No users have been added. </h3>
+        <hr>
+    {% endif %}
+    <a href="{{ url_for('admin.add_user') }}" class="btn btn-default btn-lg">
+      <i class="fa fa-plus"></i>
+      Add User
+    </a>
   </div>
 </div>
 {% endblock %}

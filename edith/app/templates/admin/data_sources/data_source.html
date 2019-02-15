@@ -8,21 +8,17 @@
     {% endif %}
 {% endblock %}
 {% block content %}
-<div class="content-section">
- <div class="outer">
-    <div class="middle">
-      <div class="inner">
-        <div class="center">
-            {% if add_data_source %}
-                <h1>Add Metadata Source</h1>
-            {% else %}
-                <h1>Edit Metadwata Source</h1>
-            {% endif %}
-            <br/>
-            {{ wtf.quick_form(form) }}
-        </div>
-      </div>
+<div class="card">
+    <div class="card-body">
+        {% if add_data_source %}
+            <h1>Add Metadata Source</h1>
+        {% else %}
+            <h1>Edit Metadata Source</h1>
+        {% endif %}
+        <br/>
+        {{ wtf.quick_form(form) }}
+        <br/>
+        <a class="btn btn-primary" href="{{ url_for('admin.list_data_sources') }}" role="button">Cancel</a>
     </div>
-  </div>
 </div>
 {% endblock %}

@@ -4,15 +4,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div>
+<div class="jumbotron">
+    <h1 class="display-3">WELCOME TO EDITH</h1>
+    <p class="lead">let's preserve some stuff!</p>
+</div>
+<div class="card text-center mx-auto w-75">
 	<br/>
 	{{ utils.flashed_messages() }}
-	<div>
-		<h1>Login to your account</h1>
-		<br/>
-		{{ wtf.quick_form(form) }}
-	</div>
+	<h1>Log in to your account</h1>
+	<br/>
+	{{ wtf.quick_form(form) }}
 </div>
 
 {% endblock %}
