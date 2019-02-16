@@ -117,11 +117,11 @@ metadataMaps = {
 				},
 			"digitizer" : {
 				"RS_FIELD_ID" : "",
-				"SOURCE_FIELD_NAME" : "recordingIDPadded"
+				"SOURCE_FIELD_NAME" : "recordingDigitizer"
 				},
 			"locationOfRecording" : {
 				"RS_FIELD_ID" : "",
-				"SOURCE_FIELD_NAME" : "recordingIDPadded"
+				"SOURCE_FIELD_NAME" : "recordingLocation"
 				},
 			"speakerInterviewee" : {
 				"RS_FIELD_ID" : "",
@@ -142,10 +142,6 @@ metadataMaps = {
 			"eventTitle" : {
 				"RS_FIELD_ID" : "",
 				"SOURCE_FIELD_NAME" : "recordingEventTitle"
-				},
-			"restrictionsOnUse" : {
-				"RS_FIELD_ID" : "",
-				"SOURCE_FIELD_NAME" : "recordingPermissions"
 				},
 			# BELOW HERE STILL NEEDS TO BE ADDED TO RESOURCESPACE & PBCORE MAP
 			"recordingAnalogTechnicalNotes" : {
