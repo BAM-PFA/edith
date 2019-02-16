@@ -21,8 +21,6 @@ from config import app_config
 
 def xml_query(idNumber,dataSourceAccessDetails):
 	metadataMappings = app_config['METADATA_MAPPINGS']
-	print("XXXXXXXXXX")
-	print(dataSourceAccessDetails)
 	dsn = dataSourceAccessDetails['dataSourceName']
 	namespace = metadataMappings[dsn]['NAMESPACE']
 	# namespace = {"filemaker":"http://www.filemaker.com/xml/fmresultset"}
@@ -42,7 +40,7 @@ def xml_query(idNumber,dataSourceAccessDetails):
 		"&{3}=={4}"
 		"&-find".format(server, dsn, layout, primaryAssetIDField, idNumber)
 		)
-		print(requestURL)
+		# print(requestURL)
 	elif len(idNumber) == 9:
 		# secondary ID = 9-digit barcode
 		requestURL = (
@@ -56,7 +54,7 @@ def xml_query(idNumber,dataSourceAccessDetails):
 
 	# print(requestURL)
 	xml = requests.get(requestURL,auth=(user,password))
-	print(xml.text)
+	# print(xml.text)
 	recordDict = metadataMaster.metadataMasterDict
 	root = etree.fromstring(xml.text.encode())
 	# print(root)
@@ -77,8 +75,11 @@ def xml_query(idNumber,dataSourceAccessDetails):
 		xpathExpression = "./filemaker:field[@name='{}']".format(
 			sourceFieldName
 			)
-		fieldResult = recordRoot.find(xpathExpression,namespace)
-		recordDict[fieldName] = fieldResult[0].text
+		try:
+			fieldResult = recordRoot.find(xpathExpression,namespace)
+			recordDict[fieldName] = fieldResult[0].text
+		except:
+			recordDict[fieldName] = None
 
 	for key,value in recordDict.items():
 		if value == None:

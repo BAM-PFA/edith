@@ -54,6 +54,12 @@ metadataMasterDict['locationOfRecording'] = ''
 metadataMasterDict['speakerInterviewee'] = ''
 metadataMasterDict['filmTitleSubjects'] = ''
 metadataMasterDict['topicalSubjects'] = ''
+metadataMasterDict['recordingAnalogTechnicalNotes'] = ''
+metadataMasterDict['audioRecordingID'] = ''
+metadataMasterDict['recordingPermissionsNotes'] = ''
+metadataMasterDict['analogTapeNumber'] = ''
+metadataMasterDict['analogTapeSide'] = ''
+metadataMasterDict['digitizationQCNotes'] = ''
 
 # metadataMasterDict[''] = ''
 

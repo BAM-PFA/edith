@@ -137,7 +137,7 @@ metadataMaps = {
 				},
 			"description" : {
 				"RS_FIELD_ID" : "",
-				"SOURCE_FIELD_NAME" : "recordingEventNotes"
+				"SOURCE_FIELD_NAME" : "recordingEventDescription"
 				},
 			"eventTitle" : {
 				"RS_FIELD_ID" : "",
@@ -166,7 +166,7 @@ metadataMaps = {
 				},
 			"digitizationQCNotes" : {
 				"RS_FIELD_ID" : "",
-				"SOURCE_FIELD_NAME" : "Digitization Notes"
+				"SOURCE_FIELD_NAME" : "DigitizationNotes"
 				}
 			}
 		}
