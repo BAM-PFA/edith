@@ -13,7 +13,9 @@ def main(dataSourceID):
 		'dataSourceLayout' : dataSource.fmpLayout,
 		'dataSourceIP' : dataSource.IPaddress,
 		'dataSourceUsername' : dataSource.username,
-		'dataSourceCredentials' : dataSource.credentials
+		'dataSourceCredentials' : dataSource.credentials,
+		'dataSourcePrimaryID' : dataSource.primaryAssetID,
+		'dataSourceSecondaryID' : dataSource.secondaryAssetID
 	}
 
 	return results

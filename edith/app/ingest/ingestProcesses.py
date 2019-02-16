@@ -105,6 +105,7 @@ def get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
 		except:
 			# if no results, try padding with zeros
 			idNumber = "{0:0>5}".format(idNumber)
+			print('Now searching FileMaker on '+idNumber)
 			try:
 				FMmetadata = metadataQuery.xml_query(idNumber,dataSourceAccessDetails)
 				# add any filemaker metadata to the dict

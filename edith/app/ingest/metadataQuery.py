@@ -30,20 +30,25 @@ def xml_query(idNumber,dataSourceAccessDetails):
 	user = dataSourceAccessDetails['dataSourceUsername']
 	password = dataSourceAccessDetails['dataSourceCredentials']
 
+	primaryAssetIDField = dataSourceAccessDetails['dataSourcePrimaryID']
+	secondaryAssetIDField = dataSourceAccessDetails['dataSourceSecondaryID']
+
 	if len(idNumber) <= 5:
+		# primaryAssetID is a 5-digit record id
 		requestURL = (
 		"http://{0}/fmi/xml/fmresultset.xml?"
 		"-db={1}&-lay={2}"
-		"&AccessionNumberItemNumber=={3}"
-		"&-find".format(server, dsn, layout,idNumber)
+		"&{3}=={4}"
+		"&-find".format(server, dsn, layout, primaryAssetIDField, idNumber)
 		)
 		print(requestURL)
 	elif len(idNumber) == 9:
+		# secondary ID = 9-digit barcode
 		requestURL = (
 		"http://{0}/fmi/xml/fmresultset.xml?"
 		"-db={1}&-lay={2}"
-		"&Barcode={3}"
-		"&-find".format(server, dsn, layout,idNumber)
+		"&{3}={4}"
+		"&-find".format(server, dsn, layout, secondaryAssetIDField, idNumber)
 		)
 	else:
 		pass
@@ -52,7 +57,7 @@ def xml_query(idNumber,dataSourceAccessDetails):
 	xml = requests.get(requestURL,auth=(user,password))
 	recordDict = metadataMaster.metadataMasterDict
 	root = etree.fromstring(xml.text.encode())
-	#print(root)
+	# print(root)
 	# THERE SHOULD ONLY EVER BE ONE RECORD IN A RESULTSET 
 	# SINCE ITEM NUMBERS SHOULD BE UNIQUE
 	recordElement = root.find(
