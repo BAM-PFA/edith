@@ -73,12 +73,12 @@ def xml_query(idNumber,dataSourceAccessDetails):
 	recordRoot = etree.fromstring(recordString)
 
 	for fieldName, details in metadataMappings[dsn]['FIELDS'].items():
-		for _,sourceFieldName in details.items():
-			xpathExpression = "./filemaker:field[@name='{}']".format(
-				sourceFieldName
-				)
-			fieldResult = recordRoot.find(xpathExpression,namespace)
-			recordDict[fieldName] = fieldResult[0].text
+		sourceFieldName = details["SOURCE_FIELD_NAME"]
+		xpathExpression = "./filemaker:field[@name='{}']".format(
+			sourceFieldName
+			)
+		fieldResult = recordRoot.find(xpathExpression,namespace)
+		recordDict[fieldName] = fieldResult[0].text
 
 	for key,value in recordDict.items():
 		if value == None:
