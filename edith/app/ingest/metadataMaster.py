@@ -81,7 +81,7 @@ class Metadata:
 		self.metadataDict = {}
 		self.available_metadataSources = db.session.query(Metadata_Field).all()
 		for fieldName in self.available_metadataSources:
-			print(fieldName)
+			print(fieldName.data)
 
 
 
