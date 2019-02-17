@@ -397,3 +397,131 @@ def delete_data_source(id):
 	return redirect(url_for('admin.list_data_sources'))
 
 	return render_template(title="Delete Data Source")
+
+'''
+####################
+# Metadata Fields Views
+@admin.route('/metadata_fields')
+@login_required
+def list_metadata_fields():
+	"""
+	List all metadata_fields
+	"""
+	check_admin()
+
+	metadata_fields = Metadata_Field.query.all()
+	return render_template('admin/metadata_fields/metadata_fields.html',
+						   metadata_fields=metadata_fields, title='Metadata Fields')
+
+@admin.route('/metadata_fields/add', methods=['GET', 'POST'])
+@login_required
+def add_metadata_field():
+	"""
+	Add a metadata_field to the database
+	"""
+	check_admin()
+
+	add_metadata_field = True
+
+	form = MetadataFieldForm()
+	if form.validate_on_submit():
+		metadata_field = Metadata_Field(
+			fieldName = form.fieldName.data,
+			fieldUniqueName = form.fieldUniqueName.data,
+			fieldSourceName = form.fieldSourceName.data,
+			dataSource_id = form.dataSource_id.data,
+			rsFieldID = form.rsFieldID.data,
+			description = form.description.data
+			)
+		try:
+			# add field to the database
+			db.session.add(metadata_field)
+			# print(metadata_field)
+			db.session.commit()
+			flash('You have successfully added a new metadata field.')
+		except Exception as e:
+			# in case field name already exists
+			# print(str(e))
+			flash('Error adding metadata. {}'.format(e))
+
+		# redirect to departments page
+		return redirect(url_for('admin.list_metadata_fields'))
+
+	# load department template
+	return render_template(
+		'admin/metadata_fields/metadata_field.html',
+		action="Add",
+		add_data_source=add_metadata_field,
+		form=form,
+		title="Add Metadata Field"
+		)
+
+@admin.route('/metadata_fields/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_metadata_field(id):
+	"""
+	Edit a data_source
+	""" 
+	check_admin()
+
+	add_metadata_field = False
+
+	data_source = Data_Source.query.get_or_404(id)
+	form = DataSourceForm(obj=data_source)
+	if form.validate_on_submit():
+		# print(form.data)
+		data_source.dbName= form.dbName.data
+		data_source.fmpLayout = form.fmpLayout.data
+		data_source.IPaddress = form.IPaddress.data
+		data_source.username = form.username.data
+		data_source.credentials = form.credentials.data
+		data_source.description = form.description.data
+		data_source.primaryAssetID = form.primaryAssetID.data
+		data_source.secondaryAssetID = form.secondaryAssetID.data
+		try:
+			db.session.commit()
+			flash('You have successfully edited the data source.')
+
+			# redirect to the users page
+			return redirect(url_for('admin.list_metadata_fields'))
+		except Exception as e:
+			print(e)
+			flash('Error editing the data_source. {}'.format(e))
+			return redirect(url_for('admin.list_metadata_fields'))
+
+	# this pre-populates the form with existing data from the db
+	form.dbName.data = data_source.dbName
+	form.fmpLayout.data = data_source.fmpLayout
+	form.IPaddress.data = data_source.IPaddress
+	form.username.data = data_source.username 
+	form.credentials.data = data_source.credentials
+	form.description.data = data_source.description
+	data_source.primaryAssetID = form.primaryAssetID.data
+	data_source.secondaryAssetID = form.secondaryAssetID.data
+	return render_template(
+		'admin/data_sources/data_source.html', 
+		action="Edit",
+		add_data_source=add_data_source, 
+		form=form,
+		data_source=data_source,
+		title="Edit Data Source"
+		)
+
+@admin.route('/data_sources/delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def delete_data_source(id):
+	"""
+	Delete a data_source from the database
+	"""
+	check_admin()
+
+	data_source = Data_Source.query.get_or_404(id)
+	db.session.delete(data_source)
+	db.session.commit()
+	flash('You have successfully deleted the data source.')
+
+	# redirect to the data_sources page
+	return redirect(url_for('admin.list_data_sources'))
+
+	return render_template(title="Delete Data Source")
+'''

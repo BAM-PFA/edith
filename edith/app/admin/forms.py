@@ -69,7 +69,7 @@ class EditUserForm(FlaskForm):
 
 class DataSourceForm(FlaskForm):
 	"""
-	Form for admin to create or edit users
+	Form for admin to create or edit metadata source
 	"""
 	dbName = StringField('Database name', validators=[DataRequired()])
 	fmpLayout = StringField('FileMaker Layout name')
@@ -79,5 +79,24 @@ class DataSourceForm(FlaskForm):
 	description = StringField('Database description')
 	primaryAssetID = StringField('Field name for primary ID of an asset')
 	secondaryAssetID = StringField('Field name for secondary ID of an asset')
+
+	submit = SubmitField('Submit')
+
+class MetadataFieldForm(FlaskForm):
+	"""
+	Form for admin to create or edit metadata field
+	"""
+	fieldName = StringField('Field display name', validators=[DataRequired()])
+	fieldUniqueName = StringField('Unique name for system', validators=[DataRequired()])
+	fieldSourceName = StringField('Name of field in source as applicable')
+	dataSource_id = QuerySelectField(
+		query_factory=lambda: Data_Source.query.all(),
+		get_pk=lambda x: x.id,
+		get_label="dbName",
+		allow_blank=True,
+		blank_text=u'Select a department'
+		)
+	rsFieldID = StringField("ResourceSpace reference ID for field")
+	description = StringField('Database description')
 
 	submit = SubmitField('Submit')
