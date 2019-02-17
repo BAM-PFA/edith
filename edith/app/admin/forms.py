@@ -3,7 +3,7 @@ from wtforms import StringField, SubmitField, PasswordField, BooleanField, Valid
 from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 
-from ..models import Department, User
+from ..models import Department, User, Data_Source, Metadata_Field
 
 
 class DepartmentForm(FlaskForm):

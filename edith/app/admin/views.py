@@ -9,9 +9,9 @@ from flask import abort, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
 
 from . import admin
-from .forms import DepartmentForm, AddUserForm, EditUserForm, DataSourceForm
+from .forms import DepartmentForm, AddUserForm, EditUserForm, DataSourceForm, MetadataFieldForm
 from .. import db
-from ..models import Department, User, Data_Source
+from ..models import Department, User, Data_Source, Metadata_Field
 
 
 def check_admin():
@@ -398,7 +398,7 @@ def delete_data_source(id):
 
 	return render_template(title="Delete Data Source")
 
-'''
+
 ####################
 # Metadata Fields Views
 @admin.route('/metadata_fields')
@@ -442,7 +442,7 @@ def add_metadata_field():
 		except Exception as e:
 			# in case field name already exists
 			# print(str(e))
-			flash('Error adding metadata. {}'.format(e))
+			flash('Error adding metadata field. {}'.format(e))
 
 		# redirect to departments page
 		return redirect(url_for('admin.list_metadata_fields'))
@@ -451,7 +451,7 @@ def add_metadata_field():
 	return render_template(
 		'admin/metadata_fields/metadata_field.html',
 		action="Add",
-		add_data_source=add_metadata_field,
+		add_metadata_field=add_metadata_field,
 		form=form,
 		title="Add Metadata Field"
 		)
@@ -460,24 +460,24 @@ def add_metadata_field():
 @login_required
 def edit_metadata_field(id):
 	"""
-	Edit a data_source
+	Edit a metadata field
 	""" 
 	check_admin()
 
 	add_metadata_field = False
 
-	data_source = Data_Source.query.get_or_404(id)
-	form = DataSourceForm(obj=data_source)
+	metadata_field = Metadata_Field.query.get_or_404(id)
+	form = DataSourceForm(obj=metadata_field)
 	if form.validate_on_submit():
 		# print(form.data)
-		data_source.dbName= form.dbName.data
-		data_source.fmpLayout = form.fmpLayout.data
-		data_source.IPaddress = form.IPaddress.data
-		data_source.username = form.username.data
-		data_source.credentials = form.credentials.data
-		data_source.description = form.description.data
-		data_source.primaryAssetID = form.primaryAssetID.data
-		data_source.secondaryAssetID = form.secondaryAssetID.data
+		metadata_field.dbName= form.dbName.data
+		metadata_field.fmpLayout = form.fmpLayout.data
+		metadata_field.IPaddress = form.IPaddress.data
+		metadata_field.username = form.username.data
+		metadata_field.credentials = form.credentials.data
+		metadata_field.description = form.description.data
+		metadata_field.primaryAssetID = form.primaryAssetID.data
+		metadata_field.secondaryAssetID = form.secondaryAssetID.data
 		try:
 			db.session.commit()
 			flash('You have successfully edited the data source.')
@@ -486,42 +486,42 @@ def edit_metadata_field(id):
 			return redirect(url_for('admin.list_metadata_fields'))
 		except Exception as e:
 			print(e)
-			flash('Error editing the data_source. {}'.format(e))
+			flash('Error editing the metadata_field. {}'.format(e))
 			return redirect(url_for('admin.list_metadata_fields'))
 
 	# this pre-populates the form with existing data from the db
-	form.dbName.data = data_source.dbName
-	form.fmpLayout.data = data_source.fmpLayout
-	form.IPaddress.data = data_source.IPaddress
-	form.username.data = data_source.username 
-	form.credentials.data = data_source.credentials
-	form.description.data = data_source.description
-	data_source.primaryAssetID = form.primaryAssetID.data
-	data_source.secondaryAssetID = form.secondaryAssetID.data
+	form.dbName.data = metadata_field.dbName
+	form.fmpLayout.data = metadata_field.fmpLayout
+	form.IPaddress.data = metadata_field.IPaddress
+	form.username.data = metadata_field.username 
+	form.credentials.data = metadata_field.credentials
+	form.description.data = metadata_field.description
+	metadata_field.primaryAssetID = form.primaryAssetID.data
+	metadata_field.secondaryAssetID = form.secondaryAssetID.data
 	return render_template(
-		'admin/data_sources/data_source.html', 
+		'admin/metadata_fields/metadata_field.html', 
 		action="Edit",
-		add_data_source=add_data_source, 
+		add_metadata_field=add_metadata_field, 
 		form=form,
-		data_source=data_source,
-		title="Edit Data Source"
+		metadata_field=metadata_field,
+		title="Edit Metadata Field"
 		)
 
-@admin.route('/data_sources/delete/<int:id>', methods=['GET', 'POST'])
+@admin.route('/metadata_fields/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
-def delete_data_source(id):
+def delete_metadata_field(id):
 	"""
-	Delete a data_source from the database
+	Delete a metadata_field from the database
 	"""
 	check_admin()
 
-	data_source = Data_Source.query.get_or_404(id)
-	db.session.delete(data_source)
+	metadata_field = Metadata_Field.query.get_or_404(id)
+	db.session.delete(metadata_field)
 	db.session.commit()
 	flash('You have successfully deleted the data source.')
 
-	# redirect to the data_sources page
-	return redirect(url_for('admin.list_data_sources'))
+	# redirect to the metadata_fields page
+	return redirect(url_for('admin.list_metadata_fields'))
 
-	return render_template(title="Delete Data Source")
-'''
+	return render_template(title="Delete Metadata Field")
+

@@ -1,0 +1,24 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+{% block title %}
+    {% if add_metadata_field %}
+        Add Metadata Field
+    {% else %}
+        Edit Metadata Field
+    {% endif %}
+{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        {% if add_metadata_field %}
+            <h1>Add Metadata Field</h1>
+        {% else %}
+            <h1>Edit Metadata Field</h1>
+        {% endif %}
+        <br/>
+        {{ wtf.quick_form(form) }}
+        <br/>
+        <a class="btn btn-primary" href="{{ url_for('admin.list_metadata_fields') }}" role="button">Cancel</a>
+    </div>
+</div>
+{% endblock %}
