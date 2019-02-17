@@ -94,7 +94,7 @@ class MetadataFieldForm(FlaskForm):
 		get_pk=lambda x: x.id,
 		get_label="dbName",
 		allow_blank=True,
-		blank_text=u'Select a department'
+		blank_text=u'Select a data source'
 		)
 	rsFieldID = StringField("ResourceSpace reference ID for field")
 	description = StringField('Database description')

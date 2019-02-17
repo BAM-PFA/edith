@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# local imports
+from config import app_config
+from .. import db
+from ..models import Metadata_Field
+
+
+
 metadataMasterDict = {}
 
 metadataMasterDict['tags'] = ''
@@ -64,3 +72,16 @@ metadataMasterDict['digitizationQCNotes'] = ''
 # metadataMasterDict[''] = ''
 
 metadataMasterDict['hasBAMPFAmetadata'] = ""
+
+class Metadata:
+	'''
+	Metadata instance for an asset being ingested
+	'''
+	def __init__(self):
+		self.metadataDict = {}
+		self.available_metadataSources = db.session.query(Metadata_Field).all()
+		for fieldName in self.available_metadataSources:
+			print(fieldName)
+
+
+

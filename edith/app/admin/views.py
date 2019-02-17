@@ -429,7 +429,7 @@ def add_metadata_field():
 			fieldName = form.fieldName.data,
 			fieldUniqueName = form.fieldUniqueName.data,
 			fieldSourceName = form.fieldSourceName.data,
-			dataSource_id = form.dataSource_id.data,
+			dataSource_id = form.dataSource_id.data.id,
 			rsFieldID = form.rsFieldID.data,
 			description = form.description.data
 			)
@@ -467,17 +467,16 @@ def edit_metadata_field(id):
 	add_metadata_field = False
 
 	metadata_field = Metadata_Field.query.get_or_404(id)
-	form = DataSourceForm(obj=metadata_field)
+	form = MetadataFieldForm(obj=metadata_field)
 	if form.validate_on_submit():
 		# print(form.data)
-		metadata_field.dbName= form.dbName.data
-		metadata_field.fmpLayout = form.fmpLayout.data
-		metadata_field.IPaddress = form.IPaddress.data
-		metadata_field.username = form.username.data
-		metadata_field.credentials = form.credentials.data
+		if not form.dataSource_id.data == None:
+			user.dataSource_id = form.dataSource_id.data.id
+		metadata_field.fieldName = form.fieldName.data
+		metadata_field.fieldUniqueName = form.fieldUniqueName.data
+		metadata_field.fieldSourceName = form.fieldSourceName.data
+		metadata_field.rsFieldID = form.rsFieldID.data
 		metadata_field.description = form.description.data
-		metadata_field.primaryAssetID = form.primaryAssetID.data
-		metadata_field.secondaryAssetID = form.secondaryAssetID.data
 		try:
 			db.session.commit()
 			flash('You have successfully edited the data source.')
@@ -490,14 +489,13 @@ def edit_metadata_field(id):
 			return redirect(url_for('admin.list_metadata_fields'))
 
 	# this pre-populates the form with existing data from the db
-	form.dbName.data = metadata_field.dbName
-	form.fmpLayout.data = metadata_field.fmpLayout
-	form.IPaddress.data = metadata_field.IPaddress
-	form.username.data = metadata_field.username 
-	form.credentials.data = metadata_field.credentials
-	form.description.data = metadata_field.description
-	metadata_field.primaryAssetID = form.primaryAssetID.data
-	metadata_field.secondaryAssetID = form.secondaryAssetID.data
+	if not metadata_field.dataSource_id in ('',None,"Null"):
+		dataSourceID = Data_Source.query.get(metadata_field.dataSource_id).id
+		form.dataSource_id = dataSourceID
+	form.fieldName.data = metadata_field.fieldName
+	form.fieldUniqueName.data = metadata_field.fieldUniqueName
+	form.fieldSourceName.data = metadata_field.fieldSourceName
+	form.rsFieldID.data = metadata_field.rsFieldID
 	return render_template(
 		'admin/metadata_fields/metadata_field.html', 
 		action="Edit",
