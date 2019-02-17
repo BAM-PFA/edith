@@ -265,6 +265,12 @@ def metadata_for_rs(metadataJSON):
 	rsMetaDict[132] = metadataJSON['speakerInterviewee']
 	rsMetaDict[133] = metadataJSON['filmTitleSubjects']
 	rsMetaDict[134] = metadataJSON['topicalSubjects']
+	rsMetaDict[135] = metadataJSON['recordingAnalogTechnicalNotes']
+	rsMetaDict[136] = metadataJSON['audioRecordingID']
+	rsMetaDict[137] = metadataJSON['recordingPermissionsNotes']
+	rsMetaDict[138] = metadataJSON['analogTapeNumber']
+	rsMetaDict[139] = metadataJSON['analogTapeSide']
+	rsMetaDict[140] = metadataJSON['digitizationQCNotes']
 	# rsMetaDict[] = metadataJSON['']
 	
 	rsMetaJSON = json.dumps(rsMetaDict,ensure_ascii=False)
