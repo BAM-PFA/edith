@@ -143,6 +143,8 @@ class Metadata_Field(db.Model):
 	fieldUniqueName = db.Column(db.String(60), unique=True)
 	# field name in the data source
 	fieldSourceName = db.Column(db.String(60))
+	# category of field (Film coll, Event, General, etc.)
+	fieldCategory = db.Column(db.String(100))
 	# data source
 	dataSource_id = db.Column(db.Integer, db.ForeignKey('data_sources.id'))
 	# resourceSpace field ID # 
