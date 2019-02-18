@@ -29,6 +29,8 @@ During the ingest process, we query one of the BAMPFA FileMaker databases used f
 
 The SIPs can then be written to [Linear Tape Open (LTO)](https://en.wikipedia.org/wiki/Linear_Tape-Open). Each tape is also indexed in the `pymm` MySQL database. This portion uses code inspired by [`ltopers`](https://github.com/amiaopensource/ltopers).
 
+Internally [ResourceSpace](https://resourcespace.com) hosts both access copies of assets and descriptive metadata drawn from our collection management systems, as well as user supplied metadata. It also includes the LTO tape id of assets written to tape so it's a handy front end for managing assets in the repository.
+
 ## Usage overview
 
 * Users log in in order to access the system. Each user is defined as belonging to a specific BAMPFA department (which helps per-asset access rules), as well as having an individual ResourceSpace API key.
