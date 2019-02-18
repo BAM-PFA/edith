@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# standard library imports
+import json
 # local imports
 from config import app_config
 from .. import db
@@ -76,12 +78,23 @@ metadataMasterDict['hasBAMPFAmetadata'] = ""
 class Metadata:
 	'''
 	Metadata instance for an asset being ingested
+	use object input path as ID ... ?
 	'''
-	def __init__(self):
-		self.metadataDict = {}
-		self.available_metadataSources = db.session.query(Metadata_Field).all()
-		for fieldName in self.available_metadataSources:
-			print(fieldName.data)
+	def __init__(self,objectPath):
+		self.identifier = objectPath
+		# init a base dict
+		self.metadataDict = {"hasBAMPFAmetadata":False}
+		# get all the defined fields from the db
+		self.availableMetadataFields = db.session.query(Metadata_Field).all()
+		for field in self.availableMetadataFields:
+			# build out the metadata dict
+			self.metadataDict[field.fieldUniqueName] = None
+
+	def get_json(self):
+		metadata = self.metadataDict
+		_json = json.dumps(metadata)
+
+		return(_json)
 
 
 

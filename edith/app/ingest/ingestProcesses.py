@@ -16,7 +16,7 @@ from flask_login import current_user
 # local modules
 from . import metadataQuery
 from . import dataSourceAccess
-from .metadataMaster import metadataMasterDict
+from .metadataMaster import metadataMasterDict, Metadata
 from .. import resourcespaceFunctions
 from .. import sshStuff
 from .. import utils
@@ -146,12 +146,12 @@ def grab_remote_files(targetFilepath):
 			"so don't need to rsync anything."
 			)
 
-def write_metadata_json(metadata,basename):
+def write_metadata_json(_metadata,basename):
 	tempDir = utils.get_temp_dir()
 	jsonPath = os.path.join(tempDir,basename+".json")
 	# print(jsonPath)
 	with open(jsonPath,'w+') as jsonTemp:
-		json.dump(metadata,jsonTemp)#,ensure_ascii=False)
+		json.dump(_metadata,jsonTemp)#,ensure_ascii=False)
 	# print(jsonPath)
 
 	return jsonPath
@@ -159,6 +159,7 @@ def write_metadata_json(metadata,basename):
 def add_metadata(ingestDict):
 	for objectPath, objectOptions in ingestDict.items():
 		
+
 		metadataSourceID = int(ingestDict[objectPath]['metadataSource'])
 		if not metadataSourceID == 0:
 			dataSourceAccessDetails = dataSourceAccess.main(metadataSourceID)
