@@ -158,21 +158,25 @@ def write_metadata_json(_metadata,basename):
 
 def add_metadata(ingestDict):
 	for objectPath, objectOptions in ingestDict.items():
-		
-
 		metadataSourceID = int(ingestDict[objectPath]['metadataSource'])
 		if not metadataSourceID == 0:
 			dataSourceAccessDetails = dataSourceAccess.main(metadataSourceID)
 			
+		objectMetadataInstance = Metadata(objectPath)
 		metadataJson = {}
 		metadataJson[objectPath] = {}
 		# first check if there is user-supplied metadata
 		if 'userMetadata' in ingestDict[objectPath]:
 			metadataJson[objectPath]['metadata'] = \
 				ingestDict[objectPath]['userMetadata']
+			# testing build of Metadata class
+			for k,v in ingestDict[objectPath]['userMetadata'].items():
+				if k in objectMetadataInstance.metadataDict and not v in (None,""):
+				 	objectMetadataInstance.metadataDict[k] = v
 		else:
 			# if not, init an empty dict
 			metadataJson[objectPath]['metadata'] = {}
+			
 
 		basename = objectOptions['basename']
 		# try to parse an ID number

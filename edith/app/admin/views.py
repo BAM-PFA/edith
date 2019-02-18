@@ -429,6 +429,7 @@ def add_metadata_field():
 			fieldName = form.fieldName.data,
 			fieldUniqueName = form.fieldUniqueName.data,
 			fieldSourceName = form.fieldSourceName.data,
+			fieldCategory = form.fieldCategory.data,
 			dataSource_id = form.dataSource_id.data.id,
 			rsFieldID = form.rsFieldID.data,
 			description = form.description.data
@@ -475,6 +476,7 @@ def edit_metadata_field(id):
 		metadata_field.fieldName = form.fieldName.data
 		metadata_field.fieldUniqueName = form.fieldUniqueName.data
 		metadata_field.fieldSourceName = form.fieldSourceName.data
+		metadata_field.fieldCategory = form.fieldCategory.data
 		metadata_field.rsFieldID = form.rsFieldID.data
 		metadata_field.description = form.description.data
 		try:
@@ -495,6 +497,7 @@ def edit_metadata_field(id):
 	form.fieldName.data = metadata_field.fieldName
 	form.fieldUniqueName.data = metadata_field.fieldUniqueName
 	form.fieldSourceName.data = metadata_field.fieldSourceName
+	form.fieldCategory.data = metadata_field.fieldCategory
 	form.rsFieldID.data = metadata_field.rsFieldID
 	return render_template(
 		'admin/metadata_fields/metadata_field.html', 

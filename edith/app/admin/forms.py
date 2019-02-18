@@ -89,6 +89,9 @@ class MetadataFieldForm(FlaskForm):
 	fieldName = StringField('Field display name', validators=[DataRequired()])
 	fieldUniqueName = StringField('Unique name for system', validators=[DataRequired()])
 	fieldSourceName = StringField('Name of field in source as applicable')
+	fieldCategory = StringField(
+			'Category field belongs to. Please choose '\
+			'"Event","Communications", "Film Collection", or "General".')
 	dataSource_id = QuerySelectField(
 		query_factory=lambda: Data_Source.query.all(),
 		get_pk=lambda x: x.id,

@@ -81,7 +81,7 @@ class Metadata:
 	use object input path as ID ... ?
 	'''
 	def __init__(self,objectPath):
-		self.identifier = objectPath
+		self.objectPath = objectPath
 		# init a base dict
 		self.metadataDict = {"hasBAMPFAmetadata":False}
 		# get all the defined fields from the db
@@ -90,11 +90,39 @@ class Metadata:
 			# build out the metadata dict
 			self.metadataDict[field.fieldUniqueName] = None
 
+	def get_external_identifier(self):
+		'''
+		Parse the ID/accession number from self.objectPath
+		'''
+		# self.idNumber = parse self.objectPath
+		# return self.idNumber
+		pass
+
 	def get_json(self):
 		metadata = self.metadataDict
 		_json = json.dumps(metadata)
 
 		return(_json)
+
+	def write_json_file(self,jsonPath):
+		'''
+		Provided an output path for a JSON file,
+		write self.metadataDict to it
+		'''
+		self.metadataFilepath = jsonPath
+		with open(jsonPath,'w+') as jsonTemp:
+			json.dump(self.metadataDict,jsonTemp)
+
+		return self
+
+	def fetch_metadata(self,dataSourceAccessDetails):
+		'''
+		Given a set of target credentials for an external data source,
+		go get some metadata based on self.idNumber
+		take logic from ingestProcesses.get_metadata()
+		'''
+		# return self.metadataDict ... i guess?
+		pass
 
 
 
