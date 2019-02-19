@@ -292,6 +292,7 @@ def unmount_tapes():
 		return True
 
 def parse_index_schema_file():
+	# get the first and last name of current_user
 	user = utils.construct_user_name()
 	print("PARSING LTFS SCHEMA FILE")
 	pythonBinary = utils.get_python_path()
@@ -301,11 +302,11 @@ def parse_index_schema_file():
 	tempDir = utils.get_temp_dir()
 	aTapeSchema = os.path.join(tempDir,aTapeID+".schema")
 	parseCommand = [
-	pythonBinary,
-	ltfsSchemaParserPath,
-	'-l',aTapeSchema,
-	'-u',user
-	]
+		pythonBinary,
+		ltfsSchemaParserPath,
+		'-l',aTapeSchema,
+		'-u',user
+		]
 
 	if os.path.isfile(aTapeSchema):
 		out = subprocess.run(

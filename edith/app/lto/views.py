@@ -9,7 +9,7 @@ import sys
 from time import sleep
 # non-standard libraries
 from flask import render_template, request
-from flask_login import login_required
+from flask_login import login_required, current_user
 import wtforms
 # local modules
 from . import forms
@@ -20,6 +20,7 @@ from .. import listObjects
 from .. import utils
 
 @lto.route('/lto_menu',methods=['GET','POST'])
+@login_required
 def lto_menu():
 	return render_template(
 		'lto/lto_menu.html',
@@ -28,6 +29,7 @@ def lto_menu():
 
 
 @lto.route('/format_lto',methods=['GET','POST'])
+@login_required
 def format_lto():
 	currentLTOid = utils.get_current_LTO_id()
 
@@ -41,6 +43,7 @@ def format_lto():
 		)
 
 @lto.route('/format_status',methods=['GET','POST'])
+@login_required
 def format_status():
 	# we are using SCSI (SAS) attached drives in linux so I'll defalt the 
 	# device names to nst0 and nst1, which are the non-auto-rewind device 
@@ -89,6 +92,7 @@ def format_status():
 		)
 
 @lto.route('/lto_id',methods=['GET','POST'])
+@login_required
 def lto_id():
 	newLTOid = forms.LTO_id_form()
 	currentLTOid = utils.get_current_LTO_id()
@@ -100,6 +104,7 @@ def lto_id():
 		)
 
 @lto.route('/lto_id_status',methods=['GET','POST'])
+@login_required
 def lto_id_status():
 	tapeIdRegex = re.compile(r'^((\d{4}[A-Z]A)|(\d{5}A))$')
 	ltoIDstatus = False
@@ -126,6 +131,7 @@ def lto_id_status():
 		)
 
 @lto.route('/mount_lto',methods=['GET','POST'])
+@login_required
 def mount_lto():
 
 	mountEmUp = forms.mount()
@@ -178,6 +184,7 @@ def mount_lto():
 		)
 
 @lto.route('/mount_status',methods=['GET','POST'])
+@login_required
 def mount_status():
 	statuses = {'errors':[]}
 	userId = os.getegid()
@@ -264,6 +271,7 @@ def mount_status():
 		)
 
 @lto.route('/list_aips',methods=['GET','POST'])
+@login_required
 def list_aips():
 	objects = listObjects.list_objects('aip')
 	# need to get a human readable targetBase:
@@ -325,6 +333,7 @@ def list_aips():
 		)
 
 @lto.route('/write_status',methods=['GET','POST'])
+@login_required
 def write_status():
 	# raw data from the form
 	_data = request.form.to_dict(flat=False)
@@ -365,7 +374,7 @@ def write_status():
 			writeStatuses[sip] = aipStatus
 	print(writeStatuses)
 
-	# remove staged AIPs ~~THIS DOESN'T EXIST YET!~~
+	# remove staged AIPs ~~THIS DOESN'T EXIST YET!~~ @fixme
 	# ltoProcesses.remove_staged_AIPs(writeStatuses)
 
 	ltoProcesses.post_tape_id_to_rs(writeStatuses)
@@ -383,6 +392,7 @@ def write_status():
 		)
 
 @lto.route('/unmount_lto_status',methods=['GET','POST'])
+@login_required
 def unmount_lto_status():
 	# _data = request.form.to_dict(flat=False)
 	errors = ltoProcesses.unmount_tapes()
@@ -397,6 +407,7 @@ def unmount_lto_status():
 		)
 
 @lto.route('/choose_deck',methods=['GET','POST'])
+@login_required
 def choose_deck():
 	form = forms.choose_deck()
 
@@ -406,6 +417,7 @@ def choose_deck():
 		)
 
 @lto.route('/get_them_dips',methods=['GET','POST'])
+@login_required
 def get_them_dips():
 	deck = request.form['drive']
 	contents = ltoProcesses.get_tape_contents(deck)
@@ -441,6 +453,7 @@ def get_them_dips():
 		)
 
 @lto.route('/dip_status',methods=['GET','POST'])
+@login_required
 def dip_status():
 	_data = request.form.to_dict(flat=False)
 

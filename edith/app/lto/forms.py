@@ -53,10 +53,10 @@ class write_to_LTO(FlaskForm):
 	General input form
 	'''
 	suchChoices = wtforms.HiddenField(default='default choices')
-	user = wtforms.StringField(
-		'Please enter your email address:',
-		validators=[DataRequired(), Email()]
-		)
+	# user = wtforms.StringField(
+	# 	'Please enter your email address:',
+	# 	validators=[DataRequired(), Email()]
+	# 	)
 	submit = wtforms.SubmitField('WRITE TO LTO')
 
 class choose_deck(FlaskForm):
