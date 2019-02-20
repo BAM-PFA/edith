@@ -132,7 +132,7 @@ Each AIP is written to LTO using the `pymm` function `move_n_verify_sip()` to ve
 
 The user that Apache is run as (declared in ingestfiles.wsgi) has to be added to the `tape` user group so that it has access to the tape devices in Linux. I am not totally sure what this will/would look like in Mac. `ltopers` on Mac doesn't seem to need additional permissions.
 
-On mounting a tape, there's also a temp .json file that is created listing the tape letter (A/B), the mountpoint for the tape filesystem (in the `tmp` folder of the app), and the number of 1024-byte blocks that are available on the tape (read from a call to `df` during the mount process). This is read and displayed to users in human-readable format when AIPs are listed (along with the total size of each AIP).
+On mounting a tape, there's also a temporary .json file that is created listing the tape letter (A/B), the mountpoint for the tape filesystem (in the `tmp` folder of the app), and the number of 1024-byte blocks that are available on the tape (read from a call to `df` during the mount process). This is read and displayed to users in human-readable format when AIPs are listed (along with the total size of each AIP).
 
 ## Flask UI notes:
 The structure of the app is pretty basic. I have some of the 'secret stuff' and all the configurable paths set up in an 'instance-specific' `config.py` file. There should be at least one Admin user who can use the interfaces for setting up Departments, Metadata Sources, Metadata Fields, other Users, and so on.
@@ -149,7 +149,7 @@ flask db init
 flask db migrate
 flask db upgrade
 ```
-* Run `flask shell` from within the edith repository and make an admin user for the app:
+* Run `flask shell` from within the edith project root directory (`cd /path/to/edith`) and make an admin user for the app:
 ```
 >>> from app.models import User
 >>> from app import db
