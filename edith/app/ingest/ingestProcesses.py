@@ -171,6 +171,7 @@ def add_metadata(ingestDict):
 		if 'userMetadata' in ingestDict[objectPath]:
 			metadataJson[objectPath]['metadata'] = \
 				ingestDict[objectPath]['userMetadata']
+
 			# testing build of Metadata class
 			for k,v in ingestDict[objectPath]['userMetadata'].items():
 				if k in objectMetadataInstance.metadataDict and not v in (None,""):
@@ -184,12 +185,9 @@ def add_metadata(ingestDict):
 		# try to parse an ID number
 		idNumber = get_acc_from_filename(basename)
 
-		if not dataSourceAccessDetails == None:
-			# go get some metadata
-			intermediateMetadata = metadataJson[objectPath]['metadata']
-			metadata = get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
-		else:
-			metadata = metadataJson[objectPath]['metadata']
+		# go get some metadata
+		intermediateMetadata = metadataJson[objectPath]['metadata']
+		metadata = get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
 
 		objectOptions['metadata'] = metadata
 
