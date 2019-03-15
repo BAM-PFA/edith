@@ -161,6 +161,8 @@ def add_metadata(ingestDict):
 		metadataSourceID = int(ingestDict[objectPath]['metadataSource'])
 		if not metadataSourceID == 0:
 			dataSourceAccessDetails = dataSourceAccess.main(metadataSourceID)
+		else:
+			dataSourceAccessDetails = None
 			
 		objectMetadataInstance = Metadata(objectPath)
 		metadataJson = {}
@@ -181,10 +183,13 @@ def add_metadata(ingestDict):
 		basename = objectOptions['basename']
 		# try to parse an ID number
 		idNumber = get_acc_from_filename(basename)
-		intermediateMetadata = metadataJson[objectPath]['metadata']
 
-		# go get some metadata
-		metadata = get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
+		if not dataSourceAccessDetails == None:
+			# go get some metadata
+			intermediateMetadata = metadataJson[objectPath]['metadata']
+			metadata = get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
+		else:
+			metadata = metadataJson[objectPath]['metadata']
 
 		objectOptions['metadata'] = metadata
 
