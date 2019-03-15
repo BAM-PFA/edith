@@ -238,6 +238,7 @@ def main(ingestDict):
 		# otherwise default to the user's email address
 		user = current_user.email
 
+	print(user)
 	# GET THE PYMM PATH TO CALL IN A SEC
 	pymmPath = utils.get_pymm_path()
 	ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
