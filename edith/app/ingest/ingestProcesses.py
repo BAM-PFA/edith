@@ -305,6 +305,7 @@ def main(ingestDict):
 				ingestStatus.append(
 					'Archival information package creation succeeeded'
 					)
+				print(ingestStatus)
 			except subprocess.CalledProcessError as e:
 				print(e)
 				ingestStatus.append(
@@ -323,6 +324,7 @@ def main(ingestDict):
 					json.dump(theGoods,mdwrite)
 					print('wrote to the md file')
 				ingestStatus.append('Added metadata to sidecar JSON file')
+				print(ingestStatus)
 			except:
 				ingestStatus.append(
 					'Warning: Problem writing to JSON metadata file.'\
