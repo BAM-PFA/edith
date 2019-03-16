@@ -287,7 +287,11 @@ def main(ingestDict):
 
 			# prep a pymm command
 			pymmResult = None
-			pymmCommand,metadataFilepath = make_pymm_command(user,_object,ingestDict)
+			pymmCommand,metadataFilepath = make_pymm_command(
+				user,
+				_object,
+				ingestDict
+				)
 			print(pymmCommand)
 
 			try:
@@ -298,14 +302,40 @@ def main(ingestDict):
 				# get the pymm result dict via this highly hack-y method
 				pymmOut = pymmOut.decode().split('\n')
 				pymmResult = ast.literal_eval(pymmOut[-2])
-				print(pymmResult)
-				# get the UUID which we'll add to the metadata file in a sec
-				ingestUUID = pymmResult['ingestUUID']
+				print("PYMM OUTPUT\n",pymmResult)
 
-				ingestStatus.append(
-					'Archival information package creation succeeeded'
-					)
-				print(ingestStatus)
+				# now work on metadata
+				if not pymmResult['status'] == False:
+					ingestStatus.append(
+						'Archival information package'\
+						' creation succeeeded'
+						)
+					# get the UUID which we'll add to the metadata file in a sec
+					ingestUUID = pymmResult['ingestUUID']
+					try:
+						with open(metadataFilepath,'r+') as mdread:
+							# print('opened the md file')
+							data = json.load(mdread)
+							key = list(data.keys())[0]
+							data[key]['metadata']['ingestUUID'] = ingestUUID
+							theGoods = data[key]['metadata']
+						with open(metadataFilepath,'w+') as mdwrite:
+							json.dump(theGoods,mdwrite)
+							# print('wrote to the md file')
+						ingestStatus.append(
+							'Added metadata to sidecar JSON file: {}'.format(
+								metadataFilepath
+								)
+							)
+						# print(ingestStatus)
+					except:
+						ingestStatus.append(
+							'Warning: Problem writing to JSON metadata file:'\
+							' {}.\nCheck file/folder permissions.'.format(
+								metadataFilepath
+								)
+							)
+
 			except subprocess.CalledProcessError as e:
 				print(e)
 				ingestStatus.append(
@@ -313,57 +343,44 @@ def main(ingestDict):
 					' creation failed'
 					)
 
-			try:
-				with open(metadataFilepath,'r+') as mdread:
-					print('opened the md file')
-					data = json.load(mdread)
-					key = list(data.keys())[0]
-					data[key]['metadata']['ingestUUID'] = ingestUUID
-					theGoods = data[key]['metadata']
-				with open(metadataFilepath,'w+') as mdwrite:
-					json.dump(theGoods,mdwrite)
-					print('wrote to the md file')
-				ingestStatus.append('Added metadata to sidecar JSON file')
-				print(ingestStatus)
-			except:
-				ingestStatus.append(
-					'Warning: Problem writing to JSON metadata file.'\
-					' Check file/folder permissions.'
-					)
+			print(ingestStatus)
+
 			########################
 			#### RESOURCESPACE STUFF
 			########################
 			rsDir = utils.get_rs_dir()
-			if pymmResult:
-				rsProxyPath = pymmResult['accessPath']
-				basename = ingestDict[_object]['basename']
-				#print(rsProxyPath)
-				#print(os.path.exists(rsProxyPath))
-				if os.path.exists(rsProxyPath):
-					print("WOOOT")
-					# rsStatus is True/False result
-					rsStatus = resourcespaceFunctions.do_resourcespace(
-						# user,
-						rsProxyPath,
-						metadataFilepath
-						)
-					if rsStatus:
-						ingestStatus.append(
-							'Added proxy file(s) '\
-							'and metadata to resourcespace'
+			if pymmResult != None:
+				if pymmResult['status'] != False:
+					rsProxyPath = pymmResult['accessPath']
+					basename = ingestDict[_object]['basename']
+					#print(rsProxyPath)
+					#print(os.path.exists(rsProxyPath))
+					if os.path.exists(rsProxyPath):
+						print("WOOOT")
+						# rsStatus is True/False result
+						rsStatus = resourcespaceFunctions.do_resourcespace(
+							rsProxyPath,
+							metadataFilepath
 							)
+						if rsStatus:
+							ingestStatus.append(
+								'Added proxy file(s) '\
+								'and metadata to resourcespace'
+								)
+						else:
+							ingestStatus.append(
+								'Warning: Problem sending file or metadata '\
+								'or both to ResourceSpace.'
+								)
 					else:
+						print("PROXY FILE PATH PROBLEMO")
 						ingestStatus.append(
-							'Warning: Problem sending file or metadata '\
-							'or both to ResourceSpace.'
+							"Problem accessing the resourcespace proxy file."\
+							"Maybe it didn't get created?"\
+							"Maybe check folder permissions."
 							)
-				else:
-					print("PROXY FILE PATH PROBLEMO")
-					ingestStatus.append(
-						"Problem accessing the resourcespace proxy file."\
-						"Maybe it didn't get created?"\
-						"Maybe check folder permissions."
-						)
+			else:
+				pass
 
 			ingestDict[_object]['ingestStatus'] = ingestStatus
 
