@@ -118,9 +118,12 @@ def get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
 				# give up
 				pass
 
-	for tag, mdValue in metadataDict.items():
-		if mdValue == "":
-			metadataDict.pop(tag,None)
+	# poppers = []
+	#for tag, mdValue in metadataDict.items():
+	#	if mdValue == "":
+	#		poppers.append(tag)
+	#for tag in poppers:
+	#	metadataDict.pop(tag,None)
 
 	print('metadataDict')
 	print(metadataDict)
