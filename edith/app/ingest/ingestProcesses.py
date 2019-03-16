@@ -335,6 +335,8 @@ def main(ingestDict):
 								metadataFilepath
 								)
 							)
+				else:
+					ingestStatus.append(pymmResult['abortReason'])
 
 			except subprocess.CalledProcessError as e:
 				print(e)
