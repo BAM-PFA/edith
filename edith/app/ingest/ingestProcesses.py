@@ -118,8 +118,12 @@ def get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
 				# give up
 				pass
 
-	# print('metadataDict')
-	# print(metadataDict)
+	for tag, mdValue in metadataDict.items():
+		if mdValue == "":
+			metadataDict.pop(tag,None)
+
+	print('metadataDict')
+	print(metadataDict)
 	return(metadataDict)
 
 def grab_remote_files(targetFilepath):
@@ -189,12 +193,15 @@ def add_metadata(ingestDict):
 		intermediateMetadata = metadataJson[objectPath]['metadata']
 		metadata = get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
 
+
 		objectOptions['metadata'] = metadata
 
 		metadataJson[objectPath]['metadata'] = metadata
 		metadataJson[objectPath]['basename'] = basename
 		objectOptions['metadataFilepath'] = \
 			write_metadata_json(metadataJson,basename)
+
+		del metadata
 
 	# print(ingestDict)
 	print("HELLO THERE WE ADDED METADATA!")
