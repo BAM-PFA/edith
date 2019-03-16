@@ -44,8 +44,10 @@ def do_resourcespace(proxyPath,metadataFilepath=None):
 				quotedPath,
 				proxyPath
 				)
-		if result not in (None,'','Invalid signature'):
+		if result not in (None,'','Invalid signature','false'):
 			success = True
+		else:
+			pass
 
 	elif os.path.isdir(proxyPath):
 		print("the input object is a directory")
@@ -72,7 +74,7 @@ def do_resourcespace(proxyPath,metadataFilepath=None):
 			)
 		print('primaryRecord')
 		print(primaryRecord)
-		if primaryRecord not in (None,'','Invalid signature'):
+		if primaryRecord not in (None,'','Invalid signature','false'):
 			coolItems.remove(primaryItem)
 			# print(coolItems)
 			while len(coolItems) > 0:
