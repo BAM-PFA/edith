@@ -396,5 +396,5 @@ def main(ingestDict):
 
 			ingestDict[_object]['ingestStatus'] = ingestStatus
 
-	utils.clean_temp_dir('ingest')
+	# utils.clean_temp_dir('ingest')
 	return(ingestDict)
