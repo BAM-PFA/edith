@@ -78,7 +78,6 @@ def get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
 			# print(barcode)
 			if barcode == "000000000":
 				print("ID AND BARCODE BOTH ZEROED OUT")
-				# return metadataDict
 
 			else:
 				FMmetadata = metadataQuery.xml_query(barcode,dataSourceAccessDetails)
@@ -90,7 +89,6 @@ def get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
 					metadataDict['hasBAMPFAmetadata'] = True
 		except:
 			print("Error searching FileMaker on ID and barcode")
-			# return metadataDict
 	else:
 		try:
 			print('searching FileMaker on '+idNumber)
@@ -118,13 +116,6 @@ def get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
 				# give up
 				pass
 
-	# poppers = []
-	#for tag, mdValue in metadataDict.items():
-	#	if mdValue == "":
-	#		poppers.append(tag)
-	#for tag in poppers:
-	#	metadataDict.pop(tag,None)
-
 	print('metadataDict')
 	print(metadataDict)
 	return(metadataDict)
@@ -143,7 +134,6 @@ def grab_remote_files(targetFilepath):
 				'{0}@{1}:{2}'.format(remoteUser,remoteAddress,targetFilepath),
 				processingDir
 				])
-				# connection.sendCommand(command)
 			except:
 				print("Couldn't rsync the file...")
 
@@ -346,7 +336,7 @@ def main(ingestDict):
 								)
 							)
 				else:
-					ingestStatus.append(pymmResult['abortReason'])
+					ingestStatus.append("Warning: "+str(pymmResult['abortReason']))
 
 			except subprocess.CalledProcessError as e:
 				print(e)
@@ -387,7 +377,7 @@ def main(ingestDict):
 					else:
 						print("PROXY FILE PATH PROBLEMO")
 						ingestStatus.append(
-							"Problem accessing the resourcespace proxy file."\
+							"Warning: Problem accessing the resourcespace proxy file."\
 							"Maybe it didn't get created?"\
 							"Maybe check folder permissions."
 							)

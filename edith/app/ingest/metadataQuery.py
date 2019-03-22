@@ -23,7 +23,6 @@ def xml_query(idNumber,dataSourceAccessDetails):
 	metadataMappings = app_config['METADATA_MAPPINGS']
 	dsn = dataSourceAccessDetails['dataSourceName']
 	namespace = metadataMappings[dsn]['NAMESPACE']
-	# namespace = {"filemaker":"http://www.filemaker.com/xml/fmresultset"}
 	layout = dataSourceAccessDetails['dataSourceLayout']
 	server = dataSourceAccessDetails['dataSourceIP']
 	user = dataSourceAccessDetails['dataSourceUsername']
@@ -64,7 +63,7 @@ def xml_query(idNumber,dataSourceAccessDetails):
 		"./filemaker:resultset/filemaker:record",
 		namespace
 		)
-	#print(recordElement)
+	# print(recordElement)
 	# do a little back and forth to get a new root 
 	# that is just the single <record> element
 	recordString = etree.tostring(recordElement)
