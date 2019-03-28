@@ -3,6 +3,7 @@
 Useful utility stuff.
 '''
 # standard library stuff
+import configparser
 import glob
 import os
 import shutil
@@ -50,6 +51,25 @@ def get_temp_dir():
 def get_pymm_path():
 	pymmPath = config["PYMM_PATH"]
 	return pymmPath
+
+def get_pymm_log():
+	pymmPath = get_pymm_path()
+	pymmConfigPath = os.path.join(pymmPath,'pymmconfig','config.ini')
+	pymmConfig = configparser.SafeConfigParser()
+	pymmConfig.read(pymmConfigPath)
+	pymmLogDir = pymmConfig['logging']['pymm_log_dir']
+	pymmLogPath = os.path.join(pymmLogDir,'pymm_log.txt')
+	lines = []
+	try:
+		with open(pymmLogPath,'r') as f:
+			for line in f.readlines():
+				lines.append(line.rstrip())
+		log = lines
+	except:
+		log = ["Couldn't read the pymm log.. sorry."]
+
+	return log
+
 
 def get_python_path():
 	pythonPath = config['PYTHON3_BINARY_PATH']
