@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # standard library imports
 import json
+import os
 # local imports
 from config import app_config
 from .. import db
@@ -82,6 +83,10 @@ class Metadata:
 	'''
 	def __init__(self,objectPath):
 		self.objectPath = objectPath
+		self.basename = os.path.basename(self.objectPath)
+		self.idNumber = self.get_primary_identifier(self.basename)
+		self.barcode = self.get_barcode_from_filename(self.basename)
+
 		# init a base dict
 		self.metadataDict = {"hasBAMPFAmetadata":False}
 		# get all the defined fields from the db
@@ -90,13 +95,34 @@ class Metadata:
 			# build out the metadata dict
 			self.metadataDict[field.fieldUniqueName] = None
 
-	def get_external_identifier(self):
+	def get_primary_identifier(self,basename):
 		'''
-		Parse the ID/accession number from self.objectPath
+		Parse a 5-digit ID number from self.basename
 		'''
-		# self.idNumber = parse self.objectPath
-		# return self.idNumber
-		pass
+		idRegex = re.compile(r'(.+\_)(\d{5})((\_.*)|($))')
+		idMatch = re.match(idRegex, basename)
+		if not idMatch == None: 
+			idNumber = idMatch.group(2)
+			if not idNumber == "00000":
+				idNumber = idNumber.lstrip("0")
+		else:
+			idNumber = "--"	
+
+		print("THIS IS THE ID NUMBER: "+idNumber)
+
+		return idNumber
+
+	def get_barcode_from_filename(self,basename):
+		'''
+		Try to get a "PM1234567" barcode from self.basename
+		'''
+		barcodeRegex = re.compile(r"(.+\_\d{5}\_)(pm\d{7})(.+)",re.IGNORECASE)
+		barcodeMatch = re.match(barcodeRegex,basename)
+		if not barcodeMatch == None:
+			barcode = barcodeMatch.group(2)
+		else:
+			barcode = "000000000"
+		return barcode
 
 	def get_json(self):
 		metadata = self.metadataDict
