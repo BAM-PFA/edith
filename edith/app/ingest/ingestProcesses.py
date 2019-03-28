@@ -9,6 +9,7 @@ import subprocess
 import sys
 import time
 import urllib
+import uuid
 
 # non-standard modules
 from flask_login import current_user
@@ -20,6 +21,33 @@ from .metadataMaster import metadataMasterDict, Metadata
 from .. import resourcespaceFunctions
 from .. import sshStuff
 from .. import utils
+
+class IngestProcess:
+	def __init__(self):
+		self.user = self.get_user()
+		self._uuid = str(uuid.uuid4())
+
+		self.Ingestibles = []
+
+	def get_user(self):
+		userFirstName = current_user.first_name
+		userLastName = current_user.last_name
+		# Construct the user's full name, unless the user is missing
+		# one of these values (they shouldn't be...)
+		if not any(x in (userFirstName,userLastName) for x in ("None",None)):
+			user = "{} {}".format(userFirstName,userLastName)
+		else:
+			# otherwise default to the user's email address
+			user = current_user.email
+
+		print(user)
+		return user
+
+class Ingestible:
+	def __init__(self, inputPath):
+		self.inputPath = inputPath
+		self.metadata = metadataMaster.Metadata
+
 
 def get_acc_from_filename(basename):
 	idRegex = re.compile(r'(.+\_)(\d{5})((\_.*)|($))')
@@ -231,17 +259,6 @@ def main(ingestDict):
 	# run `pymm` on ingest objects
 	# post access copies to resourcespace
 
-	userFirstName = current_user.first_name
-	userLastName = current_user.last_name
-	# Construct the user's full name, unless the user is missing
-	# one of these values (they shouldn't be...)
-	if not any(x in (userFirstName,userLastName) for x in ("None",None)):
-		user = "{} {}".format(userFirstName,userLastName)
-	else:
-		# otherwise default to the user's email address
-		user = current_user.email
-
-	print(user)
 	# GET THE PYMM PATH TO CALL IN A SEC
 	pymmPath = utils.get_pymm_path()
 	ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
