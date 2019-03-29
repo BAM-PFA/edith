@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Pymm Log{% endblock %}
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">WELCOME TO EDITH</h1>
+    <h3 class="lead">let's preserve some stuff!</h3>
+</div>
+<div class="container">
+    <div class="card">
+    	<div class="card-body">
+	    	<h5 class="card-title">
+	    		This is the log from PYMM, the set of scripts doing stuff behind the scenes in EDITH.
+	    	</h5>
+		    <h6 class="card-subtitle mb-2 text-muted">
+		    	The display of this is a work in progress. Try just doing a text search for what you are looking for!</p>
+	    	</h6>
+	    	
+	        <p class="card-text">
+	        	{% for line in pymm_log %}
+	        		{{ line }}<br>
+	        	{% endfor %}
+	        </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
