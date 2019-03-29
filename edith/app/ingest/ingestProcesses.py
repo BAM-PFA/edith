@@ -92,69 +92,46 @@ def add_metadata(CurrentIngest):
 			dataSourceAccessDetails = dataSourceAccess.main(metadataSourceID)
 		else:
 			dataSourceAccessDetails = None
-			
-		_object.
-		# first check if there is user-supplied metadata
-		if 'userMetadata' in ingestDict[objectPath]:
-			metadataJson[objectPath]['metadata'] = \
-				ingestDict[objectPath]['userMetadata']
-
-			# testing build of Metadata class
-			for k,v in ingestDict[objectPath]['userMetadata'].items():
-				if k in objectMetadataInstance.metadataDict and not v in (None,""):
-				 	objectMetadataInstance.metadataDict[k] = v
-		else:
-			# if not, init an empty dict
-			metadataJson[objectPath]['metadata'] = {}
-			
 
 		basename = objectOptions['basename']
 		# try to parse an ID number
 		idNumber = get_acc_from_filename(basename)
 
 		# go get some metadata
-		intermediateMetadata = metadataJson[objectPath]['metadata']
-		metadata = get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
+		_object.metadata.fetch_metadata(dataSourceAccessDetails)
 
+		if _object.metadata.retrievedExternalMetadata == True:
+			print("HELLO THERE WE ADDED METADATA!")
 
-		objectOptions['metadata'] = metadata
+		_object.metadata.set_hasBAMPFAmetadata()
+		if _object.metadata.metadataDict['hasBAMPFAmetadata'] == True:
+			_object.metadata.write_json_file()
 
-		metadataJson[objectPath]['metadata'] = metadata
-		metadataJson[objectPath]['basename'] = basename
-		objectOptions['metadataFilepath'] = \
-			write_metadata_json(metadataJson,basename)
+	return CurrentIngest
 
-		del metadata
-
-	# print(ingestDict)
-	print("HELLO THERE WE ADDED METADATA!")
-	# print(barf)
-	return ingestDict
-
-def make_pymm_command(user,_object,ingestDict):
+def make_pymm_command(CurrentIngest,_object):
 	pythonBinary = utils.get_python_path()
 	pymmPath = utils.get_pymm_path()
 	ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 	pymmCommand = [
-		pythonBinary,	# path to python3 executable
-		ingestSipPath,	# path to pymm folder
-		'-i',_object,	# input path
-		'-u',user,		# user gets recorded
-		'-dz'			# report to db and delete originals
+		pythonBinary,			# path to python3 executable
+		ingestSipPath,			# path to pymm folder
+		'-i',_object.inputPath,	# input path
+		'-u',CurrentIngest.user,# user gets recorded
+		'-dz'					# report to db and delete originals
 		]
-	metadataFilepath = ingestDict[_object]['metadataFilepath']
 
+	metadataJSONpath = _object.metadata.metadataJSONpath
 	# IMPORTANT call to `777` the JSON file so pymm can read it
-	os.chmod(metadataFilepath,0o777)
-	if ingestDict[_object]['metadata']['hasBAMPFAmetadata'] != False:
-		pymmCommand.extend(['-j',metadataFilepath])
+	if os.path.isfile(metadataJSONpath):
+		os.chmod(metadataJSONpath,0o777)
+		pymmCommand.extend(['-j',metadataJSONpath])
 	else:
 		pass
-	if 'concat reels' in ingestDict[_object].keys():
-		if ingestDict[_object]['concat reels']:
-			pymmCommand.extend(['-c'])
+	if _object.concatReels == True:
+		pymmCommand.extend(['-c'])
 
-	return pymmCommand,metadataFilepath
+	return pymmCommand
 
 def parse_raw_ingest_form(formData,CurrentIngest):
 	'''
@@ -234,26 +211,20 @@ def parse_raw_ingest_form(formData,CurrentIngest):
 
 	return CurrentIngest
 
-def main(ingestDict):
-	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
-	# run `pymm` on ingest objects
+def main(CurrentIngest):
+	# TAKE IN AN `INGEST` OBJECT
+	#   IT SHOULD CONTAIN AT LEAST ONE `INGESTIBLE`
+	# run `pymm` on Ingestibles
 	# post access copies to resourcespace
 
 	# GET THE PYMM PATH TO CALL IN A SEC
 	pymmPath = utils.get_pymm_path()
 	ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 
-	# get rid of the userMetadata dict if all the values are empty
-	# it shouldn't be here but just in case....
-	for _object,details in ingestDict.items():
-		if 'userMetadata' in ingestDict[_object]:
-			if all(value=="" for value in ingestDict[_object]['userMetadata'].values()):
-				ingestDict[_object].pop('userMetadata')
-
-	print("INGEST DICT LOOKS LIKE THIS NOW")
-	for k,v in ingestDict.items():
-		print(k)
-		print(v)
+	print("INGEST LOOKS LIKE THIS NOW")
+	for item in CurrentIngest.Ingestibles:
+		print(item.inputPath)
+		print(item.metadata.metadataDict)
 		print("------")
 	# get the hostname of the shared dir:
 	_, hostName, _ = utils.get_shared_dir_stuff('shared')
@@ -261,7 +232,7 @@ def main(ingestDict):
 	####################
 	##### FETCH METADATA 
 	####################
-	ingestDict = add_metadata(ingestDict)
+	CurrentIngest = add_metadata(CurrentIngest)
 
 	##############
 	#### CALL PYMM
@@ -277,17 +248,16 @@ def main(ingestDict):
 				print("no dice.")
 		'''
 	else:
-		for _object in ingestDict.keys():
+		for _object in CurrentIngest.Ingestibles:
 			# ingestStatus is a set of messages that will be flashed to
 			# the user. Compiling it as a list for now... seems simplest?
 			ingestStatus = []
 
 			# prep a pymm command
 			pymmResult = None
-			pymmCommand,metadataFilepath = make_pymm_command(
-				user,
-				_object,
-				ingestDict
+			pymmCommand = make_pymm_command(
+				CurrentIngest,
+				_object
 				)
 			print(pymmCommand)
 

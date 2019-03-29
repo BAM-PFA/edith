@@ -208,6 +208,15 @@ class Metadata:
 
 		return True
 
+	def clear_empty_metadata_fields(self):
+		'''
+		Remove empty metadata fields
+		'''
+		self.metadataDict = {
+			key:value for key, value in self.metadataDict.items()
+			if value not in ('',None)
+		}
+
 	def set_hasBAMPFAmetadata(self):
 		if all(value in ("",None) for value in self.metadataDict.values()):
 			metadataDict['hasBAMPFAmetadata'] = False
