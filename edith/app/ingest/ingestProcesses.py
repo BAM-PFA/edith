@@ -26,7 +26,9 @@ class IngestProcess:
 	def __init__(self):
 		self.user = self.get_user()
 		self._uuid = str(uuid.uuid4())
+		self.status = None
 
+		# this is a list of objects being ingested
 		self.Ingestibles = []
 
 	def get_user(self):
@@ -44,109 +46,21 @@ class IngestProcess:
 		return user
 
 class Ingestible:
+	'''
+	This is a single object selected by a user to be ingested.
+	'''
 	def __init__(self, inputPath):
 		self.inputPath = inputPath
-		self.metadata = metadataMaster.Metadata
+		self.metadata = metadataMaster.Metadata(self.inputPath)
 
+		self.doProres = None
+		self.deliverMezzanine = None
+		self.concatReels = None
 
-def get_acc_from_filename(basename):
-	idRegex = re.compile(r'(.+\_)(\d{5})((\_.*)|($))')
-	idMatch = re.match(idRegex, basename)
-	if not idMatch == None: 
-		idNumber = idMatch.group(2)
-		if not idNumber == "00000":
-			idNumber = idNumber.lstrip("0")
-	else:
-		idNumber = "--"	
+		self.ingestWarnings = []
+		self.ingestMessages = []
 
-	print("THIS IS THE ID NUMBER: "+idNumber)
-
-	return idNumber
-
-def get_barcode_from_filename(basename):
-	barcodeRegex = re.compile(r"(.+\_\d{5}\_)(pm\d{7})(.+)",re.IGNORECASE)
-	barcodeMatch = re.match(barcodeRegex,basename)
-	if not barcodeMatch == None:
-		barcode = barcodeMatch.group(2)
-	else:
-		barcode = "000000000"
-	return barcode
-
-def get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails):
-	# Init an empty dict for each item
-	metadataDict = {}
-	# Get the metadata master dict from metadataMaster.py
-	# have to build up the metadataDict w each loop 
-	# to avoid persisting metadata in subsequent loops
-	for tag,mdValue in metadataMasterDict.items():
-		metadataDict[tag] = mdValue
-
-	# Add any existing field values to the blank dict
-	if not intermediateMetadata == {}:
-		for tag,mdValue in intermediateMetadata.items():
-			if not mdValue == "":
-				if tag in metadataDict:
-					metadataDict[tag] = mdValue
-	else:
-		pass
-
-	if all(value in ("",None) for value in metadataDict.values()):
-		metadataDict['hasBAMPFAmetadata'] = False
-	else:
-		metadataDict['hasBAMPFAmetadata'] = True
-
-	if idNumber == "--":
-		print("NO PFA ID NUMBER")
-
-	elif idNumber == '00000':
-		# if the acc item number is zeroed out,
-		# try looking for a barcode to search on
-		try:
-			barcode = get_barcode_from_filename(basename)
-			# print(barcode)
-			if barcode == "000000000":
-				print("ID AND BARCODE BOTH ZEROED OUT")
-
-			else:
-				FMmetadata = metadataQuery.xml_query(barcode,dataSourceAccessDetails)
-				if FMmetadata:
-					# add any filemaker metadata to the dict
-					for k,v in FMmetadata.items():
-						if k in metadataDict:
-							metadataDict[k] = v
-					metadataDict['hasBAMPFAmetadata'] = True
-		except:
-			print("Error searching FileMaker on ID and barcode")
-	else:
-		try:
-			print('searching FileMaker on '+idNumber)
-			FMmetadata = metadataQuery.xml_query(idNumber,dataSourceAccessDetails)
-			# print(FMmetadata)
-			if FMmetadata:
-				# add any filemaker metadata to the dict
-				for k,v in FMmetadata.items():
-					if k in metadataDict:
-						metadataDict[k] = v
-				metadataDict['hasBAMPFAmetadata'] = True
-		except:
-			# if no results, try padding with zeros
-			idNumber = "{0:0>5}".format(idNumber)
-			print('Now searching FileMaker on '+idNumber)
-			try:
-				FMmetadata = metadataQuery.xml_query(idNumber,dataSourceAccessDetails)
-				# add any filemaker metadata to the dict
-				if FMmetadata:
-					for k,v in FMmetadata.items():
-						if k in metadataDict:
-							metadataDict[k] = v
-					metadataDict['hasBAMPFAmetadata'] = True
-			except:
-				# give up
-				pass
-
-	print('metadataDict')
-	print(metadataDict)
-	return(metadataDict)
+		self.status = None
 
 def grab_remote_files(targetFilepath):
 	# prep credentials to grab stuff from remote shared dir
@@ -171,27 +85,15 @@ def grab_remote_files(targetFilepath):
 			"so don't need to rsync anything."
 			)
 
-def write_metadata_json(_metadata,basename):
-	tempDir = utils.get_temp_dir()
-	jsonPath = os.path.join(tempDir,basename+".json")
-	# print(jsonPath)
-	with open(jsonPath,'w+') as jsonTemp:
-		json.dump(_metadata,jsonTemp)#,ensure_ascii=False)
-	# print(jsonPath)
-
-	return jsonPath
-
-def add_metadata(ingestDict):
-	for objectPath, objectOptions in ingestDict.items():
-		metadataSourceID = int(ingestDict[objectPath]['metadataSource'])
+def add_metadata(CurrentIngest):
+	for _object in CurrentIngest.Ingestibles:
+		metadataSourceID = int(_object.metadataSource)
 		if not metadataSourceID == 0:
 			dataSourceAccessDetails = dataSourceAccess.main(metadataSourceID)
 		else:
 			dataSourceAccessDetails = None
 			
-		objectMetadataInstance = Metadata(objectPath)
-		metadataJson = {}
-		metadataJson[objectPath] = {}
+		_object.
 		# first check if there is user-supplied metadata
 		if 'userMetadata' in ingestDict[objectPath]:
 			metadataJson[objectPath]['metadata'] = \
@@ -253,6 +155,84 @@ def make_pymm_command(user,_object,ingestDict):
 			pymmCommand.extend(['-c'])
 
 	return pymmCommand,metadataFilepath
+
+def parse_raw_ingest_form(formData,CurrentIngest):
+	'''
+	Logic to parse the raw form data from ingest.views.status
+	'''
+	results = {}
+	toIngest =[]
+	targetPaths = []
+	doProresYES = []
+	proresToDaveYES = []
+	doConcatYES =[]
+	metadataSourceSelection = {}
+	metadataEntries = {}
+
+	for key, value in _data.items():
+		# get names/paths of files we actually want to process
+		if 'runIngest' in key:
+			toIngest.append(key.replace('runIngest-',''))
+		# targetPath is the path of the item coming from the form
+		# I think targetPath includes *all the things* from the list, 
+		# not just selected ones
+		elif 'targetPath' in key:
+			targetPaths.append(value[0])
+		elif 'doProres' in key:
+			doProresYES.append(key.replace('doProres-',''))
+		elif 'proresToDave' in key:
+			proresToDaveYES.append(key.replace('proresToDave-',''))
+		elif 'doConcat' in key:
+			doConcatYES.append(key.replace('doConcat-',''))
+		elif 'metadataSource' in key:
+			pattern = r'(metadataSource-)(.*)'
+			mySearch = re.search(pattern,key)
+			theObject = mySearch.group(2)
+			metadataSourceSelection[theObject] = value[0]
+		# start trawling for metadata entries
+		# skip entries that are blank
+		# -> n.b. this should result in no userMetadata dict 
+		#    if there isn't any user md
+		elif 'metadataForm' in key and not value == ['']:
+			# print(key)
+			# get the field label and object via regex
+			pattern = r'(metadataForm-)([a-zA-Z0-9_]+)(-)(.*)'
+			fieldSearch = re.search(pattern,key)
+			# raw fields are formed as userMD_1_eventLocation
+			field = re.sub(r"(userMD_)(\d)(_)", '', fieldSearch.group(2))
+			theObject = fieldSearch.group(4)
+			# print(field,theObject)
+			if not theObject in  metadataEntries:
+				# see if its been added, if not make a new temp dict
+				metadataEntries[theObject] = {}
+				# `value` here is returned as a list 
+				# from the metadata FormField
+				metadataEntries[theObject][field] = value[0]
+			else:
+				metadataEntries[theObject][field] = value[0]
+
+	for _object in toIngest:
+		# build a dict of files:options
+		for _path in targetPaths:
+			ingestMe = Ingestible(_path)
+			if _object == os.path.basename(_path):
+				if _object in metadataEntries:
+					ingestMe.metadata.add_more_metadata(metadataEntries[_object])
+				if _object in metadataSourceSelection:
+					ingestMe.metadata.metadataSource = metadataSourceSelection[_object]
+			CurrentIngest.Ingestibles.append(ingestMe)
+
+
+	# add boolean options to dict
+	for ingestible in CurrentIngest.Ingestibles:
+		if ingestible.metadata.basename in doProresYES:
+			ingestible.doProres = True
+		if ingestible.metadata.basename in proresToDaveYES:
+			ingestible.deliverMezzanine = True
+		if ingestible.metadata.basename in doConcatYES:
+			ingestible.concatReels = True
+
+	return CurrentIngest
 
 def main(ingestDict):
 	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
