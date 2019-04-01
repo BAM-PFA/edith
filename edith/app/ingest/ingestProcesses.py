@@ -17,7 +17,7 @@ from flask_login import current_user
 # local modules
 from . import metadataQuery
 from . import dataSourceAccess
-from .metadataMaster import metadataMasterDict, Metadata
+from . import metadataMaster
 from .. import resourcespaceFunctions
 from .. import sshStuff
 from .. import utils
@@ -87,15 +87,11 @@ def grab_remote_files(targetFilepath):
 
 def add_metadata(CurrentIngest):
 	for _object in CurrentIngest.Ingestibles:
-		metadataSourceID = int(_object.metadataSource)
+		metadataSourceID = int(_object.metadata.metadataSource)
 		if not metadataSourceID == 0:
 			dataSourceAccessDetails = dataSourceAccess.main(metadataSourceID)
 		else:
 			dataSourceAccessDetails = None
-
-		basename = objectOptions['basename']
-		# try to parse an ID number
-		idNumber = get_acc_from_filename(basename)
 
 		# go get some metadata
 		_object.metadata.fetch_metadata(dataSourceAccessDetails)
@@ -146,7 +142,7 @@ def parse_raw_ingest_form(formData,CurrentIngest):
 	metadataSourceSelection = {}
 	metadataEntries = {}
 
-	for key, value in _data.items():
+	for key, value in formData.items():
 		# get names/paths of files we actually want to process
 		if 'runIngest' in key:
 			toIngest.append(key.replace('runIngest-',''))
@@ -268,8 +264,10 @@ def main(CurrentIngest):
 				# the last thing printed is the status dict....
 				# get the pymm result dict via this highly hack-y method
 				pymmOut = pymmOut.decode().split('\n')
+				print(pymmOut)
 				pymmResult = ast.literal_eval(pymmOut[-2])
 				print("PYMM OUTPUT\n",pymmResult)
+				sys.exit()
 
 				# now work on metadata
 				if not pymmResult['status'] == False:

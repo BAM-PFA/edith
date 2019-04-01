@@ -60,9 +60,11 @@ def ingest_stuff():
 @ingest.route('/status',methods=['GET','POST'])
 @login_required
 def status():
-	CurrentIngest = ingestProcesses.IngestProcess
+	CurrentIngest = ingestProcesses.IngestProcess()
 	CurrentIngest.status = 'form submitted ok'
 	print(CurrentIngest.status)
+	# CurrentIngest.user = CurrentIngest.get_user(CurrentIngest)
+	print(CurrentIngest.user)
 	
 	_data = request.form.to_dict(flat=False)
 	print(_data)

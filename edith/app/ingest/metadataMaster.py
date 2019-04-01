@@ -7,6 +7,7 @@ import re
 from config import app_config
 from .. import db
 from ..models import Metadata_Field
+from .. import utils
 
 
 
@@ -86,7 +87,7 @@ class Metadata:
 		self.objectPath = objectPath
 		self.basename = os.path.basename(self.objectPath)
 		self.idNumber = self.parse_primary_identifier()
-		self.barcode = self.parse_barcode()
+		self.barcode = self.parse_barcode_from_filename()
 
 		self.metadataSource = 0	
 
@@ -219,9 +220,9 @@ class Metadata:
 
 	def set_hasBAMPFAmetadata(self):
 		if all(value in ("",None) for value in self.metadataDict.values()):
-			metadataDict['hasBAMPFAmetadata'] = False
+			self.metadataDict['hasBAMPFAmetadata'] = False
 		else:
-			metadataDict['hasBAMPFAmetadata'] = True
+			self.metadataDict['hasBAMPFAmetadata'] = True
 
 	def set_json(self):
 		'''
