@@ -187,13 +187,13 @@ def parse_raw_ingest_form(formData,CurrentIngest):
 	for _object in toIngest:
 		# build a dict of files:options
 		for _path in targetPaths:
-			ingestMe = Ingestible(_path)
 			if _object == os.path.basename(_path):
+				ingestMe = Ingestible(_path)
 				if _object in metadataEntries:
 					ingestMe.metadata.add_more_metadata(metadataEntries[_object])
 				if _object in metadataSourceSelection:
 					ingestMe.metadata.metadataSource = metadataSourceSelection[_object]
-			CurrentIngest.Ingestibles.append(ingestMe)
+				CurrentIngest.Ingestibles.append(ingestMe)
 
 
 	# add boolean options to dict
