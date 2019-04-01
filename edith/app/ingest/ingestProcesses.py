@@ -98,8 +98,14 @@ def add_metadata(CurrentIngest):
 
 		if _object.metadata.retrievedExternalMetadata == True:
 			print("HELLO THERE WE ADDED METADATA!")
+		else:
+			_object.ingestWarnings.append(
+				"Note: we did not retrieve metadata from any BAMPFA "\
+				"database."
+				)
 
 		_object.metadata.set_hasBAMPFAmetadata()
+		_object.clear_empty_metadata_fields()
 		if _object.metadata.metadataDict['hasBAMPFAmetadata'] == True:
 			_object.metadata.write_json_file()
 
@@ -245,10 +251,6 @@ def main(CurrentIngest):
 		'''
 	else:
 		for _object in CurrentIngest.Ingestibles:
-			# ingestStatus is a set of messages that will be flashed to
-			# the user. Compiling it as a list for now... seems simplest?
-			ingestStatus = []
-
 			# prep a pymm command
 			pymmResult = None
 			pymmCommand = make_pymm_command(
@@ -267,11 +269,11 @@ def main(CurrentIngest):
 				print(pymmOut)
 				pymmResult = ast.literal_eval(pymmOut[-2])
 				print("PYMM OUTPUT\n",pymmResult)
-				sys.exit()
+				# sys.exit()
 
 				# now work on metadata
 				if not pymmResult['status'] == False:
-					ingestStatus.append(
+					_object.ingestMessages.append(
 						'Archival information package'\
 						' creation succeeeded'
 						)
@@ -287,30 +289,29 @@ def main(CurrentIngest):
 						with open(metadataFilepath,'w+') as mdwrite:
 							json.dump(theGoods,mdwrite)
 							# print('wrote to the md file')
-						ingestStatus.append(
+						_object.ingestMessages.append(
 							'Added metadata to sidecar JSON file: {}'.format(
 								metadataFilepath
 								)
 							)
-						# print(ingestStatus)
 					except:
-						ingestStatus.append(
+						_object.ingestWarnings.append(
 							'Warning: Problem writing to JSON metadata file:'\
 							' {}.\nCheck file/folder permissions.'.format(
 								metadataFilepath
 								)
 							)
 				else:
-					ingestStatus.append("Warning: "+str(pymmResult['abortReason']))
+					_object.ingestWarnings.append("Warning: "+str(pymmResult['abortReason']))
 
 			except subprocess.CalledProcessError as e:
 				print(e)
-				ingestStatus.append(
+				_object.ingestWarnings.append(
 					'Warning: Archival information package'\
 					' creation failed'
 					)
 
-			print(ingestStatus)
+			print(_object.ingestWarnings,_object.ingestMessages)
 
 			########################
 			#### RESOURCESPACE STUFF
@@ -319,9 +320,8 @@ def main(CurrentIngest):
 			if pymmResult != None:
 				if pymmResult['status'] != False:
 					rsProxyPath = pymmResult['accessPath']
-					basename = ingestDict[_object]['basename']
-					#print(rsProxyPath)
-					#print(os.path.exists(rsProxyPath))
+					basename = _object.metadata.basename
+
 					if os.path.exists(rsProxyPath):
 						print("WOOOT")
 						# rsStatus is True/False result
@@ -330,18 +330,18 @@ def main(CurrentIngest):
 							metadataFilepath
 							)
 						if rsStatus:
-							ingestStatus.append(
+							_object.ingestMessages.append(
 								'Added proxy file(s) '\
 								'and metadata to resourcespace'
 								)
 						else:
-							ingestStatus.append(
+							_object.ingestWarnings.append(
 								'Warning: Problem sending file or metadata '\
 								'or both to ResourceSpace.'
 								)
 					else:
 						print("PROXY FILE PATH PROBLEMO")
-						ingestStatus.append(
+						_object.ingestWarnings.append(
 							"Warning: Problem accessing the resourcespace proxy file."\
 							"Maybe it didn't get created?"\
 							"Maybe check folder permissions."
@@ -349,7 +349,5 @@ def main(CurrentIngest):
 			else:
 				pass
 
-			ingestDict[_object]['ingestStatus'] = ingestStatus
-
 	# utils.clean_temp_dir('ingest')
-	return(ingestDict)
+	return(CurrentIngest)
