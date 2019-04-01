@@ -92,12 +92,20 @@ class Metadata:
 		self.metadataSource = 0	
 
 		# init a base dict
-		self.metadataDict = {"hasBAMPFAmetadata":False}
+		self.innerMetadataDict = {"hasBAMPFAmetadata":False}
+		self.metadataDict = {
+			self.objectPath:{
+				"basename":self.basename,
+				"metadata":{
+					"":""
+					}
+				}
+			}
 		# get all the defined fields from the db
 		self.availableMetadataFields = db.session.query(Metadata_Field).all()
 		for field in self.availableMetadataFields:
 			# build out the metadata dict
-			self.metadataDict[field.fieldUniqueName] = None
+			self.innerMetadataDict[field.fieldUniqueName] = None
 
 		self.retrievedExternalMetadata = False
 
@@ -193,7 +201,7 @@ class Metadata:
 					pass
 
 		print('metadataDict')
-		print(self.metadataDict)
+		print(self.innerMetadataDict)
 		return True
 
 	def add_more_metadata(self,moreMetadata):
@@ -204,8 +212,8 @@ class Metadata:
 		or could be supplied by an external data source.
 		'''
 		for key, value in moreMetadata.items():
-			if key in self.metadataDict:
-				self.metadataDict[key] = value
+			if key in self.innerMetadataDict:
+				self.innerMetadataDict[key] = value
 
 		return True
 
@@ -213,23 +221,24 @@ class Metadata:
 		'''
 		Remove empty metadata fields
 		'''
-		self.metadataDict = {
-			key:value for key, value in self.metadataDict.items()
-			if value not in ('',None)
+		self.innerMetadataDict = {
+			key:value for key, value in self.innerMetadataDict.items()
+			if value not in ('',None,"null","Null")
 		}
 
 	def set_hasBAMPFAmetadata(self):
-		if all(value in ("",None) for value in self.metadataDict.values()):
-			self.metadataDict['hasBAMPFAmetadata'] = False
+		if all(value in ("",None) for value in self.innerMetadataDict.values()):
+			self.innerMetadataDict['hasBAMPFAmetadata'] = False
 		else:
-			self.metadataDict['hasBAMPFAmetadata'] = True
+			self.innerMetadataDict['hasBAMPFAmetadata'] = True
 
 	def set_json(self):
 		'''
 		Make self.metadataDict a JSON object
 		'''
+		self.metadataDict[self.objectPath]['metadata'] = self.innerMetadataDict
 		try:
-			self.metadataJSON = json.dumps(self.metadataDict)
+			self.metadataJSON = json.loads(self.metadataDict)
 		except:
 			self.metadataJSON = self.metadataDict
 		return True

@@ -105,8 +105,8 @@ def add_metadata(CurrentIngest):
 				)
 
 		_object.metadata.set_hasBAMPFAmetadata()
-		_object.clear_empty_metadata_fields()
-		if _object.metadata.metadataDict['hasBAMPFAmetadata'] == True:
+		_object.metadata.clear_empty_metadata_fields()
+		if _object.metadata.innerMetadataDict['hasBAMPFAmetadata'] == True:
 			_object.metadata.write_json_file()
 
 	return CurrentIngest
