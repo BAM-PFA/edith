@@ -3,6 +3,7 @@
 import json
 import os
 import re
+import urllib.parse
 # local imports
 from config import app_config
 from .. import db
@@ -111,6 +112,8 @@ class Metadata:
 
 		self.metadataJSON = None
 		self.metadataJSONpath = None
+
+		self.resourcespaceQuotedJSON = None
 
 	def parse_primary_identifier(self):
 		'''
@@ -227,7 +230,10 @@ class Metadata:
 		}
 
 	def set_hasBAMPFAmetadata(self):
-		if all(value in ("",None) for value in self.innerMetadataDict.values()):
+		if all(
+			value in ('',None,"null","Null") for value in 
+				self.innerMetadataDict.values()
+			):
 			self.innerMetadataDict['hasBAMPFAmetadata'] = False
 		else:
 			self.innerMetadataDict['hasBAMPFAmetadata'] = True
@@ -261,4 +267,37 @@ class Metadata:
 			self.metadataJSONpath = None
 
 		return outpath
+
+	def prep_resourcespace_JSON(self):
+		'''
+		Prepare URL-escaped JSON for posting to ResourceSpace
+		'''
+		rsMetaDict = {}
+		for key, value in self.innerMetadataDict.items():
+			try:
+				field = Metadata_Field.query.filter_by(
+					fieldUniqueName=key
+					).first()
+				rsFieldID = field.rsFieldID
+				rsMetaDict[int(rsFieldID)] = value
+			except:
+				pass
+
+		# hard coded proxy framerate 
+		# -->the field id is a default in resourcespace!
+		# if it's empty (e.g. for audio), ignore it
+		frameRateProxy = self.innerMetadataDict['frameRateProxy']
+		if not frameRateProxy in ('',None,"null","Null"):
+			rsMetaDict[76] = self.innerMetadataDict['frameRateProxy']
+
+		rsMetaJSON = json.dumps(rsMetaDict,ensure_ascii=False)
+		# print(rsMetaJSON)
+		quotedJSON = urllib.parse.quote(rsMetaJSON.encode())
+		if "%5Cn" in quotedJSON:
+			print("REPLACING NEWLINES")
+			quotedJSON = quotedJSON.replace('%5Cn','%3Cbr%2F%3E')
+
+		self.resourcespaceQuotedJSON = quotedJSON
+
+		return quotedJSON
 

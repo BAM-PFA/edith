@@ -15,52 +15,48 @@ import requests
 # local modules
 from . import utils
 
-def do_resourcespace(proxyPath,metadataFilepath=None):
+def do_resourcespace(ingestible):
 	'''
 	take in the object(s) and process them according to file/dir status
 	'''
-	# print(proxyPath)
+	# print(accessCopyPath)
 	success = False
-	if metadataFilepath != None:
-		with open(metadataFilepath,'r+') as mf:
-			metadata = json.load(mf)
-			print("READING JSON IN THE RS PROCESS")
-			print(metadata)
+	ingestible.metadata.innerMetadataDict['frameRateProxy'] = ''
+	accessCopyPath = ingestible.accessCopyPath
 
-			# HOW TF DOES THIS HANDLE NO METADATA? don't remember.... :(
-	else:
-		mdDict = '{"frameRateProxy":""}'
-		metadata= json.loads(mdDict)
-	# urlMetadata = metadata_for_rs(metadata)
-
-	if os.path.isfile(proxyPath):
+	if os.path.isfile(accessCopyPath):
 		print("the input object is a file")
-		frameRateProxy = utils.get_proxy_framerate(proxyPath)
-		metadata['frameRateProxy'] = frameRateProxy
-		urlMetadata = metadata_for_rs(metadata)
-		quotedPath = urllib.parse.quote(proxyPath, safe='')	
+		frameRateProxy = utils.get_proxy_framerate(accessCopyPath)
+		ingestible.metadata.innerMetadataDict['frameRateProxy'] = frameRateProxy
+
+		urlMetadata = ingestible.metadata.prep_resourcespace_JSON()
+		quotedPath = urllib.parse.quote(accessCopyPath, safe='')
+
 		result = resourcespace_API_call(
-				urlMetadata,
-				quotedPath,
-				proxyPath
-				)
+			urlMetadata,
+			quotedPath,
+			accessCopyPath
+			)
 		if result not in (None,'','Invalid signature','false'):
 			success = True
 		else:
 			pass
 
-	elif os.path.isdir(proxyPath):
+	elif os.path.isdir(accessCopyPath):
 		print("the input object is a directory")
-		items = os.listdir(proxyPath)
+		items = os.listdir(accessCopyPath)
 		items.sort()
-		coolItems = [os.path.join(proxyPath,x) for x in items if not x.startswith('.')]
+		coolItems = [
+			os.path.join(accessCopyPath,x) for x in items \
+				if not x.startswith('.')
+			]
 		print(coolItems)
 		primaryItem = coolItems[0]
-		# RS only has metadata per primary item, so hopefully all the reels have
-		# the same framerate.
+		# RS only has metadata per primary item, 
+		# so hopefully all the reels have the same framerate. :/
 		frameRateProxy = utils.get_proxy_framerate(primaryItem)
-		metadata['frameRateProxy'] = frameRateProxy
-		urlMetadata = metadata_for_rs(metadata)
+		ingestible.metadata.innerMetadataDict['frameRateProxy'] = frameRateProxy
+		urlMetadata = ingestible.metadata.prep_resourcespace_JSON()
 		quotedPath = urllib.parse.quote(
 			primaryItem,
 			safe=''
@@ -205,84 +201,84 @@ def rs_alt_file_API_call(primaryRecord,quotedPath,filePath):
 		utils.delete_it(filePath)
 	return text
 
-def metadata_for_rs(metadataJSON):
-	'''
-	Map metadata to RS field IDs
-	Return URL-encoded JSON per RS API reqs.
-	'''
+# def metadata_for_rs(metadataJSON):
+# 	'''
+# 	Map metadata to RS field IDs
+# 	Return URL-encoded JSON per RS API reqs.
+# 	'''
 
-	rsMetaDict = {}
+# 	rsMetaDict = {}
 
-	rsMetaDict[1] = metadataJSON['tags']
-	rsMetaDict[3] = metadataJSON['country']
-	rsMetaDict[8] = metadataJSON['title']
-	rsMetaDict[29] = metadataJSON['nameSubjects']
-	rsMetaDict[76] = metadataJSON['frameRateProxy']
-	rsMetaDict[84] = metadataJSON['altTitle']
-	rsMetaDict[85] = metadataJSON['releaseYear']
-	rsMetaDict[86] = metadataJSON['accPref']
-	rsMetaDict[87] = metadataJSON['accDepos']
-	rsMetaDict[88] = metadataJSON['accItem']
-	rsMetaDict[89] = metadataJSON['accFull']
-	rsMetaDict[90] = metadataJSON['projGrp']
-	rsMetaDict[91] = metadataJSON['directorsNames']
-	rsMetaDict[92] = metadataJSON['credits']
-	rsMetaDict[93] = metadataJSON['generalNotes']
-	rsMetaDict[94] = metadataJSON['conditionNote']
-	rsMetaDict[95] = metadataJSON['ingestUUID']
-	rsMetaDict[98] = metadataJSON['Barcode']
-	rsMetaDict[99] = metadataJSON['language']
-	rsMetaDict[100] = metadataJSON['soundCharacteristics']
-	rsMetaDict[101] = metadataJSON['color']
-	rsMetaDict[102] = metadataJSON['runningTime']
-	rsMetaDict[103] = metadataJSON['medium']
-	rsMetaDict[104] = metadataJSON['dimensions']
-	rsMetaDict[105] = metadataJSON['videoFormat']
-	rsMetaDict[106] = metadataJSON['videoStandard']
-	rsMetaDict[107] = metadataJSON['eventTitle']
-	rsMetaDict[108] = metadataJSON['eventYear']
-	rsMetaDict[109] = metadataJSON['eventFullDate']
-	rsMetaDict[110] = metadataJSON['eventSeries']
-	rsMetaDict[111] = metadataJSON['eventRelatedExhibition']
-	rsMetaDict[112] = metadataJSON['eventLocation']
-	rsMetaDict[113] = metadataJSON['description']
-	rsMetaDict[114] = metadataJSON['creator']
-	rsMetaDict[115] = metadataJSON['creatorRole']
-	rsMetaDict[116] = metadataJSON['eventOrganizer']
-	rsMetaDict[117] = metadataJSON['assetExternalSource']
-	rsMetaDict[118] = metadataJSON['copyrightStatement']
-	rsMetaDict[119] = metadataJSON['restrictionsOnUse']
-	rsMetaDict[120] = metadataJSON['generation']
-	rsMetaDict[121] = metadataJSON['frameRateTRTdetails']
-	rsMetaDict[122] = metadataJSON['platformOutlet']
-	rsMetaDict[123] = metadataJSON['editSequenceSettings']
-	rsMetaDict[124] = metadataJSON['additionalCredits']
-	rsMetaDict[125] = metadataJSON['postProcessing']
-	rsMetaDict[126] = metadataJSON['exportPublishDate']
-	rsMetaDict[127] = metadataJSON['PFAfilmSeries']
-	rsMetaDict[128] = metadataJSON['recordingDate']
-	rsMetaDict[129] = metadataJSON['digitizedBornDigital']
-	rsMetaDict[130] = metadataJSON['digitizer']
-	rsMetaDict[131] = metadataJSON['locationOfRecording']
-	rsMetaDict[132] = metadataJSON['speakerInterviewee']
-	rsMetaDict[133] = metadataJSON['filmTitleSubjects']
-	rsMetaDict[134] = metadataJSON['topicalSubjects']
-	rsMetaDict[135] = metadataJSON['recordingAnalogTechnicalNotes']
-	rsMetaDict[136] = metadataJSON['audioRecordingID']
-	rsMetaDict[137] = metadataJSON['recordingPermissionsNotes']
-	rsMetaDict[138] = metadataJSON['analogTapeNumber']
-	rsMetaDict[139] = metadataJSON['analogTapeSide']
-	rsMetaDict[140] = metadataJSON['digitizationQCNotes']
-	# rsMetaDict[] = metadataJSON['']
+# 	rsMetaDict[1] = metadataJSON['tags']
+# 	rsMetaDict[3] = metadataJSON['country']
+# 	rsMetaDict[8] = metadataJSON['title']
+# 	rsMetaDict[29] = metadataJSON['nameSubjects']
+# 	rsMetaDict[76] = metadataJSON['frameRateProxy']
+# 	rsMetaDict[84] = metadataJSON['altTitle']
+# 	rsMetaDict[85] = metadataJSON['releaseYear']
+# 	rsMetaDict[86] = metadataJSON['accPref']
+# 	rsMetaDict[87] = metadataJSON['accDepos']
+# 	rsMetaDict[88] = metadataJSON['accItem']
+# 	rsMetaDict[89] = metadataJSON['accFull']
+# 	rsMetaDict[90] = metadataJSON['projGrp']
+# 	rsMetaDict[91] = metadataJSON['directorsNames']
+# 	rsMetaDict[92] = metadataJSON['credits']
+# 	rsMetaDict[93] = metadataJSON['generalNotes']
+# 	rsMetaDict[94] = metadataJSON['conditionNote']
+# 	rsMetaDict[95] = metadataJSON['ingestUUID']
+# 	rsMetaDict[98] = metadataJSON['Barcode']
+# 	rsMetaDict[99] = metadataJSON['language']
+# 	rsMetaDict[100] = metadataJSON['soundCharacteristics']
+# 	rsMetaDict[101] = metadataJSON['color']
+# 	rsMetaDict[102] = metadataJSON['runningTime']
+# 	rsMetaDict[103] = metadataJSON['medium']
+# 	rsMetaDict[104] = metadataJSON['dimensions']
+# 	rsMetaDict[105] = metadataJSON['videoFormat']
+# 	rsMetaDict[106] = metadataJSON['videoStandard']
+# 	rsMetaDict[107] = metadataJSON['eventTitle']
+# 	rsMetaDict[108] = metadataJSON['eventYear']
+# 	rsMetaDict[109] = metadataJSON['eventFullDate']
+# 	rsMetaDict[110] = metadataJSON['eventSeries']
+# 	rsMetaDict[111] = metadataJSON['eventRelatedExhibition']
+# 	rsMetaDict[112] = metadataJSON['eventLocation']
+# 	rsMetaDict[113] = metadataJSON['description']
+# 	rsMetaDict[114] = metadataJSON['creator']
+# 	rsMetaDict[115] = metadataJSON['creatorRole']
+# 	rsMetaDict[116] = metadataJSON['eventOrganizer']
+# 	rsMetaDict[117] = metadataJSON['assetExternalSource']
+# 	rsMetaDict[118] = metadataJSON['copyrightStatement']
+# 	rsMetaDict[119] = metadataJSON['restrictionsOnUse']
+# 	rsMetaDict[120] = metadataJSON['generation']
+# 	rsMetaDict[121] = metadataJSON['frameRateTRTdetails']
+# 	rsMetaDict[122] = metadataJSON['platformOutlet']
+# 	rsMetaDict[123] = metadataJSON['editSequenceSettings']
+# 	rsMetaDict[124] = metadataJSON['additionalCredits']
+# 	rsMetaDict[125] = metadataJSON['postProcessing']
+# 	rsMetaDict[126] = metadataJSON['exportPublishDate']
+# 	rsMetaDict[127] = metadataJSON['PFAfilmSeries']
+# 	rsMetaDict[128] = metadataJSON['recordingDate']
+# 	rsMetaDict[129] = metadataJSON['digitizedBornDigital']
+# 	rsMetaDict[130] = metadataJSON['digitizer']
+# 	rsMetaDict[131] = metadataJSON['locationOfRecording']
+# 	rsMetaDict[132] = metadataJSON['speakerInterviewee']
+# 	rsMetaDict[133] = metadataJSON['filmTitleSubjects']
+# 	rsMetaDict[134] = metadataJSON['topicalSubjects']
+# 	rsMetaDict[135] = metadataJSON['recordingAnalogTechnicalNotes']
+# 	rsMetaDict[136] = metadataJSON['audioRecordingID']
+# 	rsMetaDict[137] = metadataJSON['recordingPermissionsNotes']
+# 	rsMetaDict[138] = metadataJSON['analogTapeNumber']
+# 	rsMetaDict[139] = metadataJSON['analogTapeSide']
+# 	rsMetaDict[140] = metadataJSON['digitizationQCNotes']
+# 	# rsMetaDict[] = metadataJSON['']
 	
-	rsMetaJSON = json.dumps(rsMetaDict,ensure_ascii=False)
-	# print(rsMetaJSON)
-	quotedJSON = urllib.parse.quote(rsMetaJSON.encode())
-	if "%5Cn" in quotedJSON:
-		print("REPLACING NEWLINES")
-		quotedJSON = quotedJSON.replace('%5Cn','%3Cbr%2F%3E')
+# 	rsMetaJSON = json.dumps(rsMetaDict,ensure_ascii=False)
+# 	# print(rsMetaJSON)
+# 	quotedJSON = urllib.parse.quote(rsMetaJSON.encode())
+# 	if "%5Cn" in quotedJSON:
+# 		print("REPLACING NEWLINES")
+# 		quotedJSON = quotedJSON.replace('%5Cn','%3Cbr%2F%3E')
 
-	return quotedJSON
+# 	return quotedJSON
 
 def getRSid(AIP):
 	'''

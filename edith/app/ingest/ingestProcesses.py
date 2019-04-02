@@ -57,6 +57,9 @@ class Ingestible:
 		self.deliverMezzanine = None
 		self.concatReels = None
 
+		self.pymmResult = None
+		self.accessCopyPath = None
+
 		self.ingestWarnings = []
 		self.ingestMessages = []
 
@@ -251,8 +254,8 @@ def main(CurrentIngest):
 		'''
 	else:
 		for _object in CurrentIngest.Ingestibles:
+			metadataJSONpath = _object.metadata.metadataJSONpath
 			# prep a pymm command
-			pymmResult = None
 			pymmCommand = make_pymm_command(
 				CurrentIngest,
 				_object
@@ -267,42 +270,52 @@ def main(CurrentIngest):
 				# get the pymm result dict via this highly hack-y method
 				pymmOut = pymmOut.decode().split('\n')
 				print(pymmOut)
-				pymmResult = ast.literal_eval(pymmOut[-2])
-				print("PYMM OUTPUT\n",pymmResult)
+				_object.pymmResult = ast.literal_eval(pymmOut[-2])
+				print("PYMM OUTPUT\n",_object.pymmResult)
 				# sys.exit()
 
 				# now work on metadata
-				if not pymmResult['status'] == False:
+				if not _object.pymmResult['status'] == False:
 					_object.ingestMessages.append(
 						'Archival information package'\
 						' creation succeeeded'
 						)
 					# get the UUID which we'll add to the metadata file in a sec
-					ingestUUID = pymmResult['ingestUUID']
+					ingestUUID = _object.pymmResult['ingestUUID']
 					try:
-						with open(metadataFilepath,'r+') as mdread:
-							# print('opened the md file')
+						with open(metadataJSONpath,'r+') as mdread:
+							print('opened the md file')
 							data = json.load(mdread)
 							key = list(data.keys())[0]
 							data[key]['metadata']['ingestUUID'] = ingestUUID
 							theGoods = data[key]['metadata']
-						with open(metadataFilepath,'w+') as mdwrite:
+							print(theGoods)
+							# also update the Ingestible attributes
+							_object.metadata.innerMetadataDict = theGoods
+							_object.metadata.metadataDict[_object.inputPath]\
+								['metadata'] = theGoods
+							# print("X X "*40)
+							# print(_object.metadata.metadataDict[_object.inputPath]['metadata'])
+
+						with open(metadataJSONpath,'w+') as mdwrite:
 							json.dump(theGoods,mdwrite)
-							# print('wrote to the md file')
+							print('wrote to the md file')
 						_object.ingestMessages.append(
 							'Added metadata to sidecar JSON file: {}'.format(
-								metadataFilepath
+								metadataJSONpath
 								)
 							)
 					except:
 						_object.ingestWarnings.append(
 							'Warning: Problem writing to JSON metadata file:'\
 							' {}.\nCheck file/folder permissions.'.format(
-								metadataFilepath
+								metadataJSONpath
 								)
 							)
 				else:
-					_object.ingestWarnings.append("Warning: "+str(pymmResult['abortReason']))
+					_object.ingestWarnings.append(
+						"Warning: "+str(_object.pymmResult['abortReason'])
+						)
 
 			except subprocess.CalledProcessError as e:
 				print(e)
@@ -317,17 +330,16 @@ def main(CurrentIngest):
 			#### RESOURCESPACE STUFF
 			########################
 			rsDir = utils.get_rs_dir()
-			if pymmResult != None:
-				if pymmResult['status'] != False:
-					rsProxyPath = pymmResult['accessPath']
+			if _object.pymmResult != None:
+				if _object.pymmResult['status'] != False:
+					_object.accessCopyPath = _object.pymmResult['accessPath']
 					basename = _object.metadata.basename
 
-					if os.path.exists(rsProxyPath):
+					if os.path.exists(_object.accessCopyPath):
 						print("WOOOT")
 						# rsStatus is True/False result
 						rsStatus = resourcespaceFunctions.do_resourcespace(
-							rsProxyPath,
-							metadataFilepath
+							_object
 							)
 						if rsStatus:
 							_object.ingestMessages.append(
