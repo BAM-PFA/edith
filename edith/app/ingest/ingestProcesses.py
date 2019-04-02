@@ -360,5 +360,6 @@ def main(CurrentIngest):
 			else:
 				pass
 
-	# utils.clean_temp_dir('ingest')
+			_object.metadata.delete_temp_JSON_file()
+
 	return(CurrentIngest)

@@ -268,6 +268,22 @@ class Metadata:
 
 		return outpath
 
+	def delete_temp_JSON_file(self):
+		if os.path.isfile(self.metadataJSONpath):
+			try:
+				os.remove(self.metadataJSONpath)
+			except:
+				print("Couldn't delete the temp JSON file at {}".format(
+					self.metadataJSONpath
+					)
+				)
+		else:
+			print("{} is not an existing file, can't delete".format(
+				self.metadataJSONpath
+				)
+			)
+		return self
+
 	def prep_resourcespace_JSON(self):
 		'''
 		Prepare URL-escaped JSON for posting to ResourceSpace
