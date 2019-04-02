@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # standard library modules
 import ast
-import hashlib
 import json
 import os
 import re
