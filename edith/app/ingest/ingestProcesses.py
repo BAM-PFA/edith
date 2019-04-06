@@ -14,6 +14,7 @@ from flask_login import current_user
 # local modules
 from . import dataSourceAccess
 from . import metadataMaster
+from ..pymm import ingestSip
 from .. import resourcespaceFunctions
 from .. import sshStuff
 from .. import utils
@@ -53,6 +54,7 @@ class Ingestible:
 		self.deliverMezzanine = None
 		self.concatReels = None
 
+		self.pymmArgv = []
 		self.pymmResult = None
 		self.accessCopyPath = None
 
@@ -111,28 +113,44 @@ def add_metadata(CurrentIngest):
 	return CurrentIngest
 
 def make_pymm_command(CurrentIngest,_object):
-	pythonBinary = utils.get_python_path()
-	pymmPath = utils.get_pymm_path()
-	ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
-	pymmCommand = [
-		pythonBinary,			# path to python3 executable
-		ingestSipPath,			# path to pymm folder
-		'-i',_object.inputPath,	# input path
-		'-u',CurrentIngest.user,# user gets recorded
-		'-dz'					# report to db and delete originals
-		]
 
+	_object.pymmArgv = [
+	'',
+	'-i',_object.inputPath,	# input path
+	'-u',CurrentIngest.user,# user gets recorded
+	'-dz'					# report to db and delete originals
+	]
 	metadataJSONpath = _object.metadata.metadataJSONpath
 	# IMPORTANT call to `777` the JSON file so pymm can read it
 	if os.path.isfile(metadataJSONpath):
 		os.chmod(metadataJSONpath,0o777)
-		pymmCommand.extend(['-j',metadataJSONpath])
-	else:
-		pass
-	if _object.concatReels == True:
-		pymmCommand.extend(['-c'])
+		_object.pymmArgv.extend(['-j',metadataJSONpath])
 
-	return pymmCommand
+	if _object.concatReels:
+		_object.pymmArgv.extend(['-c'])
+
+	# pythonBinary = utils.get_python_path()
+	# pymmPath = utils.get_pymm_path()
+	# ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
+	# pymmCommand = [
+	# 	pythonBinary,			# path to python3 executable
+	# 	ingestSipPath,			# path to pymm folder
+	# 	'-i',_object.inputPath,	# input path
+	# 	'-u',CurrentIngest.user,# user gets recorded
+	# 	'-dz'					# report to db and delete originals
+	# 	]
+
+	# metadataJSONpath = _object.metadata.metadataJSONpath
+	# # IMPORTANT call to `777` the JSON file so pymm can read it
+	# if os.path.isfile(metadataJSONpath):
+	# 	os.chmod(metadataJSONpath,0o777)
+	# 	pymmCommand.extend(['-j',metadataJSONpath])
+	# else:
+	# 	pass
+	# if _object.concatReels == True:
+	# 	pymmCommand.extend(['-c'])
+
+	# return pymmCommand
 
 def parse_raw_ingest_form(formData,CurrentIngest):
 	'''
@@ -252,13 +270,18 @@ def main(CurrentIngest):
 		for _object in CurrentIngest.Ingestibles:
 			metadataJSONpath = _object.metadata.metadataJSONpath
 			# prep a pymm command
-			pymmCommand = make_pymm_command(
-				CurrentIngest,
-				_object
-				)
-			print(pymmCommand)
+			# pymmCommand = make_pymm_command(
+			# 	CurrentIngest,
+			# 	_object
+			# 	)
+			# print(pymmCommand)
+			make_pymm_command(CurrentIngest,_object)
 
 			try:
+				sys.argv = _object.pymmArgv
+				pymmIngest = ingestSip.main()
+				print(pymmIngest)
+				sys.exit()
 				pymmOut = subprocess.check_output(
 					pymmCommand
 					)
