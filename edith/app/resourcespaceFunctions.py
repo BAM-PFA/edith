@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 # standard library modules
-import codecs
 import hashlib
 import json
 import os
 import re
 import subprocess
 import sys
-import time
 import urllib.parse
 # nonstandard libraries
 from flask_login import current_user

@@ -6,15 +6,12 @@ import os
 import re
 import subprocess
 import sys
-import time
-import urllib
 import uuid
 
 # non-standard modules
 from flask_login import current_user
 
 # local modules
-from . import metadataQuery
 from . import dataSourceAccess
 from . import metadataMaster
 from .. import resourcespaceFunctions
