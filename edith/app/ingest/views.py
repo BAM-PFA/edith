@@ -60,109 +60,23 @@ def ingest_stuff():
 @ingest.route('/status',methods=['GET','POST'])
 @login_required
 def status():
-	status = 'form submitted ok'
-	error = None
-	print(status)
+	CurrentIngest = ingestProcesses.IngestProcess()
+	CurrentIngest.status = 'form submitted ok'
+	print(CurrentIngest.status)
+	# CurrentIngest.user = CurrentIngest.get_user(CurrentIngest)
+	print(CurrentIngest.user)
 	
 	_data = request.form.to_dict(flat=False)
 	print(_data)
 	# sys.exit
-
-	results = {}
-	toIngest =[]
-	targetPaths = []
-	doProresYES = []
-	proresToDaveYES = []
-	doConcatYES =[]
-	metadataSourceSelection = {}
-	metadataEntries = {}
-
-	for key, value in _data.items():
-		# get names/paths of files we actually want to process
-		if 'runIngest' in key:
-			toIngest.append(key.replace('runIngest-',''))
-		# targetPath is the path of the item coming from the form
-		elif 'targetPath' in key:
-			targetPaths.append(value[0])
-		elif 'doProres' in key:
-			doProresYES.append(key.replace('doProres-',''))
-		elif 'proresToDave' in key:
-			proresToDaveYES.append(key.replace('proresToDave-',''))
-		elif 'doConcat' in key:
-			doConcatYES.append(key.replace('doConcat-',''))
-		elif 'metadataSource' in key:
-			pattern = r'(metadataSource-)(.*)'
-			mySearch = re.search(pattern,key)
-			theObject = mySearch.group(2)
-			metadataSourceSelection[theObject] = value[0]
-		# start trawling for metadata entries
-		# skip entries that are blank
-		# -> n.b. this should result in no userMetadata dict 
-		#    if there isn't any user md
-		elif 'metadataForm' in key and not value == ['']:
-			# print(key)
-			# get the field label and object via regex
-			pattern = r'(metadataForm-)([a-zA-Z0-9_]+)(-)(.*)'
-			fieldSearch = re.search(pattern,key)
-			# raw fields are formed as userMD_1_eventLocation
-			field = re.sub(r"(userMD_)(\d)(_)", '', fieldSearch.group(2))
-			theObject = fieldSearch.group(4)
-			# print(field,theObject)
-			if not theObject in  metadataEntries:
-				metadataEntries[theObject] = {}
-				# `value` here is returned as a list from the metadata FormField
-				metadataEntries[theObject][field] = value[0]
-			else:
-				metadataEntries[theObject][field] = value[0]
-
-	for _object in toIngest:
-		# build a dict of files:options
-		for path in targetPaths:
-			# this line is probably fucking something up (duplicating calls for similar named files) @fixme
-			if _object in path:
-				results[path] = {'basename' : _object}
-				if _object in metadataEntries:
-					results[path]['userMetadata'] = metadataEntries[_object]
-				if _object in metadataSourceSelection:
-					results[path]['metadataSource'] = metadataSourceSelection[_object]
-
-	# add boolean options to dict
-	for path,sub in results.items():
-		if results[path]['basename'] in doProresYES:
-			results[path]['prores'] = 'True'
-		if results[path]['basename'] in proresToDaveYES:
-			results[path]['mezzanine to Dave'] = 'True'
-		if results[path]['basename'] in doConcatYES:
-			results[path]['concat reels'] = 'True'
-
-	print(results)
+	CurrentIngest = ingestProcesses.parse_raw_ingest_form(_data,CurrentIngest)
 	# sys.exit
 	# pass dict of files:options to ingestProcesses.main() and get back
 	# a dict that includes metadata
-	results = ingestProcesses.main(results)
+	CurrentIngest = ingestProcesses.main(CurrentIngest)
 
-	# start building a dict of messages and warnings to display
-	# from the results of ingestProcesses.main()
-	statusMessages = {}
-	for _object, objectOptions in results.items():
-		anObject = objectOptions['basename']
-		statusMessages[anObject] = {}
-		statusMessages[anObject]['Warnings'] = []
-		statusMessages[anObject]['Messages'] = []
-		for message in objectOptions['ingestStatus']:
-			if message.startswith("Warning"):
-				statusMessages[anObject]['Warnings'].append(message)
-			else:
-				statusMessages[anObject]['Messages'].append(message)
-		if objectOptions['metadata']['hasBAMPFAmetadata'] in ("False",False):
-			statusMessages[anObject]['Warnings'].append(
-				"Note: we did not retrieve metadata from any BAMPFA "\
-				"database."
-				)
-
-	print(results)
 	return render_template(
 		'ingest/status.html',
 		title='Ingest',
-		statusMessages=statusMessages
+		CurrentIngest=CurrentIngest
 		)

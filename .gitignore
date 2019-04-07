@@ -5,5 +5,5 @@ __py*
 bundle.js
 css/*
 config.ini
-pymm_log*
+pymm_log.txt
 edith/edith.wsgi

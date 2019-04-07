@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}System Menu{% endblock %}
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-3">WELCOME TO EDITH</h1>
+    <h3 class="lead">let's preserve some stuff!</h3>
+</div>
+<div class="container">
+    <div class="card">
+	    <div class="list-group list-group-flush">
+            <a class="list-group-item" href="{{ url_for('home.pymm_log') }}">Pymm Log</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

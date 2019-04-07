@@ -1,7 +1,8 @@
 # app/home/views.py
-
 from flask import render_template
 from flask_login import login_required, current_user
+
+from .. import utils
 
 from . import home
 
@@ -28,3 +29,27 @@ def admin_dashboard():
         abort(403)
 
     return render_template('home/admin_dashboard.html', title="Dashboard")
+
+@home.route('/system_menu')
+@login_required
+def system_menu():
+	"""
+	Render the system menu
+	"""
+	return render_template(
+		'/home/system_menu.html',
+		title = "System Menu"
+		)
+
+@home.route('/pymm_log')
+@login_required
+def pymm_log():
+	"""
+	Display the pymm log...
+	"""
+	pymm_log = utils.get_pymm_log()
+
+	return render_template(
+		'/home/pymm_log.html',
+		pymm_log = pymm_log
+		)

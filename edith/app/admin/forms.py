@@ -74,6 +74,7 @@ class DataSourceForm(FlaskForm):
 	dbName = StringField('Database name', validators=[DataRequired()])
 	fmpLayout = StringField('FileMaker Layout name')
 	IPaddress = StringField('IP Address', validators=[DataRequired()])
+	namespace = StringField('Namespace for XML/XPATH queries')
 	username = StringField("Database user's username", validators=[DataRequired()])
 	credentials = StringField('Database user password', validators=[DataRequired()])
 	description = StringField('Database description')

@@ -113,6 +113,8 @@ class Data_Source(db.Model):
 	fmpLayout = db.Column(db.String(60), unique=True)
 	# server address
 	IPaddress = db.Column(db.String(60))
+	# namespace for XML/XPATH
+	namespace = db.Column(db.String(60))
 	# account with access 
 	username = db.Column(db.String(60))
 	# account credentials

@@ -3,15 +3,18 @@
 Useful utility stuff.
 '''
 # standard library stuff
+import configparser
 import glob
 import os
 import shutil
 import subprocess
+import sys
 import time
 # non-standard modules
 from flask_login import current_user
 # local modules
 import app
+from app.pymm import makeMetadata
 
 config = app.app_config
 
@@ -50,6 +53,25 @@ def get_temp_dir():
 def get_pymm_path():
 	pymmPath = config["PYMM_PATH"]
 	return pymmPath
+
+def get_pymm_log():
+	pymmPath = get_pymm_path()
+	pymmConfigPath = os.path.join(pymmPath,'pymmconfig','config.ini')
+	pymmConfig = configparser.SafeConfigParser()
+	pymmConfig.read(pymmConfigPath)
+	pymmLogDir = pymmConfig['logging']['pymm_log_dir']
+	pymmLogPath = os.path.join(pymmLogDir,'pymm_log.txt')
+	lines = []
+	try:
+		with open(pymmLogPath,'r') as f:
+			for line in f.readlines():
+				lines.append(line.rstrip())
+		log = lines
+	except:
+		log = ["Couldn't read the pymm log.. sorry."]
+
+	return log
+
 
 def get_python_path():
 	pythonPath = config['PYTHON3_BINARY_PATH']
@@ -203,18 +225,13 @@ def get_proxy_framerate(proxyPath):
 	Also: this will return an empty string for things like audio that don't 
 	have a Video track.
 	'''
-	pythonPath = get_python_path()
-	pymmPath = get_pymm_path()
-	makeMetadataPath = os.path.join(pymmPath,'makeMetadata.py')
-	makeMetadataCommand = [
-		pythonPath,
-		makeMetadataPath,
+	sys.argv = [
+		'',
 		'-i', proxyPath,
 		'-v','FrameRate/String',
 		'-t','Video'
 	]
-	out = subprocess.run(makeMetadataCommand,stdout=subprocess.PIPE)
-	framerate = out.stdout.decode().rstrip()
+	framerate = makeMetadata.main()
 
 	return framerate
 

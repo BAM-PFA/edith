@@ -1,23 +1,20 @@
 #!/usr/bin/env python3
 # standard library modules
 import ast
-import hashlib
 import json
 import os
 import re
 import subprocess
 import sys
-import time
-import urllib
 import uuid
 
 # non-standard modules
 from flask_login import current_user
 
 # local modules
-from . import metadataQuery
 from . import dataSourceAccess
-from .metadataMaster import metadataMasterDict, Metadata
+from . import metadataMaster
+from ..pymm import ingestSip
 from .. import resourcespaceFunctions
 from .. import sshStuff
 from .. import utils
@@ -26,7 +23,9 @@ class IngestProcess:
 	def __init__(self):
 		self.user = self.get_user()
 		self._uuid = str(uuid.uuid4())
+		self.status = None
 
+		# this is a list of objects being ingested
 		self.Ingestibles = []
 
 	def get_user(self):
@@ -44,109 +43,25 @@ class IngestProcess:
 		return user
 
 class Ingestible:
+	'''
+	This is a single object selected by a user to be ingested.
+	'''
 	def __init__(self, inputPath):
 		self.inputPath = inputPath
-		self.metadata = metadataMaster.Metadata
+		self.metadata = metadataMaster.Metadata(self.inputPath)
 
+		self.doProres = None
+		self.deliverMezzanine = None
+		self.concatReels = None
 
-def get_acc_from_filename(basename):
-	idRegex = re.compile(r'(.+\_)(\d{5})((\_.*)|($))')
-	idMatch = re.match(idRegex, basename)
-	if not idMatch == None: 
-		idNumber = idMatch.group(2)
-		if not idNumber == "00000":
-			idNumber = idNumber.lstrip("0")
-	else:
-		idNumber = "--"	
+		self.pymmArgv = []
+		self.pymmResult = None
+		self.accessCopyPath = None
 
-	print("THIS IS THE ID NUMBER: "+idNumber)
+		self.ingestWarnings = []
+		self.ingestMessages = []
 
-	return idNumber
-
-def get_barcode_from_filename(basename):
-	barcodeRegex = re.compile(r"(.+\_\d{5}\_)(pm\d{7})(.+)",re.IGNORECASE)
-	barcodeMatch = re.match(barcodeRegex,basename)
-	if not barcodeMatch == None:
-		barcode = barcodeMatch.group(2)
-	else:
-		barcode = "000000000"
-	return barcode
-
-def get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails):
-	# Init an empty dict for each item
-	metadataDict = {}
-	# Get the metadata master dict from metadataMaster.py
-	# have to build up the metadataDict w each loop 
-	# to avoid persisting metadata in subsequent loops
-	for tag,mdValue in metadataMasterDict.items():
-		metadataDict[tag] = mdValue
-
-	# Add any existing field values to the blank dict
-	if not intermediateMetadata == {}:
-		for tag,mdValue in intermediateMetadata.items():
-			if not mdValue == "":
-				if tag in metadataDict:
-					metadataDict[tag] = mdValue
-	else:
-		pass
-
-	if all(value in ("",None) for value in metadataDict.values()):
-		metadataDict['hasBAMPFAmetadata'] = False
-	else:
-		metadataDict['hasBAMPFAmetadata'] = True
-
-	if idNumber == "--":
-		print("NO PFA ID NUMBER")
-
-	elif idNumber == '00000':
-		# if the acc item number is zeroed out,
-		# try looking for a barcode to search on
-		try:
-			barcode = get_barcode_from_filename(basename)
-			# print(barcode)
-			if barcode == "000000000":
-				print("ID AND BARCODE BOTH ZEROED OUT")
-
-			else:
-				FMmetadata = metadataQuery.xml_query(barcode,dataSourceAccessDetails)
-				if FMmetadata:
-					# add any filemaker metadata to the dict
-					for k,v in FMmetadata.items():
-						if k in metadataDict:
-							metadataDict[k] = v
-					metadataDict['hasBAMPFAmetadata'] = True
-		except:
-			print("Error searching FileMaker on ID and barcode")
-	else:
-		try:
-			print('searching FileMaker on '+idNumber)
-			FMmetadata = metadataQuery.xml_query(idNumber,dataSourceAccessDetails)
-			# print(FMmetadata)
-			if FMmetadata:
-				# add any filemaker metadata to the dict
-				for k,v in FMmetadata.items():
-					if k in metadataDict:
-						metadataDict[k] = v
-				metadataDict['hasBAMPFAmetadata'] = True
-		except:
-			# if no results, try padding with zeros
-			idNumber = "{0:0>5}".format(idNumber)
-			print('Now searching FileMaker on '+idNumber)
-			try:
-				FMmetadata = metadataQuery.xml_query(idNumber,dataSourceAccessDetails)
-				# add any filemaker metadata to the dict
-				if FMmetadata:
-					for k,v in FMmetadata.items():
-						if k in metadataDict:
-							metadataDict[k] = v
-					metadataDict['hasBAMPFAmetadata'] = True
-			except:
-				# give up
-				pass
-
-	print('metadataDict')
-	print(metadataDict)
-	return(metadataDict)
+		self.status = None
 
 def grab_remote_files(targetFilepath):
 	# prep credentials to grab stuff from remote shared dir
@@ -171,109 +86,141 @@ def grab_remote_files(targetFilepath):
 			"so don't need to rsync anything."
 			)
 
-def write_metadata_json(_metadata,basename):
-	tempDir = utils.get_temp_dir()
-	jsonPath = os.path.join(tempDir,basename+".json")
-	# print(jsonPath)
-	with open(jsonPath,'w+') as jsonTemp:
-		json.dump(_metadata,jsonTemp)#,ensure_ascii=False)
-	# print(jsonPath)
-
-	return jsonPath
-
-def add_metadata(ingestDict):
-	for objectPath, objectOptions in ingestDict.items():
-		metadataSourceID = int(ingestDict[objectPath]['metadataSource'])
+def add_metadata(CurrentIngest):
+	for _object in CurrentIngest.Ingestibles:
+		metadataSourceID = int(_object.metadata.metadataSource)
 		if not metadataSourceID == 0:
 			dataSourceAccessDetails = dataSourceAccess.main(metadataSourceID)
 		else:
 			dataSourceAccessDetails = None
-			
-		objectMetadataInstance = Metadata(objectPath)
-		metadataJson = {}
-		metadataJson[objectPath] = {}
-		# first check if there is user-supplied metadata
-		if 'userMetadata' in ingestDict[objectPath]:
-			metadataJson[objectPath]['metadata'] = \
-				ingestDict[objectPath]['userMetadata']
-
-			# testing build of Metadata class
-			for k,v in ingestDict[objectPath]['userMetadata'].items():
-				if k in objectMetadataInstance.metadataDict and not v in (None,""):
-				 	objectMetadataInstance.metadataDict[k] = v
-		else:
-			# if not, init an empty dict
-			metadataJson[objectPath]['metadata'] = {}
-			
-
-		basename = objectOptions['basename']
-		# try to parse an ID number
-		idNumber = get_acc_from_filename(basename)
 
 		# go get some metadata
-		intermediateMetadata = metadataJson[objectPath]['metadata']
-		metadata = get_metadata(idNumber,basename,intermediateMetadata,dataSourceAccessDetails)
+		_object.metadata.fetch_metadata(dataSourceAccessDetails)
 
+		if _object.metadata.retrievedExternalMetadata == True:
+			print("HELLO THERE WE ADDED METADATA!")
+		else:
+			_object.ingestWarnings.append(
+				"Note: we did not retrieve metadata from any BAMPFA "\
+				"database."
+				)
 
-		objectOptions['metadata'] = metadata
+		_object.metadata.set_hasBAMPFAmetadata()
+		_object.metadata.clear_empty_metadata_fields()
+		if _object.metadata.innerMetadataDict['hasBAMPFAmetadata'] == True:
+			_object.metadata.write_json_file()
 
-		metadataJson[objectPath]['metadata'] = metadata
-		metadataJson[objectPath]['basename'] = basename
-		objectOptions['metadataFilepath'] = \
-			write_metadata_json(metadataJson,basename)
+	return CurrentIngest
 
-		del metadata
+def set_pymm_sys_args(CurrentIngest,_object):
 
-	# print(ingestDict)
-	print("HELLO THERE WE ADDED METADATA!")
-	# print(barf)
-	return ingestDict
-
-def make_pymm_command(user,_object,ingestDict):
-	pythonBinary = utils.get_python_path()
-	pymmPath = utils.get_pymm_path()
-	ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
-	pymmCommand = [
-		pythonBinary,	# path to python3 executable
-		ingestSipPath,	# path to pymm folder
-		'-i',_object,	# input path
-		'-u',user,		# user gets recorded
-		'-dz'			# report to db and delete originals
-		]
-	metadataFilepath = ingestDict[_object]['metadataFilepath']
-
+	_object.pymmArgv = [
+	'',
+	'-i',_object.inputPath,	# input path
+	'-u',CurrentIngest.user,# user gets recorded
+	'-dz'					# report to db and delete originals
+	]
+	metadataJSONpath = _object.metadata.metadataJSONpath
 	# IMPORTANT call to `777` the JSON file so pymm can read it
-	os.chmod(metadataFilepath,0o777)
-	if ingestDict[_object]['metadata']['hasBAMPFAmetadata'] != False:
-		pymmCommand.extend(['-j',metadataFilepath])
-	else:
-		pass
-	if 'concat reels' in ingestDict[_object].keys():
-		if ingestDict[_object]['concat reels']:
-			pymmCommand.extend(['-c'])
+	if os.path.isfile(metadataJSONpath):
+		os.chmod(metadataJSONpath,0o777)
+		_object.pymmArgv.extend(['-j',metadataJSONpath])
 
-	return pymmCommand,metadataFilepath
+	if _object.concatReels:
+		_object.pymmArgv.extend(['-c'])
 
-def main(ingestDict):
-	# TAKE IN A DICT OF {OBJECTS:OPTIONS/DETAILS}
-	# run `pymm` on ingest objects
+def parse_raw_ingest_form(formData,CurrentIngest):
+	'''
+	Logic to parse the raw form data from ingest.views.status
+	'''
+	results = {}
+	toIngest =[]
+	targetPaths = []
+	doProresYES = []
+	proresToDaveYES = []
+	doConcatYES =[]
+	metadataSourceSelection = {}
+	metadataEntries = {}
+
+	for key, value in formData.items():
+		# get names/paths of files we actually want to process
+		if 'runIngest' in key:
+			toIngest.append(key.replace('runIngest-',''))
+		# targetPath is the path of the item coming from the form
+		# I think targetPath includes *all the things* from the list, 
+		# not just selected ones
+		elif 'targetPath' in key:
+			targetPaths.append(value[0])
+		elif 'doProres' in key:
+			doProresYES.append(key.replace('doProres-',''))
+		elif 'proresToDave' in key:
+			proresToDaveYES.append(key.replace('proresToDave-',''))
+		elif 'doConcat' in key:
+			doConcatYES.append(key.replace('doConcat-',''))
+		elif 'metadataSource' in key:
+			pattern = r'(metadataSource-)(.*)'
+			mySearch = re.search(pattern,key)
+			theObject = mySearch.group(2)
+			metadataSourceSelection[theObject] = value[0]
+		# start trawling for metadata entries
+		# skip entries that are blank
+		# -> n.b. this should result in no userMetadata dict 
+		#    if there isn't any user md
+		elif 'metadataForm' in key and not value == ['']:
+			# print(key)
+			# get the field label and object via regex
+			pattern = r'(metadataForm-)([a-zA-Z0-9_]+)(-)(.*)'
+			fieldSearch = re.search(pattern,key)
+			# raw fields are formed as userMD_1_eventLocation
+			field = re.sub(r"(userMD_)(\d)(_)", '', fieldSearch.group(2))
+			theObject = fieldSearch.group(4)
+			# print(field,theObject)
+			if not theObject in  metadataEntries:
+				# see if its been added, if not make a new temp dict
+				metadataEntries[theObject] = {}
+				# `value` here is returned as a list 
+				# from the metadata FormField
+				metadataEntries[theObject][field] = value[0]
+			else:
+				metadataEntries[theObject][field] = value[0]
+
+	for _object in toIngest:
+		# build a dict of files:options
+		for _path in targetPaths:
+			if _object == os.path.basename(_path):
+				ingestMe = Ingestible(_path)
+				if _object in metadataEntries:
+					ingestMe.metadata.add_more_metadata(metadataEntries[_object])
+				if _object in metadataSourceSelection:
+					ingestMe.metadata.metadataSource = metadataSourceSelection[_object]
+				CurrentIngest.Ingestibles.append(ingestMe)
+
+
+	# add boolean options to dict
+	for ingestible in CurrentIngest.Ingestibles:
+		if ingestible.metadata.basename in doProresYES:
+			ingestible.doProres = True
+		if ingestible.metadata.basename in proresToDaveYES:
+			ingestible.deliverMezzanine = True
+		if ingestible.metadata.basename in doConcatYES:
+			ingestible.concatReels = True
+
+	return CurrentIngest
+
+def main(CurrentIngest):
+	# TAKE IN AN `INGEST` OBJECT
+	#   IT SHOULD CONTAIN AT LEAST ONE `INGESTIBLE`
+	# run `pymm` on Ingestibles
 	# post access copies to resourcespace
 
 	# GET THE PYMM PATH TO CALL IN A SEC
 	pymmPath = utils.get_pymm_path()
 	ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
 
-	# get rid of the userMetadata dict if all the values are empty
-	# it shouldn't be here but just in case....
-	for _object,details in ingestDict.items():
-		if 'userMetadata' in ingestDict[_object]:
-			if all(value=="" for value in ingestDict[_object]['userMetadata'].values()):
-				ingestDict[_object].pop('userMetadata')
-
-	print("INGEST DICT LOOKS LIKE THIS NOW")
-	for k,v in ingestDict.items():
-		print(k)
-		print(v)
+	print("INGEST LOOKS LIKE THIS NOW")
+	for item in CurrentIngest.Ingestibles:
+		print(item.inputPath)
+		print(item.metadata.metadataDict)
 		print("------")
 	# get the hostname of the shared dir:
 	_, hostName, _ = utils.get_shared_dir_stuff('shared')
@@ -281,7 +228,7 @@ def main(ingestDict):
 	####################
 	##### FETCH METADATA 
 	####################
-	ingestDict = add_metadata(ingestDict)
+	CurrentIngest = add_metadata(CurrentIngest)
 
 	##############
 	#### CALL PYMM
@@ -297,103 +244,101 @@ def main(ingestDict):
 				print("no dice.")
 		'''
 	else:
-		for _object in ingestDict.keys():
-			# ingestStatus is a set of messages that will be flashed to
-			# the user. Compiling it as a list for now... seems simplest?
-			ingestStatus = []
+		for _object in CurrentIngest.Ingestibles:
+			metadataJSONpath = _object.metadata.metadataJSONpath
 
-			# prep a pymm command
-			pymmResult = None
-			pymmCommand,metadataFilepath = make_pymm_command(
-				user,
-				_object,
-				ingestDict
-				)
-			print(pymmCommand)
+			set_pymm_sys_args(CurrentIngest,_object)
 
 			try:
-				pymmOut = subprocess.check_output(
-					pymmCommand
-					)
-				# the last thing printed is the status dict....
-				# get the pymm result dict via this highly hack-y method
-				pymmOut = pymmOut.decode().split('\n')
-				pymmResult = ast.literal_eval(pymmOut[-2])
-				print("PYMM OUTPUT\n",pymmResult)
+				sys.argv = _object.pymmArgv
+				try:
+					pymmIngest = ingestSip.main()
+				except:
+					break
+
+				_object.pymmIngest = pymmIngest
+				_object.pymmResult = pymmIngest.ingestResults
+				print("PYMM OUTPUT\n",_object.pymmResult)
+				# sys.exit()
 
 				# now work on metadata
-				if not pymmResult['status'] == False:
-					ingestStatus.append(
+				if not _object.pymmResult['status'] == False:
+					_object.ingestMessages.append(
 						'Archival information package'\
 						' creation succeeeded'
 						)
 					# get the UUID which we'll add to the metadata file in a sec
-					ingestUUID = pymmResult['ingestUUID']
+					ingestUUID = _object.pymmResult['ingestUUID']
 					try:
-						with open(metadataFilepath,'r+') as mdread:
-							# print('opened the md file')
+						with open(metadataJSONpath,'r+') as mdread:
+							print('opened the md file')
 							data = json.load(mdread)
 							key = list(data.keys())[0]
 							data[key]['metadata']['ingestUUID'] = ingestUUID
 							theGoods = data[key]['metadata']
-						with open(metadataFilepath,'w+') as mdwrite:
+							print(theGoods)
+							# also update the Ingestible attributes
+							_object.metadata.innerMetadataDict = theGoods
+							_object.metadata.metadataDict[_object.inputPath]\
+								['metadata'] = theGoods
+
+						with open(metadataJSONpath,'w+') as mdwrite:
 							json.dump(theGoods,mdwrite)
-							# print('wrote to the md file')
-						ingestStatus.append(
+							print('wrote to the md file')
+						_object.ingestMessages.append(
 							'Added metadata to sidecar JSON file: {}'.format(
-								metadataFilepath
+								metadataJSONpath
 								)
 							)
-						# print(ingestStatus)
 					except:
-						ingestStatus.append(
+						_object.ingestWarnings.append(
 							'Warning: Problem writing to JSON metadata file:'\
 							' {}.\nCheck file/folder permissions.'.format(
-								metadataFilepath
+								metadataJSONpath
 								)
 							)
 				else:
-					ingestStatus.append("Warning: "+str(pymmResult['abortReason']))
+					_object.ingestWarnings.append(
+						"Warning: "+str(_object.pymmResult['abortReason'])
+						)
 
 			except subprocess.CalledProcessError as e:
 				print(e)
-				ingestStatus.append(
+				_object.ingestWarnings.append(
 					'Warning: Archival information package'\
 					' creation failed'
 					)
 
-			print(ingestStatus)
+			print(_object.ingestWarnings,_object.ingestMessages)
 
 			########################
 			#### RESOURCESPACE STUFF
 			########################
 			rsDir = utils.get_rs_dir()
-			if pymmResult != None:
-				if pymmResult['status'] != False:
-					rsProxyPath = pymmResult['accessPath']
-					basename = ingestDict[_object]['basename']
-					#print(rsProxyPath)
-					#print(os.path.exists(rsProxyPath))
-					if os.path.exists(rsProxyPath):
+			if _object.pymmResult != None:
+				if _object.pymmResult['status'] != False:
+					_object.accessCopyPath = pymmIngest.rsPackageDelivery
+					basename = _object.metadata.basename
+
+					if os.path.exists(_object.accessCopyPath):
 						print("WOOOT")
 						# rsStatus is True/False result
 						rsStatus = resourcespaceFunctions.do_resourcespace(
-							rsProxyPath,
-							metadataFilepath
+							_object
 							)
 						if rsStatus:
-							ingestStatus.append(
+							_object.ingestMessages.append(
 								'Added proxy file(s) '\
 								'and metadata to resourcespace'
 								)
 						else:
-							ingestStatus.append(
+							_object.ingestWarnings.append(
 								'Warning: Problem sending file or metadata '\
 								'or both to ResourceSpace.'
 								)
 					else:
 						print("PROXY FILE PATH PROBLEMO")
-						ingestStatus.append(
+						_object.ingestWarnings.append(
 							"Warning: Problem accessing the resourcespace proxy file."\
 							"Maybe it didn't get created?"\
 							"Maybe check folder permissions."
@@ -401,7 +346,6 @@ def main(ingestDict):
 			else:
 				pass
 
-			ingestDict[_object]['ingestStatus'] = ingestStatus
+			_object.metadata.delete_temp_JSON_file()
 
-	# utils.clean_temp_dir('ingest')
-	return(ingestDict)
+	return(CurrentIngest)
