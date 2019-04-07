@@ -46,7 +46,7 @@ def do_resourcespace(ingestible):
 		items.sort()
 		coolItems = [
 			os.path.join(accessCopyPath,x) for x in items \
-				if not x.startswith('.')
+				if not (x.startswith('.') or x == 'documentation')
 			]
 		print(coolItems)
 		primaryItem = coolItems[0]
@@ -71,6 +71,14 @@ def do_resourcespace(ingestible):
 		if primaryRecord not in (None,'','Invalid signature','false'):
 			coolItems.remove(primaryItem)
 			# print(coolItems)
+			if ingestible.pymmIngest.includesSubmissionDocumentation:
+				documentationPath = os.path.join(
+					accessCopyPath,
+					'documentation'
+					)
+				if os.path.isdir(documentationPath):
+					for item in os.scandir(documentationPath):
+						coolItems.append(item)
 			while len(coolItems) > 0:
 				alt = coolItems[0]
 				print("I want to post {} as an alt file!!".format(alt))

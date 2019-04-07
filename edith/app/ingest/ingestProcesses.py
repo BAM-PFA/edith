@@ -112,7 +112,7 @@ def add_metadata(CurrentIngest):
 
 	return CurrentIngest
 
-def make_pymm_command(CurrentIngest,_object):
+def set_pymm_sys_args(CurrentIngest,_object):
 
 	_object.pymmArgv = [
 	'',
@@ -128,29 +128,6 @@ def make_pymm_command(CurrentIngest,_object):
 
 	if _object.concatReels:
 		_object.pymmArgv.extend(['-c'])
-
-	# pythonBinary = utils.get_python_path()
-	# pymmPath = utils.get_pymm_path()
-	# ingestSipPath = os.path.join(pymmPath,'ingestSip.py')
-	# pymmCommand = [
-	# 	pythonBinary,			# path to python3 executable
-	# 	ingestSipPath,			# path to pymm folder
-	# 	'-i',_object.inputPath,	# input path
-	# 	'-u',CurrentIngest.user,# user gets recorded
-	# 	'-dz'					# report to db and delete originals
-	# 	]
-
-	# metadataJSONpath = _object.metadata.metadataJSONpath
-	# # IMPORTANT call to `777` the JSON file so pymm can read it
-	# if os.path.isfile(metadataJSONpath):
-	# 	os.chmod(metadataJSONpath,0o777)
-	# 	pymmCommand.extend(['-j',metadataJSONpath])
-	# else:
-	# 	pass
-	# if _object.concatReels == True:
-	# 	pymmCommand.extend(['-c'])
-
-	# return pymmCommand
 
 def parse_raw_ingest_form(formData,CurrentIngest):
 	'''
@@ -269,27 +246,18 @@ def main(CurrentIngest):
 	else:
 		for _object in CurrentIngest.Ingestibles:
 			metadataJSONpath = _object.metadata.metadataJSONpath
-			# prep a pymm command
-			# pymmCommand = make_pymm_command(
-			# 	CurrentIngest,
-			# 	_object
-			# 	)
-			# print(pymmCommand)
-			make_pymm_command(CurrentIngest,_object)
+
+			set_pymm_sys_args(CurrentIngest,_object)
 
 			try:
 				sys.argv = _object.pymmArgv
-				pymmIngest = ingestSip.main()
-				print(pymmIngest)
-				sys.exit()
-				pymmOut = subprocess.check_output(
-					pymmCommand
-					)
-				# the last thing printed is the status dict....
-				# get the pymm result dict via this highly hack-y method
-				pymmOut = pymmOut.decode().split('\n')
-				print(pymmOut)
-				_object.pymmResult = ast.literal_eval(pymmOut[-2])
+				try:
+					pymmIngest = ingestSip.main()
+				except:
+					break
+
+				_object.pymmIngest = pymmIngest
+				_object.pymmResult = pymmIngest.ingestResults
 				print("PYMM OUTPUT\n",_object.pymmResult)
 				# sys.exit()
 
@@ -313,8 +281,6 @@ def main(CurrentIngest):
 							_object.metadata.innerMetadataDict = theGoods
 							_object.metadata.metadataDict[_object.inputPath]\
 								['metadata'] = theGoods
-							# print("X X "*40)
-							# print(_object.metadata.metadataDict[_object.inputPath]['metadata'])
 
 						with open(metadataJSONpath,'w+') as mdwrite:
 							json.dump(theGoods,mdwrite)
@@ -351,7 +317,7 @@ def main(CurrentIngest):
 			rsDir = utils.get_rs_dir()
 			if _object.pymmResult != None:
 				if _object.pymmResult['status'] != False:
-					_object.accessCopyPath = _object.pymmResult['accessPath']
+					_object.accessCopyPath = pymmIngest.rsPackageDelivery
 					basename = _object.metadata.basename
 
 					if os.path.exists(_object.accessCopyPath):
