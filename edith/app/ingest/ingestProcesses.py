@@ -317,7 +317,9 @@ def main(CurrentIngest):
 			rsDir = utils.get_rs_dir()
 			if _object.pymmResult != None:
 				if _object.pymmResult['status'] != False:
-					_object.accessCopyPath = pymmIngest.rsPackageDelivery
+
+					_object.accessCopyPath = pymmIngest.accessDelivery
+
 					basename = _object.metadata.basename
 
 					if os.path.exists(_object.accessCopyPath):
