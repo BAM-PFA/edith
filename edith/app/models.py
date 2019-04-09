@@ -142,7 +142,7 @@ class Metadata_Field(db.Model):
 	# User-visible field name (e.g. Record ID)
 	fieldName = db.Column(db.String(100))
 	# field unique name (e.g. recordID)
-	fieldUniqueName = db.Column(db.String(60), unique=True)
+	fieldUniqueName = db.Column(db.String(60))
 	# field name in the data source
 	fieldSourceName = db.Column(db.String(60))
 	# category of field (Film coll, Event, General, etc.)
@@ -150,5 +150,5 @@ class Metadata_Field(db.Model):
 	# data source
 	dataSource_id = db.Column(db.Integer, db.ForeignKey('data_sources.id'))
 	# resourceSpace field ID # 
-	rsFieldID = db.Column(db.Integer, unique=True)
+	rsFieldID = db.Column(db.Integer)
 	description = db.Column(db.String(200))

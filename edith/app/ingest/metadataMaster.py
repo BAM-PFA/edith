@@ -216,7 +216,13 @@ class Metadata:
 		'''
 		for key, value in moreMetadata.items():
 			if key in self.innerMetadataDict:
-				self.innerMetadataDict[key] = value
+				if key == None:
+					self.innerMetadataDict[key] = value
+				else:
+					# IF THERE'S ALREADY A VALUE HERE, DON'T REPLACE IT
+					# THIS MAKES IT SO THAT USER-SUPPLIED METADATA ** REPLACES **
+					# ANYTHING THAT EXISTS IN A FILEMAKER SOURCE
+					pass
 
 		return True
 

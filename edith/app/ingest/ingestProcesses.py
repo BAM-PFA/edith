@@ -190,9 +190,14 @@ def parse_raw_ingest_form(formData,CurrentIngest):
 			if _object == os.path.basename(_path):
 				ingestMe = Ingestible(_path)
 				if _object in metadataEntries:
-					ingestMe.metadata.add_more_metadata(metadataEntries[_object])
+					# this line actually adds the user metadata to the 
+					# object that's selected
+					ingestMe.metadata.add_more_metadata(
+						metadataEntries[_object]
+						)
 				if _object in metadataSourceSelection:
-					ingestMe.metadata.metadataSource = metadataSourceSelection[_object]
+					ingestMe.metadata.metadataSource = \
+						metadataSourceSelection[_object]
 				CurrentIngest.Ingestibles.append(ingestMe)
 
 
