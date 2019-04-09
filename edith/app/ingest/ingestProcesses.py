@@ -195,6 +195,7 @@ def parse_raw_ingest_form(formData,CurrentIngest):
 					ingestMe.metadata.add_more_metadata(
 						metadataEntries[_object]
 						)
+					print(ingestMe.metadata.innerMetadataDict)
 				if _object in metadataSourceSelection:
 					ingestMe.metadata.metadataSource = \
 						metadataSourceSelection[_object]
@@ -263,7 +264,7 @@ def main(CurrentIngest):
 
 				_object.pymmIngest = pymmIngest
 				_object.pymmResult = pymmIngest.ingestResults
-				print("PYMM OUTPUT\n",_object.pymmResult)
+				# print("PYMM OUTPUT\n",_object.pymmResult)
 				# sys.exit()
 
 				# now work on metadata

@@ -100,7 +100,7 @@ class MetadataFieldForm(FlaskForm):
 		allow_blank=True,
 		blank_text=u'Select a data source'
 		)
-	rsFieldID = StringField("ResourceSpace reference ID for field")
+	rsFieldID = StringField("ResourceSpace reference ID for field",validators=[DataRequired()])
 	description = StringField('Database description')
 
 	submit = SubmitField('Submit')

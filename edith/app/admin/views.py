@@ -481,7 +481,7 @@ def edit_metadata_field(id):
 		metadata_field.description = form.description.data
 		try:
 			db.session.commit()
-			flash('You have successfully edited the data source.')
+			flash('You have successfully edited the metadata field.')
 
 			# redirect to the users page
 			return redirect(url_for('admin.list_metadata_fields'))
@@ -519,7 +519,7 @@ def delete_metadata_field(id):
 	metadata_field = Metadata_Field.query.get_or_404(id)
 	db.session.delete(metadata_field)
 	db.session.commit()
-	flash('You have successfully deleted the data source.')
+	flash('You have successfully deleted the metadata field.')
 
 	# redirect to the metadata_fields page
 	return redirect(url_for('admin.list_metadata_fields'))

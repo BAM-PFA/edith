@@ -216,7 +216,7 @@ class Metadata:
 		'''
 		for key, value in moreMetadata.items():
 			if key in self.innerMetadataDict:
-				if key == None:
+				if self.innerMetadataDict[key] in (None,'None',''):
 					self.innerMetadataDict[key] = value
 				else:
 					# IF THERE'S ALREADY A VALUE HERE, DON'T REPLACE IT

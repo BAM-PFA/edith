@@ -142,7 +142,7 @@ class Metadata_Field(db.Model):
 	# User-visible field name (e.g. Record ID)
 	fieldName = db.Column(db.String(100))
 	# field unique name (e.g. recordID)
-	fieldUniqueName = db.Column(db.String(60))
+	fieldUniqueName = db.Column(db.String(60),unique=True)
 	# field name in the data source
 	fieldSourceName = db.Column(db.String(60))
 	# category of field (Film coll, Event, General, etc.)
