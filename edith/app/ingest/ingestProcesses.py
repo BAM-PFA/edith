@@ -263,6 +263,7 @@ def main(CurrentIngest):
 					break
 
 				_object.pymmIngest = pymmIngest
+				print(_object.pymmIngest, _object.pymmIngest.InputObject)
 				_object.pymmResult = pymmIngest.ingestResults
 				# print("PYMM OUTPUT\n",_object.pymmResult)
 				# sys.exit()
@@ -277,23 +278,21 @@ def main(CurrentIngest):
 					ingestUUID = _object.pymmResult['ingestUUID']
 					canonicalName = _object.pymmIngest.InputObject.canonicalName
 					inputType = _object.pymmIngest.InputObject.inputTypeDetail
-					
+
 					try:
 						with open(metadataJSONpath,'r+') as mdread:
 							print('opened the md file')
 							data = json.load(mdread)
 							key = list(data.keys())[0]
-
 							data[key]['metadata']['ingestUUID'] = ingestUUID
 							data[key]['metadata']['canonicalName'] = canonicalName
-							data[key]['metadata']['inputType'] = inputTypeDetail
+							data[key]['metadata']['inputType'] = inputType
 
 							theGoods = data[key]['metadata']
-							print(theGoods)
 							# also update the Ingestible attributes
 							_object.metadata.innerMetadataDict = theGoods
-							_object.metadata.metadataDict[_object.inputPath]\
-								['metadata'] = theGoods
+							#_object.metadata.metadataDict[_object.inputPath]\
+							#	['metadata'] = theGoods
 
 						with open(metadataJSONpath,'w+') as mdwrite:
 							json.dump(theGoods,mdwrite)
@@ -361,6 +360,6 @@ def main(CurrentIngest):
 			else:
 				pass
 
-			_object.metadata.delete_temp_JSON_file()
+			#_object.metadata.delete_temp_JSON_file()
 
 	return(CurrentIngest)

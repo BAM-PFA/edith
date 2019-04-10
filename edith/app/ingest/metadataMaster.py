@@ -7,6 +7,7 @@ import urllib.parse
 # local imports
 from config import app_config
 from .. import db
+from . import metadataQuery
 from ..models import Metadata_Field
 from .. import utils
 
@@ -99,9 +100,7 @@ class Metadata:
 		self.metadataDict = {
 			self.objectPath:{
 				"basename":self.basename,
-				"metadata":{
-					"":""
-					}
+				"metadata": self.innerMetadataDict
 				}
 			}
 		# get all the defined fields from the db
@@ -203,6 +202,7 @@ class Metadata:
 						self.retrievedExternalMetadata = True
 				except:
 					# give up
+					print("Error searching FileMaker on ID and barcode")
 					pass
 
 		print('metadataDict')

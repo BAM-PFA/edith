@@ -16,10 +16,11 @@ import urllib.parse
 # non standard modules
 from lxml import etree
 # local imports
-from . import metadataMaster
 from config import app_config
 
 def xml_query(idNumber,dataSourceAccessDetails):
+	from . import metadataMaster
+
 	metadataMappings = app_config['METADATA_MAPPINGS']
 	dsn = dataSourceAccessDetails['dataSourceName']
 	namespace = metadataMappings[dsn]['NAMESPACE']
