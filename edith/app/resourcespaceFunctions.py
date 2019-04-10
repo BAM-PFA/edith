@@ -275,6 +275,8 @@ def rs_alt_file_API_call(primaryRecord,quotedPath,filePath):
 # 	rsMetaDict[138] = metadataJSON['analogTapeNumber']
 # 	rsMetaDict[139] = metadataJSON['analogTapeSide']
 # 	rsMetaDict[140] = metadataJSON['digitizationQCNotes']
+# 	rsMetaDict[141] = metadataJSON['inputType']
+# 	rsMetaDict[140] = metadataJSON['canonicalName']
 # 	# rsMetaDict[] = metadataJSON['']
 	
 # 	rsMetaJSON = json.dumps(rsMetaDict,ensure_ascii=False)

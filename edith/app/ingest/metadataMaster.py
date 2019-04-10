@@ -74,6 +74,8 @@ metadataMasterDict['recordingPermissionsNotes'] = ''
 metadataMasterDict['analogTapeNumber'] = ''
 metadataMasterDict['analogTapeSide'] = ''
 metadataMasterDict['digitizationQCNotes'] = ''
+metadataMasterDict['inputType'] = ''
+metadataMasterDict['canonicalName'] = ''
 
 # metadataMasterDict[''] = ''
 

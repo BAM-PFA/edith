@@ -275,12 +275,19 @@ def main(CurrentIngest):
 						)
 					# get the UUID which we'll add to the metadata file in a sec
 					ingestUUID = _object.pymmResult['ingestUUID']
+					canonicalName = _object.pymmIngest.InputObject.canonicalName
+					inputType = _object.pymmIngest.InputObject.inputTypeDetail
+					
 					try:
 						with open(metadataJSONpath,'r+') as mdread:
 							print('opened the md file')
 							data = json.load(mdread)
 							key = list(data.keys())[0]
+
 							data[key]['metadata']['ingestUUID'] = ingestUUID
+							data[key]['metadata']['canonicalName'] = canonicalName
+							data[key]['metadata']['inputType'] = inputTypeDetail
+
 							theGoods = data[key]['metadata']
 							print(theGoods)
 							# also update the Ingestible attributes
