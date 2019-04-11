@@ -181,12 +181,17 @@ class Metadata:
 			try:
 				print('searching FileMaker on '+self.idNumber)
 				FMmetadata = metadataQuery.xml_query(
-					self.idNumber,dataSourceAccessDetails)
+					self.idNumber,
+					dataSourceAccessDetails
+					)
 
 				if FMmetadata:
 					# add any filemaker metadata to the dict
 					self.add_more_metadata(FMmetadata)
+					self.construct_accession_number()
 					self.retrievedExternalMetadata = True
+
+					
 			except:
 				# if no results, try padding with zeros
 				idNumberPadded = "{0:0>5}".format(self.idNumber)
@@ -199,6 +204,7 @@ class Metadata:
 					if FMmetadata:
 						# add any filemaker metadata to the dict
 						self.add_more_metadata(FMmetadata)
+						self.construct_accession_number()
 						self.retrievedExternalMetadata = True
 				except:
 					# give up
@@ -227,6 +233,26 @@ class Metadata:
 					pass
 
 		return True
+
+	def construct_accession_number(self):
+		'''
+		Construct the PFA full accession number
+		'''
+		try:
+			if self.innerMetadataDict['accPref'] not in (
+				None,'','Null','null'
+				):
+				self.innerMetadataDict['accFull'] = (
+					"{}-{}-{}".format(
+						self.innerMetadataDict['accPref'],
+						self.innerMetadataDict['accDepos'],
+						self.innerMetadataDict['accItem']
+						)
+					)
+		except Exception as e:
+			print(e)
+
+
 
 	def clear_empty_metadata_fields(self):
 		'''

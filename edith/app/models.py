@@ -148,7 +148,10 @@ class Metadata_Field(db.Model):
 	# category of field (Film coll, Event, General, etc.)
 	fieldCategory = db.Column(db.String(100))
 	# data source
-	dataSource_id = db.Column(db.Integer, db.ForeignKey('data_sources.id'))
+	try:
+		dataSource_id = db.Column(db.Integer, db.ForeignKey('data_sources.id'))
+	except:
+		dataSource_id = None
 	# resourceSpace field ID # 
 	rsFieldID = db.Column(db.Integer)
 	description = db.Column(db.String(200))
