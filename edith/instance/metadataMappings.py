@@ -16,91 +16,113 @@ metadataMaps = {
 		"FIELDS": {
 			"title" : {
 				"RS_FIELD_ID" : 8,
-				"SOURCE_FIELD_NAME" : "m_245a_CompleteTitle"
+				"SOURCE_FIELD_NAME" : "m_245a_CompleteTitle",
+				"DISPLAY_NAME": "Title"
 				},
 			"altTitle" : {
 				"RS_FIELD_ID" : 84,
-				"SOURCE_FIELD_NAME" : "AlternativeTitle"
+				"SOURCE_FIELD_NAME" : "AlternativeTitle",
+				"DISPLAY_NAME": ""
 				},
 			"accPref" : {
 				"RS_FIELD_ID" : 86,
-				"SOURCE_FIELD_NAME" : "AccessionNumberPrefix"
+				"SOURCE_FIELD_NAME" : "AccessionNumberPrefix",
+				"DISPLAY_NAME": ""
 				},
 			"accDepos" : {
 				"RS_FIELD_ID" : 87,
-				"SOURCE_FIELD_NAME" : "AccessionNumberDepositorNumber"
+				"SOURCE_FIELD_NAME" : "AccessionNumberDepositorNumber",
+				"DISPLAY_NAME": ""
 				},
 			"accItem" : {
 				"RS_FIELD_ID" : 88,
-				"SOURCE_FIELD_NAME" : "AccessionNumberItemNumber"
+				"SOURCE_FIELD_NAME" : "AccessionNumberItemNumber",
+				"DISPLAY_NAME": ""
 				},
 			"projGrp" : {
 				"RS_FIELD_ID" : 90,
-				"SOURCE_FIELD_NAME" : "ProjectGroupTitle"
+				"SOURCE_FIELD_NAME" : "ProjectGroupTitle",
+				"DISPLAY_NAME": ""
 				},
 			"country" : {
 				"RS_FIELD_ID" : 3,
-				"SOURCE_FIELD_NAME" : "m_257a_Country"
+				"SOURCE_FIELD_NAME" : "m_257a_Country",
+				"DISPLAY_NAME": ""
 				},
 			"releaseYear" : {
 				"RS_FIELD_ID" : 85,
-				"SOURCE_FIELD_NAME" : "m_260c_ReleaseYear"
+				"SOURCE_FIELD_NAME" : "m_260c_ReleaseYear",
+				"DISPLAY_NAME": ""
 				},
 			"directorsNames" : {
 				"RS_FIELD_ID" : 91,
-				"SOURCE_FIELD_NAME" : "ct_DirectorsNames"
+				"SOURCE_FIELD_NAME" : "ct_DirectorsNames",
+				"DISPLAY_NAME": ""
 				},
 			"credits" : {
 				"RS_FIELD_ID" : 92,
-				"SOURCE_FIELD_NAME" : "Credits"
+				"SOURCE_FIELD_NAME" : "Credits",
+				"DISPLAY_NAME": ""
 				},
 			"generalNotes" : {
 				"RS_FIELD_ID" : 93,
-				"SOURCE_FIELD_NAME" : "GeneralNotes"
+				"SOURCE_FIELD_NAME" : "GeneralNotes",
+				"DISPLAY_NAME": ""
 				},
 			"conditionNote" : {
 				"RS_FIELD_ID" : 94,
-				"SOURCE_FIELD_NAME" : "m_945z_GeneralConditionNotes"
+				"SOURCE_FIELD_NAME" : "m_945z_GeneralConditionNotes",
+				"DISPLAY_NAME": ""
 				},
 			"Barcode" : {
 				"RS_FIELD_ID" : 98,
-				"SOURCE_FIELD_NAME" : "Barcode"
+				"SOURCE_FIELD_NAME" : "Barcode",
+				"DISPLAY_NAME": ""
 				},
 			"language" : {
 				"RS_FIELD_ID" : 99,
-				"SOURCE_FIELD_NAME" : "m_546a_Language"
+				"SOURCE_FIELD_NAME" : "m_546a_Language",
+				"DISPLAY_NAME": ""
 				},
 			"soundCharacteristics" : {
 				"RS_FIELD_ID" : 100,
-				"SOURCE_FIELD_NAME" : "SoundCharacteristics"
+				"SOURCE_FIELD_NAME" : "SoundCharacteristics",
+				"DISPLAY_NAME": ""
 				},
 			"color" : {
 				"RS_FIELD_ID" : 101,
-				"SOURCE_FIELD_NAME" : "ColorCharacteristics"
+				"SOURCE_FIELD_NAME" : "ColorCharacteristics",
+				"DISPLAY_NAME": ""
 				},
 			"runningTime" : {
 				"RS_FIELD_ID" : 102,
-				"SOURCE_FIELD_NAME" : "RunningTime"
+				"SOURCE_FIELD_NAME" : "RunningTime",
+				"DISPLAY_NAME": ""
 				},
 			"frameRateTRTdetails" : {
 				"RS_FIELD_ID" : 121,
-				"SOURCE_FIELD_NAME" : "RunningTimeDescription"
+				"SOURCE_FIELD_NAME" : "RunningTimeDescription",
+				"DISPLAY_NAME": ""
 				},
 			"medium" : {
 				"RS_FIELD_ID" : 103,
-				"SOURCE_FIELD_NAME" : "m_245h_Medium"
+				"SOURCE_FIELD_NAME" : "m_245h_Medium",
+				"DISPLAY_NAME": ""
 				},
 			"dimensions" : {
 				"RS_FIELD_ID" : 104,
-				"SOURCE_FIELD_NAME" : "m_300c_Dimensions"
+				"SOURCE_FIELD_NAME" : "m_300c_Dimensions",
+				"DISPLAY_NAME": ""
 				},
 			"videoFormat" : {
 				"RS_FIELD_ID" : 105,
-				"SOURCE_FIELD_NAME" : "VideoFormat"
+				"SOURCE_FIELD_NAME" : "VideoFormat",
+				"DISPLAY_NAME": ""
 				},
 			"videoStandard" : {
 				"RS_FIELD_ID" : 106,
-				"SOURCE_FIELD_NAME" : "VideoStandard"
+				"SOURCE_FIELD_NAME" : "VideoStandard",
+				"DISPLAY_NAME": ""
 				}
 			}
 		},
@@ -109,68 +131,108 @@ metadataMaps = {
 		"FIELDS": {
 			"PFAfilmSeries" : {
 				"RS_FIELD_ID" : 127,
-				"SOURCE_FIELD_NAME" : "recordingPFASeries"
+				"SOURCE_FIELD_NAME" : "recordingPFASeries",
+				"DISPLAY_NAME": ""
 				},
 			"recordingDate" : {
 				"RS_FIELD_ID" : 128,
-				"SOURCE_FIELD_NAME" : "ct_RecordingDate"
+				"SOURCE_FIELD_NAME" : "ct_RecordingDate",
+				"DISPLAY_NAME": ""
 				},
 			"digitizedBornDigital" : {
 				"RS_FIELD_ID" : 129,
-				"SOURCE_FIELD_NAME" : "recordingDigitalStatusValue"
+				"SOURCE_FIELD_NAME" : "recordingDigitalStatusValue",
+				"DISPLAY_NAME": ""
 				},
 			"digitizer" : {
 				"RS_FIELD_ID" : 130,
-				"SOURCE_FIELD_NAME" : "recordingDigitizer"
+				"SOURCE_FIELD_NAME" : "recordingDigitizer",
+				"DISPLAY_NAME": ""
 				},
 			"locationOfRecording" : {
 				"RS_FIELD_ID" : 131,
-				"SOURCE_FIELD_NAME" : "recordingLocation"
+				"SOURCE_FIELD_NAME" : "recordingLocation",
+				"DISPLAY_NAME": ""
 				},
 			"speakerInterviewee" : {
 				"RS_FIELD_ID" : 132,
-				"SOURCE_FIELD_NAME" : "ct_Speakers"
+				"SOURCE_FIELD_NAME" : "ct_Speakers",
+				"DISPLAY_NAME": ""
 				},
 			"filmTitleSubjects" : {
 				"RS_FIELD_ID" : 133,
-				"SOURCE_FIELD_NAME" : "ct_FilmTitles"
+				"SOURCE_FIELD_NAME" : "ct_FilmTitles",
+				"DISPLAY_NAME": ""
 				},
 			"restrictionsOnUse" : {
 				"RS_FIELD_ID" : 119,
-				"SOURCE_FIELD_NAME" : "recordingPermissions"
+				"SOURCE_FIELD_NAME" : "recordingPermissions",
+				"DISPLAY_NAME": ""
 				},
 			"description" : {
 				"RS_FIELD_ID" : 113,
-				"SOURCE_FIELD_NAME" : "recordingEventDescription"
+				"SOURCE_FIELD_NAME" : "recordingEventDescription",
+				"DISPLAY_NAME": ""
 				},
 			"eventTitle" : {
 				"RS_FIELD_ID" : 107,
-				"SOURCE_FIELD_NAME" : "recordingEventTitle"
+				"SOURCE_FIELD_NAME" : "recordingEventTitle",
+				"DISPLAY_NAME": ""
 				},
-			# BELOW HERE STILL NEEDS TO BE ADDED TO RESOURCESPACE & PBCORE MAP
 			"recordingAnalogTechnicalNotes" : {
-				"RS_FIELD_ID" : None,
-				"SOURCE_FIELD_NAME" : "recordingEventRecordingNotes"
+				"RS_FIELD_ID" : 135,
+				"SOURCE_FIELD_NAME" : "recordingEventRecordingNotes",
+				"DISPLAY_NAME": ""
 				},
 			"audioRecordingID" : {
-				"RS_FIELD_ID" : None,
-				"SOURCE_FIELD_NAME" : "recordingIDPadded"
+				"RS_FIELD_ID" : 136,
+				"SOURCE_FIELD_NAME" : "recordingIDPadded",
+				"DISPLAY_NAME": ""
 				},
 			"recordingPermissionsNotes" : {
-				"RS_FIELD_ID" : None,
-				"SOURCE_FIELD_NAME" : "recordingPermissionsNotes"
+				"RS_FIELD_ID" : 137,
+				"SOURCE_FIELD_NAME" : "recordingPermissionsNotes",
+				"DISPLAY_NAME": ""
 				},
 			"analogTapeNumber" : {
-				"RS_FIELD_ID" : None,
-				"SOURCE_FIELD_NAME" : "recordingTapeNumber"
+				"RS_FIELD_ID" : 138,
+				"SOURCE_FIELD_NAME" : "recordingTapeNumber",
+				"DISPLAY_NAME": ""
 				},
 			"analogTapeSide" : {
-				"RS_FIELD_ID" : None,
-				"SOURCE_FIELD_NAME" : "recordingTapeSide"
+				"RS_FIELD_ID" : 139,
+				"SOURCE_FIELD_NAME" : "recordingTapeSide",
+				"DISPLAY_NAME": ""
 				},
 			"digitizationQCNotes" : {
-				"RS_FIELD_ID" : None,
-				"SOURCE_FIELD_NAME" : "DigitizationNotes"
+				"RS_FIELD_ID" : 140,
+				"SOURCE_FIELD_NAME" : "DigitizationNotes",
+				"DISPLAY_NAME": ""
+				}
+			}
+		},
+	"non-database" : {
+		"NAMESPACE" : None,
+		"FIELDS": {
+			"creator" : {
+				"RS_FIELD_ID" : 114,
+				"SOURCE_FIELD_NAME" : "",
+				"DISPLAY_NAME": ""
+				},
+			"sourceInputType" : {
+				"RS_FIELD_ID" : 141,
+				"SOURCE_FIELD_NAME" : "",
+				"DISPLAY_NAME": "Source input type"
+				},
+			"canonicalName" : {
+				"RS_FIELD_ID" : 142,
+				"SOURCE_FIELD_NAME" : "",
+				"DISPLAY_NAME": "Source canonical name"
+				},
+			"etc" : {
+				"RS_FIELD_ID" : 999,
+				"SOURCE_FIELD_NAME" : "",
+				"DISPLAY_NAME": ""
 				}
 			}
 		}
