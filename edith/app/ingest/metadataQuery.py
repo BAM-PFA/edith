@@ -5,6 +5,7 @@ and builds out a dict of fields and values that maps to Bampfa
 ResourceSpace and PBCore mappings.
 '''
 # standard libraries
+import ast
 import hashlib
 import json
 import os
@@ -21,23 +22,16 @@ from .. import db
 from ..models import Metadata_Field
 
 def xml_query(_metadata,idNumber,dataSourceAccessDetails):
-	print("HELLO")
-	#from . import metadataMaster
-
-	# metadataMappings = app_config['METADATA_MAPPINGS']
 	dsn = dataSourceAccessDetails['dataSourceName']
-	# namespace = metadataMappings[dsn]['NAMESPACE']
 	namespace = dataSourceAccessDetails['dataSourceNamespace']
-	print(type(namespace))
+	namespace = ast.literal_eval(namespace)
 	layout = dataSourceAccessDetails['dataSourceLayout']
 	server = dataSourceAccessDetails['dataSourceIP']
 	user = dataSourceAccessDetails['dataSourceUsername']
 	password = dataSourceAccessDetails['dataSourceCredentials']
-
 	primaryAssetIDField = dataSourceAccessDetails['dataSourcePrimaryID']
 	secondaryAssetIDField = dataSourceAccessDetails['dataSourceSecondaryID']
 	tertiaryAssetIDField = dataSourceAccessDetails['dataSourceTertiaryID']
-	print(_metadata)
 
 	if len(idNumber) <= 5:
 		# primaryAssetID is a 5-digit record id
@@ -68,11 +62,11 @@ def xml_query(_metadata,idNumber,dataSourceAccessDetails):
 
 	# print(requestURL)
 	xml = requests.get(requestURL,auth=(user,password))
-	print(xml.text)
+	# print(xml.text)
 
 	# Get the metadata dict from the Metadata object
-	recordDict = _metadata.innerMetadataDict
-	# print(recordDict)
+	recordDict = {k:v for k,v in _metadata.innerMetadataDict.items()}
+	#print(recordDict)
 	root = etree.fromstring(xml.text.encode())
 	# print(root)
 	# THERE SHOULD ONLY EVER BE ONE RECORD IN A RESULTSET 
@@ -81,47 +75,31 @@ def xml_query(_metadata,idNumber,dataSourceAccessDetails):
 		"./filemaker:resultset/filemaker:record",
 		namespace
 		)
-	print(type(recordDict))
+	# print(recordElement)
+
 	# do a little back and forth to get a new root 
 	# that is just the single <record> element
 	recordString = etree.tostring(recordElement)
 	recordRoot = etree.fromstring(recordString)
 
 	for fieldName,_ in recordDict.items():
-		print(fieldName)
+		# print(fieldName)
 		field = Metadata_Field.query.filter_by(fieldUniqueName=fieldName).first()
-		print(field)
-		sourceFieldName = field.fieldSourceName
-		xpathExpression = "./filemaker:field[@name='{}']".format(
-			sourceFieldName
-			)
-		print(xpathExpression)
 		try:
-			fieldResult = recordRoot.find(xpathExpression,namespace)
-			recordDict[fieldName] = fieldResult[0].text
+			sourceFieldName = field.fieldSourceName
+			xpathExpression = "./filemaker:field[@name='{}']".format(
+				sourceFieldName
+				)
+			# print(xpathExpression)
+			try:
+				fieldResult = recordRoot.find(xpathExpression,namespace)
+				recordDict[fieldName] = fieldResult[0].text
+			except:
+				recordDict[fieldName] = None
 		except:
-			recordDict[fieldName] = None
+			pass
 
-	#print(recordDict)
-
-	# for fieldName, details in metadataMappings[dsn]['FIELDS'].items():
-	# 	sourceFieldName = details["SOURCE_FIELD_NAME"]
-	# 	xpathExpression = "./filemaker:field[@name='{}']".format(
-	# 		sourceFieldName
-	# 		)
-	# 	try:
-	# 		fieldResult = recordRoot.find(xpathExpression,namespace)
-	# 		recordDict[fieldName] = fieldResult[0].text
-	# 	except:
-	# 		recordDict[fieldName] = None
-
-	# for key,value in recordDict.items():
-	# 	if value == None:
-	# 		recordDict[key] = ""
-	# 	else:
-	# 		#print(type(value))
-	# 		pass
-
-	print("THIS IS THE RECORD DICT FROM FMQUERY")
+	print(_metadata.innerMetadataDict)
+	print("THIS IS THE RECORD DICT FROM FILEMAKER QUERY")
 	print(recordDict)
 	return recordDict

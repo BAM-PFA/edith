@@ -219,6 +219,8 @@ class Metadata:
 					self.add_more_metadata(FMmetadata)
 					print("FOFOFOFOFOFOFOFO")
 					self.retrievedExternalMetadata = True
+				else:
+					print("POPOPO POPOPO POPPO")
 			except:
 				if len(self.identifier) < 5:
 					idNumberPadded = "{0:0>5}".format(str(self.idNumber))

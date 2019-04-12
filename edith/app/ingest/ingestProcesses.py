@@ -236,6 +236,7 @@ def main(CurrentIngest):
 	####################
 
 	CurrentIngest = add_metadata(CurrentIngest)
+
 	sys.exit()
 	##############
 	#### CALL PYMM
