@@ -126,6 +126,9 @@ class Data_Source(db.Model):
 	# secondary asset identifier in case
 	# the first one returns null or is not declared
 	secondaryAssetID = db.Column(db.String(60))
+	# tertiary asset identifier
+	# as a last resort
+	tertiaryAssetID = db.Column(db.String(60))
 
 	fields = db.relationship('Metadata_Field', backref='datasource',
 								lazy='dynamic')

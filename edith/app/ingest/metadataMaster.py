@@ -2,7 +2,7 @@
 # standard library imports
 import json
 import os
-import re
+import re ,sys
 import urllib.parse
 # local imports
 from config import app_config
@@ -90,8 +90,22 @@ class Metadata:
 	def __init__(self,objectPath):
 		self.objectPath = objectPath
 		self.basename = os.path.basename(self.objectPath)
-		self.idNumber = self.parse_primary_identifier()
-		self.barcode = self.parse_barcode_from_filename()
+		
+		self.idNumber = None
+		self.parse_primary_identifier()
+		
+		self.barcode = None
+		self.parse_barcode_from_filename()
+
+		self.filemakerID = None
+		self.parse_fmID_from_filename()
+
+		# this is "the one" to search filemaker with
+		# sets the order of precedence to be:
+		# acc no -> barcode -> filemaker record ID
+		self.identifier = None
+		self.set_identifier()
+		sys.exit()
 
 		self.metadataSource = 0	
 
@@ -130,86 +144,98 @@ class Metadata:
 				# actually, take off leading zeroes just in case
 				# the db record doesn't include it.
 				self.idNumber = idNumber.lstrip("0")
+				print("THIS IS THE ID NUMBER: "+self.idNumber)
 			else:
-				self.idNumber = idNumber
+				self.idNumber = None
 		else:
-			self.idNumber = "--"	
+			self.idNumber = None	
 
-		print("THIS IS THE ID NUMBER: "+self.idNumber)
-
-		return self.idNumber
+		return True
 
 	def parse_barcode_from_filename(self):
 		'''
 		Try to get a "PM1234567" barcode from self.basename
 		'''
-		barcodeRegex = re.compile(r"(.+\_\d{5}\_)(pm\d{7})(.+)",re.IGNORECASE)
+		barcodeRegex = re.compile(r"(.+)(pm\d{7})(.*)",re.IGNORECASE)
 		barcodeMatch = re.match(barcodeRegex,self.basename)
 		if not barcodeMatch == None:
 			self.barcode = barcodeMatch.group(2)
 		else:
-			self.barcode = "000000000"
-		return self.barcode
+			self.barcode = None
+		return True
+
+	def parse_fmID_from_filename(self):
+		'''
+		Try to get a FileMaker record id "ITM1234567"
+		from self.basename
+		'''
+		fmIDRegex = re.compile(r"(.+\_)(ITM\d{7})(.*)",re.IGNORECASE)
+		fmIDRegexMatch = re.match(fmIDRegex,self.basename)
+		self.filemakerID = None
+
+		try:
+			self.filemakerID = fmIDRegexMatch.group(2)
+		except:
+			pass
+
+		print("THIS IS THE FILEMAKER RECORD ID: {}".format(str(self.filemakerID)))
+		return True
+
+	def set_identifier(self):
+		print(self.idNumber,self.barcode,self.filemakerID)
+		if self.idNumber != None:
+			self.identifier = self.idNumber
+		elif self.idNumber == None and self.barcode != None:
+			self.identifier = self.barcode
+		elif (self.idNumber == None and self.barcode == None) and self.filemakerID != None:
+			self.identifier = self.filemakerID
+		else:
+			self.identifier = None
+
+		print("THIS IS THE IDENTIFIER: {}".format(str(self.identifier)))
+
+		return True
 
 	def fetch_metadata(self,dataSourceAccessDetails):
 		'''
 		Given a set of target credentials for an external data source,
-		go get some metadata based on self.idNumber or self.barcode.
+		go get some metadata based on self.identifier.
 		'''
-		if self.idNumber == "--":
-			print("NO BAMPFA ID NUMBER")
-
-		elif self.idNumber == '00000':
-			# if the acc item number is zeroed out,
-			# try looking for a barcode to search on
+		if self.identifier != None:
 			try:
-				if self.barcode == "000000000":
-					print("ID AND BARCODE BOTH ZEROED OUT")
-
-				else:
-					FMmetadata = metadataQuery.xml_query(
-						self.barcode,
-						dataSourceAccessDetails
-						)
-					if FMmetadata:
-						# add any filemaker metadata to the dict
-						self.add_more_metadata(FMmetadata)
-						self.retrievedExternalMetadata = True
-			except:
-				print("Error searching FileMaker on ID and barcode")
-		else:
-			try:
-				print('searching FileMaker on '+self.idNumber)
+				print('searching FileMaker on '+self.identifier)
 				FMmetadata = metadataQuery.xml_query(
-					self.idNumber,
+					self.identifier,
 					dataSourceAccessDetails
 					)
-
 				if FMmetadata:
 					# add any filemaker metadata to the dict
 					self.add_more_metadata(FMmetadata)
-					self.construct_accession_number()
 					self.retrievedExternalMetadata = True
-
-					
 			except:
-				# if no results, try padding with zeros
-				idNumberPadded = "{0:0>5}".format(self.idNumber)
-				print('Now searching FileMaker on '+self.idNumber)
-				try:
-					FMmetadata = metadataQuery.xml_query(
+				if self.idNumber < 5:
+					idNumberPadded = "{0:0>5}".format(self.idNumber)
+					print('searching FileMaker on '+idNumberPadded)
+					try:
+						FMmetadata = metadataQuery.xml_query(
 						idNumberPadded,
 						dataSourceAccessDetails
 						)
-					if FMmetadata:
-						# add any filemaker metadata to the dict
-						self.add_more_metadata(FMmetadata)
-						self.construct_accession_number()
-						self.retrievedExternalMetadata = True
-				except:
-					# give up
-					print("Error searching FileMaker on ID and barcode")
-					pass
+						if FMmetadata:
+							# add any filemaker metadata to the dict
+							self.add_more_metadata(FMmetadata)
+							self.retrievedExternalMetadata = True
+					except:
+						print("Error searching FileMaker on "\
+							"{}".format(self.identifier)
+							)
+				else:
+					print("Didn't find a FileMaker record for "\
+							"{}".format(self.identifier)
+							)
+		else:
+			print("Didn't find an identifier to search FileMaker with.")
+			pass
 
 		print('metadataDict')
 		print(self.innerMetadataDict)
@@ -217,7 +243,8 @@ class Metadata:
 
 	def add_more_metadata(self,moreMetadata):
 		'''
-		moreMetadata should be a dict with keys aligning with the
+		This actually adds metadata values to the object.
+		`moreMetadata` should be a dict with keys aligning with the
 		canonical metadata fields in the EDITH instance.
 		It could be supplied by the user during the ingest process,
 		or could be supplied by an external data source.

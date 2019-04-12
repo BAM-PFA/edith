@@ -50,7 +50,13 @@ def xml_query(idNumber,dataSourceAccessDetails):
 		"&-find".format(server, dsn, layout, secondaryAssetIDField, idNumber)
 		)
 	else:
-		pass
+		# tertiary ID = 10-character Filemaker ID
+		requestURL = (
+		"http://{0}/fmi/xml/fmresultset.xml?"
+		"-db={1}&-lay={2}"
+		"&{3}={4}"
+		"&-find".format(server, dsn, layout, tertiaryAssetIDField, idNumber)
+		)
 
 	# print(requestURL)
 	xml = requests.get(requestURL,auth=(user,password))

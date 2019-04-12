@@ -2,6 +2,7 @@
 Run this from `flask shell`
 from instance import insertMetadataFields
 insertMetadataFields.insert_fields()
+
 '''
 from . import metadataMappings
 from app import models,db
