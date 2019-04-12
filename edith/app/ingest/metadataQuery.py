@@ -31,7 +31,7 @@ def xml_query(idNumber,dataSourceAccessDetails):
 
 	primaryAssetIDField = dataSourceAccessDetails['dataSourcePrimaryID']
 	secondaryAssetIDField = dataSourceAccessDetails['dataSourceSecondaryID']
-	tertiaryAssetIDField = dataSourceAccessDetails['tertiaryAssetID']
+	tertiaryAssetIDField = dataSourceAccessDetails['dataSourceTertiaryID']
 
 	if len(idNumber) <= 5:
 		# primaryAssetID is a 5-digit record id

@@ -16,7 +16,7 @@ def main(dataSourceID):
 		'dataSourceCredentials' : dataSource.credentials,
 		'dataSourcePrimaryID' : dataSource.primaryAssetID,
 		'dataSourceSecondaryID' : dataSource.secondaryAssetID,
-		'dataSourcetertiaryID' : dataSource.tertiaryAssetID
+		'dataSourceTertiaryID' : dataSource.tertiaryAssetID
 	}
 
 	return results
