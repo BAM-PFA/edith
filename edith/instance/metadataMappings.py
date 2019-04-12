@@ -131,7 +131,7 @@ metadataMaps = {
 				},
 			"generation" : {
 				"RS_FIELD_ID" : 105,
-				"SOURCE_FIELD_NAME" : "m_300_3_Generation",
+				"SOURCE_FIELD_NAME" : "GenerationDisplay",
 				"DISPLAY_NAME": "Generation of original"
 				}
 			}
