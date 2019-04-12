@@ -213,7 +213,7 @@ class Metadata:
 					self.add_more_metadata(FMmetadata)
 					self.retrievedExternalMetadata = True
 			except:
-				if self.idNumber < 5:
+				if len(self.identifier) < 5:
 					idNumberPadded = "{0:0>5}".format(self.idNumber)
 					print('searching FileMaker on '+idNumberPadded)
 					try:
