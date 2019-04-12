@@ -11,6 +11,7 @@ def main(dataSourceID):
 	results = {
 		'dataSourceName' : dataSource.dbName,
 		'dataSourceLayout' : dataSource.fmpLayout,
+		'dataSourceNamespace' : dataSource.namespace,
 		'dataSourceIP' : dataSource.IPaddress,
 		'dataSourceUsername' : dataSource.username,
 		'dataSourceCredentials' : dataSource.credentials,

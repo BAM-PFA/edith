@@ -300,6 +300,7 @@ def add_data_source():
 			dbName = form.dbName.data,
 			fmpLayout = form.fmpLayout.data,
 			IPaddress = form.IPaddress.data,
+			namespace = form.namespace,
 			username = form.username.data,
 			credentials = form.credentials.data,
 			description = form.description.data,
@@ -347,6 +348,7 @@ def edit_data_source(id):
 		data_source.dbName= form.dbName.data
 		data_source.fmpLayout = form.fmpLayout.data
 		data_source.IPaddress = form.IPaddress.data
+		data_source.namespace = form.namespace.data
 		data_source.username = form.username.data
 		data_source.credentials = form.credentials.data
 		data_source.description = form.description.data
@@ -368,7 +370,8 @@ def edit_data_source(id):
 	form.dbName.data = data_source.dbName
 	form.fmpLayout.data = data_source.fmpLayout
 	form.IPaddress.data = data_source.IPaddress
-	form.username.data = data_source.username 
+	form.namespace.data = data_source.namespace
+	form.username.data = data_source.username
 	form.credentials.data = data_source.credentials
 	form.description.data = data_source.description
 	data_source.primaryAssetID = form.primaryAssetID.data

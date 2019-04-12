@@ -16,16 +16,19 @@ import urllib.parse
 # non standard modules
 from lxml import etree
 # local imports
-from config import app_config
+#from config import app_config
 from .. import db
 from ..models import Metadata_Field
 
 def xml_query(_metadata,idNumber,dataSourceAccessDetails):
-	from . import metadataMaster
+	print("HELLO")
+	#from . import metadataMaster
 
-	metadataMappings = app_config['METADATA_MAPPINGS']
+	# metadataMappings = app_config['METADATA_MAPPINGS']
 	dsn = dataSourceAccessDetails['dataSourceName']
-	namespace = metadataMappings[dsn]['NAMESPACE']
+	# namespace = metadataMappings[dsn]['NAMESPACE']
+	namespace = dataSourceAccessDetails['dataSourceNamespace']
+	print(type(namespace))
 	layout = dataSourceAccessDetails['dataSourceLayout']
 	server = dataSourceAccessDetails['dataSourceIP']
 	user = dataSourceAccessDetails['dataSourceUsername']
@@ -34,6 +37,7 @@ def xml_query(_metadata,idNumber,dataSourceAccessDetails):
 	primaryAssetIDField = dataSourceAccessDetails['dataSourcePrimaryID']
 	secondaryAssetIDField = dataSourceAccessDetails['dataSourceSecondaryID']
 	tertiaryAssetIDField = dataSourceAccessDetails['dataSourceTertiaryID']
+	print(_metadata)
 
 	if len(idNumber) <= 5:
 		# primaryAssetID is a 5-digit record id
@@ -46,6 +50,7 @@ def xml_query(_metadata,idNumber,dataSourceAccessDetails):
 		# print(requestURL)
 	elif len(idNumber) == 9:
 		# secondary ID = 9-digit barcode
+		# don't do an exact match since multiple barcodes get concatenated
 		requestURL = (
 		"http://{0}/fmi/xml/fmresultset.xml?"
 		"-db={1}&-lay={2}"
@@ -57,16 +62,17 @@ def xml_query(_metadata,idNumber,dataSourceAccessDetails):
 		requestURL = (
 		"http://{0}/fmi/xml/fmresultset.xml?"
 		"-db={1}&-lay={2}"
-		"&{3}={4}"
+		"&{3}=={4}"
 		"&-find".format(server, dsn, layout, tertiaryAssetIDField, idNumber)
 		)
 
 	# print(requestURL)
 	xml = requests.get(requestURL,auth=(user,password))
-	# print(xml.text)
+	print(xml.text)
 
 	# Get the metadata dict from the Metadata object
 	recordDict = _metadata.innerMetadataDict
+	# print(recordDict)
 	root = etree.fromstring(xml.text.encode())
 	# print(root)
 	# THERE SHOULD ONLY EVER BE ONE RECORD IN A RESULTSET 
@@ -75,23 +81,28 @@ def xml_query(_metadata,idNumber,dataSourceAccessDetails):
 		"./filemaker:resultset/filemaker:record",
 		namespace
 		)
-	# print(recordElement)
+	print(type(recordDict))
 	# do a little back and forth to get a new root 
 	# that is just the single <record> element
 	recordString = etree.tostring(recordElement)
 	recordRoot = etree.fromstring(recordString)
 
-	for fieldName in recordDict:
+	for fieldName,_ in recordDict.items():
+		print(fieldName)
 		field = Metadata_Field.query.filter_by(fieldUniqueName=fieldName).first()
+		print(field)
 		sourceFieldName = field.fieldSourceName
 		xpathExpression = "./filemaker:field[@name='{}']".format(
 			sourceFieldName
 			)
+		print(xpathExpression)
 		try:
 			fieldResult = recordRoot.find(xpathExpression,namespace)
 			recordDict[fieldName] = fieldResult[0].text
 		except:
 			recordDict[fieldName] = None
+
+	#print(recordDict)
 
 	# for fieldName, details in metadataMappings[dsn]['FIELDS'].items():
 	# 	sourceFieldName = details["SOURCE_FIELD_NAME"]
@@ -111,6 +122,6 @@ def xml_query(_metadata,idNumber,dataSourceAccessDetails):
 	# 		#print(type(value))
 	# 		pass
 
-	# print("THIS IS THE RECORD DICT FROM FMQUERY")
-	# print(recordDict)
+	print("THIS IS THE RECORD DICT FROM FMQUERY")
+	print(recordDict)
 	return recordDict

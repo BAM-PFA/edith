@@ -232,10 +232,11 @@ def main(CurrentIngest):
 	_, hostName, _ = utils.get_shared_dir_stuff('shared')
 
 	####################
-	##### FETCH METADATA 
+	##### FETCH METADATA
 	####################
-	CurrentIngest = add_metadata(CurrentIngest)
 
+	CurrentIngest = add_metadata(CurrentIngest)
+	sys.exit()
 	##############
 	#### CALL PYMM
 	##############

@@ -133,7 +133,7 @@ class Metadata:
 		BAMPFA filenames require this be between underscores:
 		  something_12345_something-else.ext
 		'''
-		idRegex = re.compile(r'(.+\_)(\d{5})((\_.*)|($))')
+		idRegex = re.compile(r'(.+\_)(\d{5})((\_.*)|($)|(\..*))')
 		idMatch = re.match(idRegex, self.basename)
 		if not idMatch == None: 
 			idNumber = idMatch.group(2)
@@ -153,7 +153,7 @@ class Metadata:
 		'''
 		Try to get a "PM1234567" barcode from self.basename
 		'''
-		barcodeRegex = re.compile(r"(.+)(pm\d{7})(.*)",re.IGNORECASE)
+		barcodeRegex = re.compile(r"(.+)(pm\d{7})((\_.*)|($)|(\..*))",re.IGNORECASE)
 		barcodeMatch = re.match(barcodeRegex,self.basename)
 		if not barcodeMatch == None:
 			self.barcode = barcodeMatch.group(2)
@@ -166,10 +166,9 @@ class Metadata:
 		Try to get a FileMaker record id "ITM1234567"
 		from self.basename
 		'''
-		fmIDRegex = re.compile(r"(.+\_)(ITM\d{7})(.*)",re.IGNORECASE)
+		fmIDRegex = re.compile(r"(.+\_)(ITM\d{7})((\_.*)|($)|(\..*))",re.IGNORECASE)
 		fmIDRegexMatch = re.match(fmIDRegex,self.basename)
 		self.filemakerID = None
-
 		try:
 			self.filemakerID = fmIDRegexMatch.group(2)
 		except:
@@ -213,9 +212,12 @@ class Metadata:
 					self.identifier,
 					dataSourceAccessDetails
 					)
-				if FMmetadata:
+				print("& "*100)
+				if FMmetadata != self.innerMetadataDict:
 					# add any filemaker metadata to the dict
+					print("FAFAFAFAFAFAFA")
 					self.add_more_metadata(FMmetadata)
+					print("FOFOFOFOFOFOFOFO")
 					self.retrievedExternalMetadata = True
 			except:
 				if len(self.identifier) < 5:
@@ -227,13 +229,15 @@ class Metadata:
 							idNumberPadded,
 							dataSourceAccessDetails
 							)
-						if FMmetadata:
+						if FMmetadata != self.innerMetadataDict:
 							# add any filemaker metadata to the dict
 							self.add_more_metadata(FMmetadata)
+							print("FAFA FAFA")
 							self.retrievedExternalMetadata = True
-					except:
+					except Exception as e:
+						print(e)
 						print("Error searching FileMaker on "\
-							"{}".format(str(self.identifier)
+							"{}".format(str(self.identifier))
 							)
 				else:
 					print("Didn't find a FileMaker record for "\
@@ -255,6 +259,9 @@ class Metadata:
 		It could be supplied by the user during the ingest process,
 		or could be supplied by an external data source.
 		'''
+		print("POPOPOPOPOPOPOPOOP")
+		print(self.innerMetadataDict)
+		print(moreMetadata)
 		for key, value in moreMetadata.items():
 			if key in self.innerMetadataDict:
 				if self.innerMetadataDict[key] in (None,'None',''):
@@ -277,6 +284,9 @@ class Metadata:
 		}
 
 	def set_hasBAMPFAmetadata(self):
+		for value in self.innerMetadataDict.values():
+			if value in ('',None,"null","Null",False):
+				value = None
 		if all(
 			value in ('',None,"null","Null") for value in 
 				self.innerMetadataDict.values()
