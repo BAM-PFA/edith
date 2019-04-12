@@ -105,7 +105,7 @@ class Metadata:
 		# acc no -> barcode -> filemaker record ID
 		self.identifier = None
 		self.set_identifier()
-		sys.exit()
+		# sys.exit()
 
 		self.metadataSource = 0	
 
