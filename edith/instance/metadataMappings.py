@@ -39,6 +39,11 @@ metadataMaps = {
 				"SOURCE_FIELD_NAME" : "AccessionNumberItemNumber",
 				"DISPLAY_NAME": "Accession number - item number"
 				},
+			"accFull" : {
+				"RS_FIELD_ID" : 89,
+				"SOURCE_FIELD_NAME" : "m_099a_PFAAccessionNumber",
+				"DISPLAY_NAME": "Accession number - complete"
+				},
 			"projGrp" : {
 				"RS_FIELD_ID" : 90,
 				"SOURCE_FIELD_NAME" : "ProjectGroupTitle",
@@ -307,11 +312,6 @@ metadataMaps = {
 				"SOURCE_FIELD_NAME" : "",
 				"DISPLAY_NAME": "Frame rate of access file",
 				"DESCRIPTION":"NOT MAPPED TO PBCORE"
-				},
-			"accFull" : {
-				"RS_FIELD_ID" : 89,
-				"SOURCE_FIELD_NAME" : "",
-				"DISPLAY_NAME": "Accession number - complete"
 				}
 			}
 		}

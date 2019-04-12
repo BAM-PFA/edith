@@ -17,8 +17,10 @@ import urllib.parse
 from lxml import etree
 # local imports
 from config import app_config
+from .. import db
+from ..models import Metadata_Field
 
-def xml_query(idNumber,dataSourceAccessDetails):
+def xml_query(_metadata,idNumber,dataSourceAccessDetails):
 	from . import metadataMaster
 
 	metadataMappings = app_config['METADATA_MAPPINGS']
@@ -62,7 +64,9 @@ def xml_query(idNumber,dataSourceAccessDetails):
 	# print(requestURL)
 	xml = requests.get(requestURL,auth=(user,password))
 	# print(xml.text)
-	recordDict = metadataMaster.metadataMasterDict
+
+	# Get the metadata dict from the Metadata object
+	recordDict = _metadata.innerMetadataDict
 	root = etree.fromstring(xml.text.encode())
 	# print(root)
 	# THERE SHOULD ONLY EVER BE ONE RECORD IN A RESULTSET 
@@ -77,8 +81,9 @@ def xml_query(idNumber,dataSourceAccessDetails):
 	recordString = etree.tostring(recordElement)
 	recordRoot = etree.fromstring(recordString)
 
-	for fieldName, details in metadataMappings[dsn]['FIELDS'].items():
-		sourceFieldName = details["SOURCE_FIELD_NAME"]
+	for fieldName in recordDict:
+		field = Metadata_Field.query.filter_by(fieldUniqueName=fieldName).first()
+		sourceFieldName = field.fieldSourceName
 		xpathExpression = "./filemaker:field[@name='{}']".format(
 			sourceFieldName
 			)
@@ -88,12 +93,23 @@ def xml_query(idNumber,dataSourceAccessDetails):
 		except:
 			recordDict[fieldName] = None
 
-	for key,value in recordDict.items():
-		if value == None:
-			recordDict[key] = ""
-		else:
-			#print(type(value))
-			pass
+	# for fieldName, details in metadataMappings[dsn]['FIELDS'].items():
+	# 	sourceFieldName = details["SOURCE_FIELD_NAME"]
+	# 	xpathExpression = "./filemaker:field[@name='{}']".format(
+	# 		sourceFieldName
+	# 		)
+	# 	try:
+	# 		fieldResult = recordRoot.find(xpathExpression,namespace)
+	# 		recordDict[fieldName] = fieldResult[0].text
+	# 	except:
+	# 		recordDict[fieldName] = None
+
+	# for key,value in recordDict.items():
+	# 	if value == None:
+	# 		recordDict[key] = ""
+	# 	else:
+	# 		#print(type(value))
+	# 		pass
 
 	# print("THIS IS THE RECORD DICT FROM FMQUERY")
 	# print(recordDict)

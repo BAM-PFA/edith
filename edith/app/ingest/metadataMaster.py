@@ -100,12 +100,9 @@ class Metadata:
 		self.filemakerID = None
 		self.parse_fmID_from_filename()
 
-		# this is "the one" to search filemaker with
-		# sets the order of precedence to be:
-		# acc no -> barcode -> filemaker record ID
+		# `identifier` is "the one" ID to search filemaker on
 		self.identifier = None
 		self.set_identifier()
-		# sys.exit()
 
 		self.metadataSource = 0	
 
@@ -182,6 +179,13 @@ class Metadata:
 		return True
 
 	def set_identifier(self):
+		'''
+		Look for one of the three possible BAMPFA FileMaker identifiers:
+		  the order of precedence is:
+		    accession # -> barcode -> filemaker record ID
+
+
+		'''
 		print(self.idNumber,self.barcode,self.filemakerID)
 		if self.idNumber != None:
 			self.identifier = self.idNumber
@@ -203,37 +207,37 @@ class Metadata:
 		'''
 		if self.identifier != None:
 			try:
-				print('searching FileMaker on '+self.identifier)
+				print('searching FileMaker on '+str(self.identifier))
 				FMmetadata = metadataQuery.xml_query(
+					self,
 					self.identifier,
 					dataSourceAccessDetails
 					)
 				if FMmetadata:
 					# add any filemaker metadata to the dict
 					self.add_more_metadata(FMmetadata)
-					self.construct_accession_number() # THIS SHOULD BE REPLACED WITH ACTUALLY CALLING ON THE FIELD IN FILEMAKER DIRECTLY... @FIXME
 					self.retrievedExternalMetadata = True
 			except:
 				if len(self.identifier) < 5:
-					idNumberPadded = "{0:0>5}".format(self.idNumber)
+					idNumberPadded = "{0:0>5}".format(str(self.idNumber))
 					print('searching FileMaker on '+idNumberPadded)
 					try:
 						FMmetadata = metadataQuery.xml_query(
-						idNumberPadded,
-						dataSourceAccessDetails
-						)
+							self,
+							idNumberPadded,
+							dataSourceAccessDetails
+							)
 						if FMmetadata:
 							# add any filemaker metadata to the dict
 							self.add_more_metadata(FMmetadata)
-							self.construct_accession_number()
 							self.retrievedExternalMetadata = True
 					except:
 						print("Error searching FileMaker on "\
-							"{}".format(self.identifier)
+							"{}".format(str(self.identifier)
 							)
 				else:
 					print("Didn't find a FileMaker record for "\
-							"{}".format(self.identifier)
+							"{}".format(str(self.identifier))
 							)
 		else:
 			print("Didn't find an identifier to search FileMaker with.")
@@ -262,26 +266,6 @@ class Metadata:
 					pass
 
 		return True
-
-	def construct_accession_number(self):
-		'''
-		Construct the PFA full accession number
-		'''
-		try:
-			if self.innerMetadataDict['accPref'] not in (
-				None,'','Null','null'
-				):
-				self.innerMetadataDict['accFull'] = (
-					"{}-{}-{}".format(
-						self.innerMetadataDict['accPref'],
-						self.innerMetadataDict['accDepos'],
-						self.innerMetadataDict['accItem']
-						)
-					)
-		except Exception as e:
-			print(e)
-
-
 
 	def clear_empty_metadata_fields(self):
 		'''
