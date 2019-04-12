@@ -211,6 +211,7 @@ class Metadata:
 				if FMmetadata:
 					# add any filemaker metadata to the dict
 					self.add_more_metadata(FMmetadata)
+					self.construct_accession_number() # THIS SHOULD BE REPLACED WITH ACTUALLY CALLING ON THE FIELD IN FILEMAKER DIRECTLY... @FIXME
 					self.retrievedExternalMetadata = True
 			except:
 				if len(self.identifier) < 5:
@@ -224,6 +225,7 @@ class Metadata:
 						if FMmetadata:
 							# add any filemaker metadata to the dict
 							self.add_more_metadata(FMmetadata)
+							self.construct_accession_number()
 							self.retrievedExternalMetadata = True
 					except:
 						print("Error searching FileMaker on "\

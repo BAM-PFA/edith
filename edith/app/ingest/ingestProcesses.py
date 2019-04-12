@@ -286,7 +286,7 @@ def main(CurrentIngest):
 							key = list(data.keys())[0]
 							data[key]['metadata']['ingestUUID'] = ingestUUID
 							data[key]['metadata']['canonicalName'] = canonicalName
-							data[key]['metadata']['inputType'] = inputType
+							data[key]['metadata']['sourceInputType'] = inputType
 
 							theGoods = data[key]['metadata']
 							# also update the Ingestible attributes
