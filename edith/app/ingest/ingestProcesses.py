@@ -39,7 +39,6 @@ class IngestProcess:
 			# otherwise default to the user's email address
 			user = current_user.email
 
-		print(user)
 		return user
 
 class Ingestible:
@@ -65,9 +64,14 @@ class Ingestible:
 
 def grab_remote_files(targetFilepath):
 	# prep credentials to grab stuff from remote shared dir
-	hostName, sourceDir, remoteAddress, remoteUser, remotePassword, sshKeyfile = utils.get_remote_credentials()
+	hostName, \
+	sourceDir, \
+	remoteAddress, \
+	remoteUser, \
+	remotePassword, \
+	sshKeyfile = utils.get_remote_credentials()
 	processingDir = utils.get_temp_dir()
-	print(processingDir)
+	# print(processingDir)
 	# double check that it's not on the current filesystem
 	if not os.path.isfile(targetFilepath):
 		if not os.path.isdir(targetFilepath):
@@ -109,8 +113,6 @@ def add_metadata(CurrentIngest):
 		_object.metadata.clear_empty_metadata_fields()
 		if _object.metadata.innerMetadataDict['hasBAMPFAmetadata'] == True:
 			_object.metadata.write_json_file()
-
-	return CurrentIngest
 
 def set_pymm_sys_args(CurrentIngest,_object):
 
@@ -195,7 +197,7 @@ def parse_raw_ingest_form(formData,CurrentIngest):
 					ingestMe.metadata.add_more_metadata(
 						metadataEntries[_object]
 						)
-					print(ingestMe.metadata.innerMetadataDict)
+					# print(ingestMe.metadata.innerMetadataDict)
 				if _object in metadataSourceSelection:
 					ingestMe.metadata.metadataSource = \
 						metadataSourceSelection[_object]
@@ -235,7 +237,7 @@ def main(CurrentIngest):
 	##### FETCH METADATA
 	####################
 
-	CurrentIngest = add_metadata(CurrentIngest)
+	add_metadata(CurrentIngest)
 
 	##############
 	#### CALL PYMM
@@ -260,11 +262,10 @@ def main(CurrentIngest):
 				sys.argv = _object.pymmArgv
 				try:
 					pymmIngest = ingestSip.main()
-				except:
-					break
+				except Exception as e:
+					print(e)
 
 				_object.pymmIngest = pymmIngest
-				print(_object.pymmIngest, _object.pymmIngest.InputObject)
 				_object.pymmResult = pymmIngest.ingestResults
 				# print("PYMM OUTPUT\n",_object.pymmResult)
 				# sys.exit()
@@ -275,14 +276,15 @@ def main(CurrentIngest):
 						'Archival information package'\
 						' creation succeeeded'
 						)
-					# get the UUID which we'll add to the metadata file in a sec
+					# get the UUID,
+					# which we'll add to the metadata file in a sec
 					ingestUUID = _object.pymmResult['ingestUUID']
 					canonicalName = _object.pymmIngest.InputObject.canonicalName
 					inputType = _object.pymmIngest.InputObject.inputTypeDetail
 
 					try:
 						with open(metadataJSONpath,'r+') as mdread:
-							print('opened the md file')
+							# print('opened the md file')
 							data = json.load(mdread)
 							key = list(data.keys())[0]
 							data[key]['metadata']['ingestUUID'] = ingestUUID
@@ -292,12 +294,10 @@ def main(CurrentIngest):
 							theGoods = data[key]['metadata']
 							# also update the Ingestible attributes
 							_object.metadata.innerMetadataDict = theGoods
-							#_object.metadata.metadataDict[_object.inputPath]\
-							#	['metadata'] = theGoods
 
 						with open(metadataJSONpath,'w+') as mdwrite:
 							json.dump(theGoods,mdwrite)
-							print('wrote to the md file')
+							# print('wrote to the md file')
 						_object.ingestMessages.append(
 							'Added metadata to sidecar JSON file: {}'.format(
 								metadataJSONpath
@@ -315,14 +315,14 @@ def main(CurrentIngest):
 						"Warning: "+str(_object.pymmResult['abortReason'])
 						)
 
-			except subprocess.CalledProcessError as e:
+			except Exception as e:
 				print(e)
 				_object.ingestWarnings.append(
 					'Warning: Archival information package'\
 					' creation failed'
 					)
 
-			print(_object.ingestWarnings,_object.ingestMessages)
+			# print(_object.ingestWarnings,_object.ingestMessages)
 
 			########################
 			#### RESOURCESPACE STUFF
@@ -336,7 +336,7 @@ def main(CurrentIngest):
 					basename = _object.metadata.basename
 
 					if os.path.exists(_object.accessCopyPath):
-						print("WOOOT")
+						# print("WOOOT")
 						# rsStatus is True/False result
 						rsStatus = resourcespaceFunctions.do_resourcespace(
 							_object
@@ -354,13 +354,13 @@ def main(CurrentIngest):
 					else:
 						print("PROXY FILE PATH PROBLEMO")
 						_object.ingestWarnings.append(
-							"Warning: Problem accessing the resourcespace proxy file."\
-							"Maybe it didn't get created?"\
+							"Warning: Problem accessing the resourcespace "\
+							"proxy file. Maybe it didn't get created? "\
 							"Maybe check folder permissions."
 							)
 			else:
 				pass
 
-			#_object.metadata.delete_temp_JSON_file()
+			_object.metadata.delete_temp_JSON_file()
 
 	return(CurrentIngest)

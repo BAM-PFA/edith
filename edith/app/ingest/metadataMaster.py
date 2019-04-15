@@ -11,77 +11,6 @@ from . import metadataQuery
 from ..models import Metadata_Field
 from .. import utils
 
-
-
-metadataMasterDict = {}
-
-metadataMasterDict['tags'] = ''
-metadataMasterDict['country'] = ''
-metadataMasterDict['title'] = ''
-metadataMasterDict['nameSubjects'] = ''
-metadataMasterDict['frameRateProxy'] = ''
-metadataMasterDict['altTitle'] = ''
-metadataMasterDict['releaseYear'] = ''
-metadataMasterDict['accPref'] = ''
-metadataMasterDict['accDepos'] = ''
-metadataMasterDict['accItem'] = ''
-metadataMasterDict['accFull'] = ''
-metadataMasterDict['projGrp'] = ''
-metadataMasterDict['directorsNames'] = ''
-metadataMasterDict['credits'] = ''
-metadataMasterDict['generalNotes'] = ''
-metadataMasterDict['conditionNote'] = ''
-metadataMasterDict['Barcode'] = ''
-metadataMasterDict['language'] = ''
-metadataMasterDict['soundCharacteristics'] = ''
-metadataMasterDict['color'] = ''
-metadataMasterDict['runningTime'] = ''
-metadataMasterDict['medium'] = ''
-metadataMasterDict['dimensions'] = ''
-metadataMasterDict['videoFormat'] = ''
-metadataMasterDict['videoStandard'] = ''
-metadataMasterDict['ingestUUID'] = ''
-metadataMasterDict['eventTitle'] = ''
-metadataMasterDict['eventYear'] = ''
-metadataMasterDict['eventFullDate'] = ''
-metadataMasterDict['eventSeries'] = ''
-metadataMasterDict['eventRelatedExhibition'] = ''
-metadataMasterDict['eventLocation'] = ''
-metadataMasterDict['description'] = ''
-metadataMasterDict['creator'] = ''
-metadataMasterDict['creatorRole'] = ''
-metadataMasterDict['eventOrganizer'] = ''
-metadataMasterDict['assetExternalSource'] = ''
-metadataMasterDict['copyrightStatement'] = ''
-metadataMasterDict['restrictionsOnUse'] = ''
-metadataMasterDict['generation'] = ''
-metadataMasterDict['frameRateTRTdetails'] = ''
-metadataMasterDict['platformOutlet'] = ''
-metadataMasterDict['editSequenceSettings'] = ''
-metadataMasterDict['additionalCredits'] = ''
-metadataMasterDict['postProcessing'] = ''
-metadataMasterDict['exportPublishDate'] = ''
-metadataMasterDict['PFAfilmSeries'] = ''
-metadataMasterDict['recordingDate'] = ''
-metadataMasterDict['digitizedBornDigital'] = ''
-metadataMasterDict['digitizer'] = ''
-metadataMasterDict['locationOfRecording'] = ''
-metadataMasterDict['speakerInterviewee'] = ''
-metadataMasterDict['filmTitleSubjects'] = ''
-metadataMasterDict['topicalSubjects'] = ''
-metadataMasterDict['recordingAnalogTechnicalNotes'] = ''
-metadataMasterDict['audioRecordingID'] = ''
-metadataMasterDict['recordingPermissionsNotes'] = ''
-metadataMasterDict['analogTapeNumber'] = ''
-metadataMasterDict['analogTapeSide'] = ''
-metadataMasterDict['digitizationQCNotes'] = ''
-metadataMasterDict['inputType'] = ''
-metadataMasterDict['canonicalName'] = ''
-
-# metadataMasterDict[''] = ''
-
-metadataMasterDict['hasBAMPFAmetadata'] = ""
-
 class Metadata:
 	'''
 	Metadata instance for an asset being ingested
@@ -130,8 +59,8 @@ class Metadata:
 	def parse_primary_identifier(self):
 		'''
 		Parse a 5-digit ID number from self.basename
-		BAMPFA filenames require this be between underscores:
-		  something_12345_something-else.ext
+		regex looks for the number to exist before an underscore, 
+		a period (i.e., a filename extension), or the end of the string
 		'''
 		idRegex = re.compile(r'(.+\_)(\d{5})((\_.*)|($)|(\..*))')
 		idMatch = re.match(idRegex, self.basename)
@@ -147,26 +76,31 @@ class Metadata:
 		else:
 			self.idNumber = None	
 
-		return True
-
 	def parse_barcode_from_filename(self):
 		'''
 		Try to get a "PM1234567" barcode from self.basename
+		regex looks for the number to exist before an underscore, 
+		a period (i.e., a filename extension), or the end of the string
 		'''
-		barcodeRegex = re.compile(r"(.+)(pm\d{7})((\_.*)|($)|(\..*))",re.IGNORECASE)
+		barcodeRegex = re.compile(
+			r"(.+)(pm\d{7})((\_.*)|($)|(\..*))",
+			re.IGNORECASE
+			)
 		barcodeMatch = re.match(barcodeRegex,self.basename)
 		if not barcodeMatch == None:
 			self.barcode = barcodeMatch.group(2)
 		else:
 			self.barcode = None
-		return True
 
 	def parse_fmID_from_filename(self):
 		'''
 		Try to get a FileMaker record id "ITM1234567"
 		from self.basename
 		'''
-		fmIDRegex = re.compile(r"(.+\_)(ITM\d{7})((\_.*)|($)|(\..*))",re.IGNORECASE)
+		fmIDRegex = re.compile(
+			r"(.+\_)(ITM\d{7})((\_.*)|($)|(\..*))",
+			re.IGNORECASE
+			)
 		fmIDRegexMatch = re.match(fmIDRegex,self.basename)
 		self.filemakerID = None
 		try:
@@ -174,8 +108,11 @@ class Metadata:
 		except:
 			pass
 
-		print("THIS IS THE FILEMAKER RECORD ID: {}".format(str(self.filemakerID)))
-		return True
+		print(
+			"THIS IS THE FILEMAKER RECORD ID: {}".format(
+			str(self.filemakerID)
+			)
+		)
 
 	def set_identifier(self):
 		'''
@@ -188,16 +125,14 @@ class Metadata:
 		print(self.idNumber,self.barcode,self.filemakerID)
 		if self.idNumber != None:
 			self.identifier = self.idNumber
-		elif self.idNumber == None and self.barcode != None:
+		elif self.barcode and not self.idNumber:
 			self.identifier = self.barcode
-		elif (self.idNumber == None and self.barcode == None) and self.filemakerID != None:
+		elif self.filemakerID and not any((self.idNumber,self.barcode)):
 			self.identifier = self.filemakerID
 		else:
 			self.identifier = None
 
 		print("THIS IS THE IDENTIFIER: {}".format(str(self.identifier)))
-
-		return True
 
 	def fetch_metadata(self,dataSourceAccessDetails):
 		'''
@@ -212,15 +147,12 @@ class Metadata:
 					self.identifier,
 					dataSourceAccessDetails
 					)
-				print("& "*100)
 				if FMmetadata != self.innerMetadataDict:
 					# add any filemaker metadata to the dict
-					print("FAFAFAFAFAFAFA")
 					self.add_more_metadata(FMmetadata)
-					print("FOFOFOFOFOFOFOFO")
 					self.retrievedExternalMetadata = True
 				else:
-					print("POPOPO POPOPO POPPO")
+					print("It looks like nothing was returned from FileMaker")
 			except:
 				if len(self.identifier) < 5:
 					idNumberPadded = "{0:0>5}".format(str(self.idNumber))
@@ -234,7 +166,6 @@ class Metadata:
 						if FMmetadata != self.innerMetadataDict:
 							# add any filemaker metadata to the dict
 							self.add_more_metadata(FMmetadata)
-							print("FAFA FAFA")
 							self.retrievedExternalMetadata = True
 					except Exception as e:
 						print(e)
@@ -247,11 +178,9 @@ class Metadata:
 							)
 		else:
 			print("Didn't find an identifier to search FileMaker with.")
-			pass
 
 		print('metadataDict')
 		print(self.innerMetadataDict)
-		return True
 
 	def add_more_metadata(self,moreMetadata):
 		'''
@@ -261,9 +190,6 @@ class Metadata:
 		It could be supplied by the user during the ingest process,
 		or could be supplied by an external data source.
 		'''
-		print("POPOPOPOPOPOPOPOOP")
-		print(self.innerMetadataDict)
-		print(moreMetadata)
 		for key, value in moreMetadata.items():
 			if key in self.innerMetadataDict:
 				if self.innerMetadataDict[key] in (None,'None',''):
@@ -306,7 +232,6 @@ class Metadata:
 			self.metadataJSON = json.loads(self.metadataDict)
 		except:
 			self.metadataJSON = self.metadataDict
-		return True
 
 	def write_json_file(self):
 		'''
@@ -325,8 +250,6 @@ class Metadata:
 			print("Error writing JSON to file at {}".format(outpath))
 			self.metadataJSONpath = None
 
-		return outpath
-
 	def delete_temp_JSON_file(self):
 		if os.path.isfile(self.metadataJSONpath):
 			try:
@@ -341,7 +264,6 @@ class Metadata:
 				self.metadataJSONpath
 				)
 			)
-		return self
 
 	def prep_resourcespace_JSON(self):
 		'''
