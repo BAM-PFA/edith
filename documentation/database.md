@@ -8,7 +8,7 @@ There are 5 tables (defined in `edith/app/models.py`):
 | users |defines users|
 | departments| defines BAMPFA departments, to which users are assigned|
 | metadata_sources |defines databases to be queried for descriptive metadata|
-| metadata_fields|defines metadata fields in the system [WIP]|
+| metadata_fields|defines metadata fields in the system |
 | paths | defines paths such as the system shared directory (EDITH watched folder) [WIP] |
 
 ---
@@ -45,6 +45,7 @@ There are 5 tables (defined in `edith/app/models.py`):
 | credentials  |  password for above user | cool_password  |
 |  primaryAssetID | name of field in db with the first identifier that queries should use to find an asset (should be unique to db)  | `accessionNumber`  |
 |  secondaryAssetID |  name of field in db with a second identifier that queries should use to find an asset in case the first one fails or is absent (should be unique to db) | `barcode`   |
+|  tertiryAssetID |  name of field in db with a third identifier that queries should use to find an asset in case the first two fail or are absent (should be unique to db) | `FileMaker record id`   |
 
 ### Metadata_Fields
 |  field name | purpose  | data example  |

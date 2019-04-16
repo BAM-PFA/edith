@@ -59,6 +59,9 @@ Tested on Ubuntu 16.04.
 * ~~paramiko (on Ubuntu `pip3 install -U paramiko` for correct Cryptography build)~~ [not currently being used, but still imported in some scripts]
 * requests (`pip3 install requests`)
 * `gcp`
+* `ltfs`
+  * This is just for use with LTFS-formatted LTO tapes.
+  * Download the `ltfs` libraries version 2.2 from [Quantum](https://www.quantum.com/serviceandsupport/softwareanddocumentationdownloads/ltfs/index.aspx?whattab=Third) and follow the instructions in the included READMEs (For Ubuntu use the Red Hat package, and you can use a tool like `alien` to convert it to a `.deb` package. You may also have to fiddle with packages like `libicu`. [Here](http://ak-aureus.blogspot.com/2013/07/installing-ltfs-on-ubuntu.html) are [some](http://www.linuxquestions.org/questions/linux-software-2/compiling-quantum-ltfs-software-on-debian-894103/) blogs I found helpful.)
 * `pymm` dependencies:
    * mediainfo
    * ffmpeg
