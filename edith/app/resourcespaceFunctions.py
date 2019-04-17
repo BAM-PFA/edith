@@ -78,7 +78,7 @@ def do_resourcespace(ingestible):
 					)
 				if os.path.isdir(documentationPath):
 					for item in os.scandir(documentationPath):
-						coolItems.append(item)
+						coolItems.append(item.path)
 			while len(coolItems) > 0:
 				alt = coolItems[0]
 				print("I want to post {} as an alt file!!".format(alt))
