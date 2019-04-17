@@ -57,6 +57,7 @@ Released 2019/02/18
 * User feedback is improved with message flashing
 
 ### Version 1.1:
+Released 2019/04/17
 * Refactor ingests using Object-Oriented approach.
   * Ingests are now an object, with each item being ingested represented by a separate object.
 * Metadata fields are now defined in the database, with metadata processes controlled by a Metadata object per item.

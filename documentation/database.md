@@ -41,6 +41,7 @@ There are 5 tables (defined in `edith/app/models.py`):
 |  dbName | display name of the database  | a_database  |
 | fmpLayout  | FileMaker layout to be accessed by the XML API if applicable  | Some_Layout  |
 |  IPaddress | the IP address or server address of the database  | 1.2.3.4 / myserver.com  |
+| namespace | Namespace for XML/XPATH queries. This is used by `lxml` to parse the XML returned from FileMaker and is required (parsing will fail and nothing will be returned without it!) | {"filemaker":"http://www.filemaker.com/xml/fmresultset"} |
 | username  |  user name with read access to the db | fuzzywuzzy  |
 | credentials  |  password for above user | cool_password  |
 |  primaryAssetID | name of field in db with the first identifier that queries should use to find an asset (should be unique to db)  | `accessionNumber`  |
