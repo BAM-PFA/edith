@@ -1,9 +1,23 @@
+{% import "bootstrap/utils.html" as utils %}
 {% extends "base.html" %}
-
 {% block content %}
-	{% for aip, status in writeResults.items() %}
-		<p> {{ aip }} : {{ status }} </p>
-
-	{% endfor %}
-
+<h1>LTO write status per Archival Information Package</h1>
+<div>
+		<br/>
+		{{ utils.flashed_messages() }}
+		<table class="table table-striped">
+			<tr>
+				<th scope="col"></th>
+				<th scope="col">Object name</th>
+				<th scope="col">LTO write status</th>
+			</tr>
+			{% for aip, status in writeResults.items() %}
+			<tr>
+				<th scope="row">{{ loop.index }}</th>
+				<td> {{ aip }} </td>
+				<td> {{ status }} </td>
+			</tr>
+			{% endfor %}
+		</table>
+</div>
 {% endblock %}

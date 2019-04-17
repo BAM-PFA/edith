@@ -8,7 +8,7 @@ There are 5 tables (defined in `edith/app/models.py`):
 | users |defines users|
 | departments| defines BAMPFA departments, to which users are assigned|
 | metadata_sources |defines databases to be queried for descriptive metadata|
-| metadata_fields|defines metadata fields in the system [WIP]|
+| metadata_fields|defines metadata fields in the system |
 | paths | defines paths such as the system shared directory (EDITH watched folder) [WIP] |
 
 ---
@@ -41,10 +41,12 @@ There are 5 tables (defined in `edith/app/models.py`):
 |  dbName | display name of the database  | a_database  |
 | fmpLayout  | FileMaker layout to be accessed by the XML API if applicable  | Some_Layout  |
 |  IPaddress | the IP address or server address of the database  | 1.2.3.4 / myserver.com  |
+| namespace | Namespace for XML/XPATH queries. This is used by `lxml` to parse the XML returned from FileMaker and is required (parsing will fail and nothing will be returned without it!) | {"filemaker":"http://www.filemaker.com/xml/fmresultset"} |
 | username  |  user name with read access to the db | fuzzywuzzy  |
 | credentials  |  password for above user | cool_password  |
 |  primaryAssetID | name of field in db with the first identifier that queries should use to find an asset (should be unique to db)  | `accessionNumber`  |
 |  secondaryAssetID |  name of field in db with a second identifier that queries should use to find an asset in case the first one fails or is absent (should be unique to db) | `barcode`   |
+|  tertiryAssetID |  name of field in db with a third identifier that queries should use to find an asset in case the first two fail or are absent (should be unique to db) | `FileMaker record id`   |
 
 ### Metadata_Fields
 |  field name | purpose  | data example  |

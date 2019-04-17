@@ -300,11 +300,13 @@ def add_data_source():
 			dbName = form.dbName.data,
 			fmpLayout = form.fmpLayout.data,
 			IPaddress = form.IPaddress.data,
+			namespace = form.namespace,
 			username = form.username.data,
 			credentials = form.credentials.data,
 			description = form.description.data,
 			primaryAssetID = form.primaryAssetID.data,
-			secondaryAssetID = form.secondaryAssetID.data
+			secondaryAssetID = form.secondaryAssetID.data,
+			tertiaryAssetID = form.tertiaryAssetID.data
 			)
 		try:
 			# add department to the database
@@ -346,11 +348,13 @@ def edit_data_source(id):
 		data_source.dbName= form.dbName.data
 		data_source.fmpLayout = form.fmpLayout.data
 		data_source.IPaddress = form.IPaddress.data
+		data_source.namespace = form.namespace.data
 		data_source.username = form.username.data
 		data_source.credentials = form.credentials.data
 		data_source.description = form.description.data
 		data_source.primaryAssetID = form.primaryAssetID.data
 		data_source.secondaryAssetID = form.secondaryAssetID.data
+		data_source.tertiaryAssetID = form.tertiaryAssetID.data
 		try:
 			db.session.commit()
 			flash('You have successfully edited the data source.')
@@ -366,11 +370,13 @@ def edit_data_source(id):
 	form.dbName.data = data_source.dbName
 	form.fmpLayout.data = data_source.fmpLayout
 	form.IPaddress.data = data_source.IPaddress
-	form.username.data = data_source.username 
+	form.namespace.data = data_source.namespace
+	form.username.data = data_source.username
 	form.credentials.data = data_source.credentials
 	form.description.data = data_source.description
 	data_source.primaryAssetID = form.primaryAssetID.data
 	data_source.secondaryAssetID = form.secondaryAssetID.data
+	data_source.tertiaryAssetID = form.tertiaryAssetID.data
 	return render_template(
 		'admin/data_sources/data_source.html', 
 		action="Edit",
@@ -481,7 +487,7 @@ def edit_metadata_field(id):
 		metadata_field.description = form.description.data
 		try:
 			db.session.commit()
-			flash('You have successfully edited the data source.')
+			flash('You have successfully edited the metadata field.')
 
 			# redirect to the users page
 			return redirect(url_for('admin.list_metadata_fields'))
@@ -519,7 +525,7 @@ def delete_metadata_field(id):
 	metadata_field = Metadata_Field.query.get_or_404(id)
 	db.session.delete(metadata_field)
 	db.session.commit()
-	flash('You have successfully deleted the data source.')
+	flash('You have successfully deleted the metadata field.')
 
 	# redirect to the metadata_fields page
 	return redirect(url_for('admin.list_metadata_fields'))

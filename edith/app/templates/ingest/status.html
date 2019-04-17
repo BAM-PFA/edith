@@ -12,18 +12,18 @@
 				<th scope="col">Ingest Notes</th>
 				<th scope="col">Warnings</th>
 			</tr>
-		{% for _object, details in statusMessages.items() %}
+		{% for _object in CurrentIngest.Ingestibles %}
 			<tr>
 				<th scope="row">{{ loop.index }}</th>
-				<td>{{ _object }}</td>
+				<td>{{ _object.metadata.basename }}</td>
 				<td>
-					{% for item in details['Messages'] %}
+					{% for item in _object.ingestMessages %}
 						{{ item }}<br/>
 					{% endfor %}
 				</td>
-				{% if not details['Warnings'] == [] %}
+				{% if not _object.ingestWarnings == [] %}
 					<td class="table-danger">
-						{% for warning in details['Warnings'] %}
+						{% for warning in _object.ingestWarnings %}
 							{{ warning }} <br/>
 						{% endfor %}
 					</td>

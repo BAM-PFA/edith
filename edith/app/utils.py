@@ -8,11 +8,13 @@ import glob
 import os
 import shutil
 import subprocess
+import sys
 import time
 # non-standard modules
 from flask_login import current_user
 # local modules
 import app
+from app.pymm import makeMetadata
 
 config = app.app_config
 
@@ -223,18 +225,13 @@ def get_proxy_framerate(proxyPath):
 	Also: this will return an empty string for things like audio that don't 
 	have a Video track.
 	'''
-	pythonPath = get_python_path()
-	pymmPath = get_pymm_path()
-	makeMetadataPath = os.path.join(pymmPath,'makeMetadata.py')
-	makeMetadataCommand = [
-		pythonPath,
-		makeMetadataPath,
+	sys.argv = [
+		'',
 		'-i', proxyPath,
 		'-v','FrameRate/String',
 		'-t','Video'
 	]
-	out = subprocess.run(makeMetadataCommand,stdout=subprocess.PIPE)
-	framerate = out.stdout.decode().rstrip()
+	framerate = makeMetadata.main()
 
 	return framerate
 

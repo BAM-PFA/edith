@@ -126,6 +126,9 @@ class Data_Source(db.Model):
 	# secondary asset identifier in case
 	# the first one returns null or is not declared
 	secondaryAssetID = db.Column(db.String(60))
+	# tertiary asset identifier
+	# as a last resort
+	tertiaryAssetID = db.Column(db.String(60))
 
 	fields = db.relationship('Metadata_Field', backref='datasource',
 								lazy='dynamic')
@@ -142,13 +145,16 @@ class Metadata_Field(db.Model):
 	# User-visible field name (e.g. Record ID)
 	fieldName = db.Column(db.String(100))
 	# field unique name (e.g. recordID)
-	fieldUniqueName = db.Column(db.String(60), unique=True)
+	fieldUniqueName = db.Column(db.String(60),unique=True)
 	# field name in the data source
 	fieldSourceName = db.Column(db.String(60))
 	# category of field (Film coll, Event, General, etc.)
 	fieldCategory = db.Column(db.String(100))
 	# data source
-	dataSource_id = db.Column(db.Integer, db.ForeignKey('data_sources.id'))
+	try:
+		dataSource_id = db.Column(db.Integer, db.ForeignKey('data_sources.id'))
+	except:
+		dataSource_id = None
 	# resourceSpace field ID # 
-	rsFieldID = db.Column(db.Integer, unique=True)
+	rsFieldID = db.Column(db.Integer)
 	description = db.Column(db.String(200))

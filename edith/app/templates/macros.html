@@ -50,6 +50,49 @@
 	<div class="collapse" id="metadataGroup-{{ uniqueName }}">
 		<div class="card card-body border-warning m-1">
 			<div class="accordion" id="accordion-{{ uniqueName }}">
+				<!--Core metadata accordion section-->
+				{% set heading = "Core-metadata" %}
+				<div class="card">
+					<div class="card-header" id="{{ heading }}-{{ uniqueName }}">
+						<h5 class="mb-0">
+							<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ heading }}-{{ uniqueName }}" aria-expanded="true" aria-controls="collapse-{{ heading }}-{{ uniqueName }}">
+								{{ heading.replace("-"," ") }}
+							</button>
+						</h5>
+					</div>
+					<div id="collapse-{{ heading }}-{{ uniqueName }}" class="collapse" aria-labelledby="{{ heading }}-{{ uniqueName }}" data-parent="#accordion-{{ uniqueName }}">
+						<div class="card-body">
+							{% for childfield in field %}
+								{% if not 'csrf_token' in childfield.name %}
+									{% if childfield.name.startswith('metadataForm-userMD_4') %}
+											{% if childfield.type == "StringField" %}
+												<div>
+													<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">{{ childfield.label.text }}</label>
+													<input class="form-control"  name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}" type="text" value="{{ childfield.data }}"/>
+												</div>
+											{% elif childfield.type == "SelectField" %}
+												<div>
+													<label for="{{ childfield.id }}-{{ uniqueName }}" class="text-info">
+														{{ childfield.label.text }}
+													</label>
+													<select class="custom-select" name="{{ childfield.id }}-{{ uniqueName }}" id="{{ childfield.id }}-{{ uniqueName }}">
+													{% for _tuple in childfield.choices %}
+														{% if not _tuple[0] == "" %}
+															<option value="{{ _tuple[0] }}">{{ _tuple[1] }}</option>
+														{% else %}
+															<option value=""/>
+														{% endif %}
+													{% endfor %}
+													</select>
+												</div>
+											{% endif %}
+									{% endif %}
+								{% endif %}
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+
 				<!--General metadata accordion section-->
 				{% set heading = "General-metadata" %}
 				<div class="card">
@@ -137,7 +180,7 @@
 				</div>
 				
 				<!--Comms metadata accordion section-->
-				{% set heading = "Comms-metadata" %}
+				{% set heading = "Communications-metadata" %}
 				<div class="card">
 					<div class="card-header" id="{{ heading }}-{{ uniqueName }}">
 						<h5 class="mb-0">
