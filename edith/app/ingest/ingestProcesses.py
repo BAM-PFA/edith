@@ -258,6 +258,8 @@ def main(CurrentIngest):
 
 			set_pymm_sys_args(CurrentIngest,_object)
 
+			pymmIngest = None
+
 			try:
 				sys.argv = _object.pymmArgv
 				try:
@@ -276,6 +278,10 @@ def main(CurrentIngest):
 						'Archival information package'\
 						' creation succeeeded'
 						)
+					if _object.pymmResult['notes'] != '':
+						_object.ingestWarnings.append(
+							_object.pymmResult['notes']
+							)
 					# get the UUID,
 					# which we'll add to the metadata file in a sec
 					ingestUUID = _object.pymmResult['ingestUUID']
@@ -328,7 +334,7 @@ def main(CurrentIngest):
 			#### RESOURCESPACE STUFF
 			########################
 			rsDir = utils.get_rs_dir()
-			if _object.pymmResult != None:
+			if _object.pymmResult != None and pymmIngest != None:
 				if _object.pymmResult['status'] != False:
 
 					_object.accessCopyPath = pymmIngest.accessDelivery
