@@ -8,7 +8,7 @@ import subprocess
 import sys
 from time import sleep
 # non-standard libraries
-from flask import render_template, request
+from flask import flash, render_template, request, url_for
 from flask_login import login_required, current_user
 import wtforms
 # local modules
@@ -311,7 +311,7 @@ def list_aips():
 	form.suchChoices = choices
 
 	spaceAvailable = ltoProcesses.get_tape_stats()
-	if not spaceAvailable == "NO STATS AVAILABLE":
+	if isinstance(spaceAvailable,dict):
 		for tape, stats in spaceAvailable.items():
 			# the `df` command that gets space available
 			# defaults to 1024-byte blocks
@@ -343,6 +343,7 @@ def write_status():
 	toWrite = []
 	targetPaths = {}
 	aipSizes = []
+	errors = None
 	for key,value in _data.items():
 		if 'writeToLTO' in key:
 			toWrite.append(key.replace('writeToLTO-',''))
@@ -359,36 +360,41 @@ def write_status():
 
 	print(results)
 	writeStatuses = {}
-	writeResults = ltoProcesses.write_LTO(results)
+	writeResults,writeError = ltoProcesses.write_LTO(results)
 	print("LTO WRITE RESULTS:")
 	print(writeResults)
-	for result in writeResults:
-		print(result)
-		resultString = str(result)
-		print(resultString)
-		if "HASHDEEP" in resultString:
-			sip = result.decode().split('|')[1]
-			#print(sip)
-			aipStatus =  result.decode().split('|')[2].rstrip()
-			#print(aipStatus)
-			writeStatuses[sip] = aipStatus
-	print(writeStatuses)
+	if writeResults:
+		for result in writeResults:
+			print(result)
+			resultString = str(result)
+			print(resultString)
+			if "HASHDEEP" in resultString:
+				sip = result.decode().split('|')[1]
+				#print(sip)
+				aipStatus =  result.decode().split('|')[2].rstrip()
+				#print(aipStatus)
+				writeStatuses[sip] = aipStatus
+		print(writeStatuses)
 
-	# remove staged AIPs ~~THIS DOESN'T EXIST YET!~~ @fixme
-	# ltoProcesses.remove_staged_AIPs(writeStatuses)
+		# remove staged AIPs ~~THIS DOESN'T EXIST YET!~~ @fixme
+		# ltoProcesses.remove_staged_AIPs(writeStatuses)
 
-	ltoProcesses.post_tape_id_to_rs(writeStatuses)
-	ltoProcesses.unmount_tapes()
-	utils.clean_temp_dir()
-	# PARSE THE UPDATED SCHEMA FILE
-	ltoProcesses.parse_index_schema_file()
-
+		ltoProcesses.post_tape_id_to_rs(writeStatuses)
+		ltoProcesses.unmount_tapes()
+		utils.clean_temp_dir()
+		# PARSE THE UPDATED SCHEMA FILE
+		ltoProcesses.parse_index_schema_file()
+	else:
+		errors = True
+		flash("There was an error writing to tape.","danger")
+		writeStatuses = writeError
 
 	return render_template(
 		'lto/write_status.html',
 		title="Write status",
 		writeResults=writeStatuses,
-		_data=_data
+		_data=_data,
+		errors=errors
 		)
 
 @lto.route('/unmount_lto_status',methods=['GET','POST'])
@@ -428,7 +434,7 @@ def get_them_dips():
 		# http://wtforms.simplecodes.com/docs/1.0.1/specific_problems.html
 		pass
 
-	if contents['status'] == True:
+	if isinstance(contents,dict) and contents['status'] == True:
 		contents.pop('status')
 		choices = {}
 		for path, details in contents.items():

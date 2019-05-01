@@ -1,23 +1,29 @@
 {% import "bootstrap/utils.html" as utils %}
 {% extends "base.html" %}
 {% block content %}
-<h1>LTO write status per Archival Information Package</h1>
-<div>
-		<br/>
-		{{ utils.flashed_messages() }}
-		<table class="table table-striped">
-			<tr>
-				<th scope="col"></th>
-				<th scope="col">Object name</th>
-				<th scope="col">LTO write status</th>
-			</tr>
-			{% for aip, status in writeResults.items() %}
-			<tr>
-				<th scope="row">{{ loop.index }}</th>
-				<td> {{ aip }} </td>
-				<td> {{ status }} </td>
-			</tr>
-			{% endfor %}
-		</table>
+<div class="card">
+	<div class="card-body">
+		<h1 class="card-title">LTO write status per Archival Information Package</h1>
+		{% if not errors %}
+			{{ utils.flashed_messages() }}
+			<table class="table table-striped">
+				<tr>
+					<th scope="col"></th>
+					<th scope="col">Object name</th>
+					<th scope="col">LTO write status</th>
+				</tr>
+				{% for aip, status in writeResults.items() %}
+				<tr>
+					<th scope="row">{{ loop.index }}</th>
+					<td> {{ aip }} </td>
+					<td> {{ status }} </td>
+				</tr>
+				{% endfor %}
+			</table>
+		{% else %}
+			<div>{{ utils.flashed_messages() }}</div>
+			<div class="card-text bg-danger">{{ writeResults }}</div>
+		{% endif %}
+	</div>
 </div>
 {% endblock %}

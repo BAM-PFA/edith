@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<h1>Format LTO</h1>
-	<div>
-		<p>The current LTO ID in use is:<br>
+<div class="card">
+	<div class="card-body">
+	<h1 class="card-title">Format LTO</h1>
+		<p class="card-text">The current LTO ID in use is:<br>
 			<b>{{ currentLTOid }}</b>
 		</p>
 	</div>
-	<div>
-		<p>If you have inserted blank tapes and need to create a new LTO tape ID,<br/>do it <a href="{{ url_for('lto.lto_id') }}">here</a>.</p>
-	</div>
+	<div class="card-body">
+		<p class="card-text">If you have inserted blank tapes and need to create a new LTO tape ID,<br/>do it <a href="{{ url_for('lto.lto_id') }}" class="card-link">here</a>.</p>
 
 	<form action="{{ url_for('lto.format_status') }}" method='POST'>
 		
@@ -21,7 +21,8 @@
 			{{ formatForm.submit(class="btn btn-warning") }}
 		</div>
 	</form>
-
-
+	</div>
+	</div>
+</div>
 
 {% endblock %}

@@ -1,28 +1,34 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<h1>Mount LTO</h1>
-	<div>
-		<p>The current base LTO ID in use is:<br>
-			<b>{{ currentLTOid }}</b>
-		</p>
+	<div class='card'>
+		<div class="card-body">
+			<h1 "card-title">Mount LTO</h1>
+			<h5 class="card-title">The current base LTO ID in use is:</h5><br>
+			<h6 class="card-subtitle">{{ currentLTOid }}</h6>
+		</div>
+		<div class="card-body">
+			<p class="card-text">
+				Found these formatted tapes:
+			</p>
+			<ul class="list-group list-group-flush">
+				{% for letter, barcode in barcodes.items() %}
+					<li class="list-group-item">{{ letter }} drive: <b>{{ barcode }}</b></li>
+				{% endfor %}
+			</ul><br>
+			<p class="card-text">If for whatever reason the tapes shown above don't match the current LTO ID, you may need to find and reinsert the current tapes.</p>
+
+			<form action="{{ url_for('lto.mount_status') }}" method='POST'>
+				
+				{{ mountForm.hidden_tag() }}
+				{{ mountForm.csrf_token }}
+
+				{{ mountForm.submit(class="btn btn-primary") }}
+			</form>
+		</div>
+
+
 	</div>
-
-	<div>
-		Found these formatted tapes:
-		{% for letter, barcode in barcodes.items() %}
-			<p>{{ letter }} drive: {{ barcode }} </p>
-		{% endfor %}
-		<p>If for whatever reason the tapes shown above don't match the current LTO ID, you may need to find and reinsert the current tapes.</p>
-	</div>
-
-	<form action="{{ url_for('lto.mount_status') }}" method='POST'>
-		
-		{{ mountForm.hidden_tag() }}
-		{{ mountForm.csrf_token }}
-
-		{{ mountForm.submit(class="btn btn-primary") }}
-	</form>
 
 
 

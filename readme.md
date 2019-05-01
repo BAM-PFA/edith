@@ -47,11 +47,13 @@ Internally [ResourceSpace](https://resourcespace.com) hosts both access copies o
 
 Here's what the ingest and LTO menus look like now:
 
-![ingest screen](documentation/ingest_screen.png)
+![ingest screen](documentation/ingest_screen.png)<br/>
 
-![lto menu](documentation/lto_menu.png)
+![lto menu](documentation/lto_menu.png)<br/>
 
-![aip write menu](documentation/aip_menu.png)
+![aip write menu](documentation/aip_menu.png)<br/>
+
+![dashboard](documentation/dashboard.png)<br/>
 
 ## Dependencies
 Tested on Ubuntu 16.04.
