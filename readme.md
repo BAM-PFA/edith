@@ -16,14 +16,18 @@
 
 3. ... then write and read Information Packages to and from LTO.
 
-## some high-level details
-First, on ingesting an asset, we create a Submission Information Package [\(following the OAIS conceptual model\)](https://en.wikipedia.org/wiki/Open_Archival_Information_System) for audiovisual files using [pymediamicroservices](https://github.com/BAM-PFA/pymm) (`pymm`).
+I named the system after Edith Kramer, the director of the Pacific Film Archive from 1983-2005, who has a world-class memory for details about films, individual prints, and where random VHS dubs came from in 1991. She is a proponent of film-on-film, so she was... amused to have a digital preservation system named for her.
+
+You can find more detailed documentation in the [documentation](documentation/) folder.
+
+## Some high-level details
+First, on ingesting an asset, we create a Submission Information Package (following the [OAIS](https://en.wikipedia.org/wiki/Open_Archival_Information_System) conceptual model) for audiovisual files using [pymediamicroservices](https://github.com/BAM-PFA/pymm) (`pymm`).
 
 `pymm` is a python 3 port of some core functionality in [mediamicroservices](https://github.com/mediamicroservices/mm), namely the package structure, metadata extraction, etc. There's a lot inspired by the [Irish Film Archive](https://github.com/kieranjol/IFIscripts) and many other colleagues.
 
 The pymm-generated SIP consists of a predefined folder structure containing the preservation master object, its derivatives, and technical metadata about each file, including checksums. `pymm` creates a derivative access copy that is appropriate for use in ResourceSpace and for research access. Objects being ingested may either be simple (a single A/V file) or complex (a folder containing subfolders with multiple reels of a DPX scan, for example).
 
-`pymm` also uses the MySQL database structure used in `mm` to record [PREMIS](https://en.wikipedia.org/wiki/Preservation_Metadata:_Implementation_Strategies) events and file characteristics.
+`pymm` also uses the MySQL database structure used in `mediamicroservices` to record [PREMIS](https://en.wikipedia.org/wiki/Preservation_Metadata:_Implementation_Strategies) events and file characteristics.
 
 During the ingest process, we query one of the BAMPFA FileMaker databases used for collection management of our film and audio collections. This provides basic descriptive metadata and technical information about analog source material in cases where the original has been accessioned into the BAMPFA collection. This is returned as JSON that is also sent to ResourceSpace along with any access files created during ingest.
 
@@ -32,9 +36,9 @@ The SIPs can then be written to [Linear Tape Open (LTO)](https://en.wikipedia.or
 Internally [ResourceSpace](https://resourcespace.com) hosts both access copies of assets and descriptive metadata drawn from our collection management systems, as well as user supplied metadata. It also includes the LTO tape id of assets written to tape so it's a handy front end for managing assets in the repository.
 
 ## Usage overview
-
+* Users transfer files (via `rsync`) to the staging folder on the EDITH server (this could technically be anywhere, but it's simpler to keep it on the same computer that hosts EDITH).
 * Users log in in order to access the system. Each user is defined as belonging to a specific BAMPFA department (which helps per-asset access rules), as well as having an individual ResourceSpace API key.
-* A user selects files/folders to ingest.
+* A user selects files/folders to ingest that are waiting in the staging folder.
 * Enter any descriptive metadata that may apply.
 * If the asset is described in a BAMPFA database, select the database to be queried.
 * Searching the filename for either an accession number or a barcode, the FileMaker database is queried and metadata returned, or not, as the case may be.
@@ -55,16 +59,18 @@ Here's what the ingest and LTO menus look like now:
 
 ![dashboard](documentation/dashboard.png)<br/>
 
+![metadata fields menu](documentation/metadata_fields.png)<br/>
+
 ## Dependencies
 Tested on Ubuntu 16.04.
 * Runs on Python 3
-* ~~paramiko (on Ubuntu `pip3 install -U paramiko` for correct Cryptography build)~~ [not currently being used, but still imported in some scripts]
+* ~~paramiko (on Ubuntu `pip3 install -U paramiko` for correct Cryptography build)~~ [not currently being used]
 * requests (`pip3 install requests`)
 * `gcp`
 * `ltfs`
   * This is just for use with LTFS-formatted LTO tapes.
   * Download the `ltfs` libraries version 2.2 from [Quantum](https://www.quantum.com/serviceandsupport/softwareanddocumentationdownloads/ltfs/index.aspx?whattab=Third) and follow the instructions in the included READMEs (For Ubuntu use the Red Hat package, and you can use a tool like `alien` to convert it to a `.deb` package. You may also have to fiddle with packages like `libicu`. [Here](http://ak-aureus.blogspot.com/2013/07/installing-ltfs-on-ubuntu.html) are [some](http://www.linuxquestions.org/questions/linux-software-2/compiling-quantum-ltfs-software-on-debian-894103/) blogs I found helpful.)
-* `pymm` dependencies:
+* `pymm` [dependencies](edith/app/pymm/readme.md):
    * mediainfo
    * ffmpeg
    * Levenshtein
@@ -84,7 +90,7 @@ We are running Flask in production with Apache using the `mod_wsgi` module (see 
 
 [insert db setup and dev setup notes from 2/2019]
 
-`pymm` requires some configuration of input and output paths, database configuration (only need to do this once at setup). There are a couple of non standard Python 3 libraries used and a couple of additional programs (see below for a list).
+`pymm` requires some [configuration](edith/app/pymm/readme.md) of input and output paths, database configuration (only need to do this once at setup). Since `pymm` runs its own database to record PREMIS events and file characteristics, you will need to make sure that each EDITH user (formatted Firstname Lastname) is also a user within the `pymm` database. From the `pymm` directory in this repo, run `python3 createPymmdb.py -m user` and follow the instructions (the user's IP address will be `localhost`). There are also a couple of non standard Python 3 libraries used and a couple of additional programs (see above for a list).
 
 ResourceSpace has some setup requirements that are [documented](https://www.resourcespace.com/knowledge-base/systemadmin/install_macosx) on its website. Mostly just getting the Apache server settings correct and tweaking some of the PHP got it working.
 
@@ -112,7 +118,7 @@ And unfortunately (at least on Linux) the Apache user needs to be added to the s
 We link to a handful of other systems in our ingest process:
 
 ### FileMaker
-Files that are digitized/born digital works from the BAMPFA film collection include a portion of the original accession number in the filename. The script uses that number to query the film collection database and retrieve relevant descriptive metadata. We use '00000' to denote items that are not (yet) accessioned, so we can also search for a 9-digit barcode in a filename to query FM. If that fails, there is no uniqe ID to search in FM and we just set the descriptive metadata to null values.
+Files that are digitized/born digital works from the BAMPFA film collection include a portion of the original accession number in the filename. The script uses that number to query the film collection database and retrieve relevant descriptive metadata. We use '00000' to denote items that are not (yet) accessioned, so we can also search for a 9-digit barcode in a filename to query FM. The filename may also include a 10-character FileMaker unique ID to search on, in the case of unaccessioned items without barcodes.
 
 [Here](https://fmhelp.filemaker.com/docs/13/en/fms13_cwp_xml.pdf) is the FileMaker 13 XML API documentation.... :(
 
@@ -168,5 +174,5 @@ You may need to run `export FLASK_APP=/path/to/edith.py` and `export FLASK_CONFI
 ## Some major unknowns/ to-dos
 * Searching the `pymm` database. This could probably be built into the Flask app but... yeah. I think we will mirror the `pymm` db on our FileMaker server instance since it's already in use.
 * Alert for an LTO tape that is getting full
-  * CURRENTLY (5/22/18) THE TOTAL SIZE OF AIPS TO WRITE ARE TOTALLED. THIS TOTAL NUMBER OF BYTES SHOULD BE COMPARED TO THE NUMBER OF BYTES AVAILABLE ON THE TAPE AND ANY WRITES PREVENTED IF THERE'S INSUFFICIENT ROOM.
+  * CURRENTLY (5/22/18) THE TOTAL SIZE OF AIPS TO WRITE ARE TOTALED. THIS TOTAL NUMBER OF BYTES SHOULD BE COMPARED TO THE NUMBER OF BYTES AVAILABLE ON THE TAPE AND ANY WRITES PREVENTED IF THERE'S INSUFFICIENT ROOM.
 * Explore a plugin to re-query Filemaker if the database record has changed
