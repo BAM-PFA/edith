@@ -1,9 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="card">
+	<div class="card-body">
 	{% for dev, status in statuses.items() %}
-		<p> {{ dev }} : {{ status }} </p>
+		<p class="card-text"> {{ dev }} : {{ status }} </p>
 
 	{% endfor %}
+	</div>
+</div>
 
 {% endblock %}

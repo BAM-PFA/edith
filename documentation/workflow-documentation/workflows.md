@@ -1,4 +1,4 @@
-# BETA EDITH WORKFLOWS
+# EDITH WORKFLOWS
 
 ## Hi-level outline
 All ingests will work basically the same, except that depending on the type of file ingested and the required output, different derivatives will be created. The main computers involved are:

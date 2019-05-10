@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<p>{{ readResults }}</p>
-	<p>{{ readStatuses }}</p>
-
+	<div class="card">
+		<div class="card-body">
+			<p class="card-text">{{ readResults }}</p>
+			<p class="card-text">{{ readStatuses }}</p>
+		</div>
+	</div>
 {% endblock %}

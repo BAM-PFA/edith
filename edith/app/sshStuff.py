@@ -5,7 +5,7 @@ Defines a class to connect to a remote server and do stuff there.
 # standard library
 import os
 # nonstandard libraries
-from paramiko import client
+# from paramiko import client
 
 class connect:
 	client = None

@@ -3,7 +3,7 @@
 import os
 import sys
 # nonstandard libraries
-import paramiko
+# import paramiko
 # local modules
 import app
 from . import sshStuff
@@ -27,11 +27,10 @@ def list_objects(dirType):
 				objects[(os.path.join(sourceDir,_object))] = _object
 		except:
 			print("CONNECTION ERROR?")
-		
+
 	else:
 		for _object in os.listdir(sourceDir):
 			if not _object.startswith('.'):
 				objects[(os.path.join(sourceDir,_object))] = _object
-	
-	return objects
 
+	return objects

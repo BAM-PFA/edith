@@ -125,6 +125,7 @@ def run_moveNcopy(aipPath,tapeMountpoint):
 
 def write_LTO(aipDict):
 	aMount,bMount = get_tape_mountpoints()
+	print(aMount,bMount)
 	sipWriteTuples = []
 	if not False in (aMount,bMount):
 		for tapeMountpoint in (aMount,bMount):
@@ -133,6 +134,13 @@ def write_LTO(aipDict):
 				# to build commands for both tapes
 				details = [path,tapeMountpoint]
 				sipWriteTuples.append(details)
+	else:
+		status = ("Couldn't read the tape stats file "
+			"or it doesn't exist. Try remounting the tapes or check "
+			"the tapes manually. Or check file permissions on edith/app/tmp?"
+			)
+
+		return (False,status)
 
 	# print(sipWriteTuples)
 	# this is a mutli-*process* call instead of a multithread call, 
@@ -142,9 +150,9 @@ def write_LTO(aipDict):
 		poolresult = pool.starmap(run_moveNcopy,sipWriteTuples)
 		pool.close()
 		print(poolresult)
-		return poolresult
+		return (poolresult,"")
 	except:
-		return False
+		return (False,"Error in the write process...")
 
 def read_LTO(pathList):
 	'''
@@ -219,10 +227,16 @@ def get_tape_contents(deck):
 	elif 'B' in deck:
 		theDeck = "B"
 	aMount,bMount = get_tape_mountpoints()
-	if theDeck == "A":
-		contents = list_aips_on_tape(aMount,contents)
-	elif theDeck == 'B':
-		contents = list_aips_on_tape(bMount,contents)
+	if not False in (aMount,bMount):
+		if theDeck == "A":
+			contents = list_aips_on_tape(aMount,contents)
+		elif theDeck == 'B':
+			contents = list_aips_on_tape(bMount,contents)
+	else:
+		contents = ("Couldn't read the tape stats file "
+			"or it doesn't exist. Try remounting the tapes or check "
+			"the tapes manually. Or check file permissions on edith/app/tmp?"
+			)
 
 	return contents
 
@@ -257,13 +271,13 @@ def get_tape_stats():
 				stats = ast.literal_eval(stats)
 		except:
 			print("couldn't read the stats file or it doesn't exist")
-			stats = "NO STATS AVAILABLE"
+			stats = "couldn't read the stats file or it doesn't exist"
 
 	return stats
 
 def get_tape_mountpoints():
 	stats = get_tape_stats()
-	if not stats == "NO STATS AVAILABLE":
+	if not stats == "couldn't read the stats file or it doesn't exist":
 		aMount = stats["A"]["mountpoint"]
 		bMount = stats["B"]["mountpoint"]
 	else:

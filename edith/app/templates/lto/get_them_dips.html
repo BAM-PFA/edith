@@ -20,8 +20,8 @@
 		{{ form.submit(class="btn btn-primary") }}
 		</form>
 	{% else %}
-		<div class="card bg-warning m-3">
-			There was some kind of problem mounting or reading from the tape. Try again... 
+		<div class="card bg-danger m-3">
+			{{ contents }} 
 		</div>
 	{% endif %}
 
