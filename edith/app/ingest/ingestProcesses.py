@@ -262,10 +262,7 @@ def main(CurrentIngest):
 
 			try:
 				sys.argv = _object.pymmArgv
-				try:
-					pymmIngest = ingestSip.main()
-				except Exception as e:
-					print(e)
+				pymmIngest = ingestSip.main()
 
 				_object.pymmIngest = pymmIngest
 				_object.pymmResult = pymmIngest.ingestResults
