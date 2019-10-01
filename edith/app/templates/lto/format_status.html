@@ -1,12 +1,15 @@
+{% import "bootstrap/utils.html" as utils %}
 {% extends "base.html" %}
-
 {% block content %}
 <div class="card">
 	<div class="card-body">
-	{% for dev, status in statuses.items() %}
-		<p class="card-text"> {{ dev }} : {{ status }} </p>
-
-	{% endfor %}
+		<p class="card-text">{{ utils.flashed_messages() }}</p>
+		{% if not tapes == [] %}
+			{% for tape in tapes %}
+				<p class="card-text"> {{ tape.tapeID }} : {{ tape.formatStatus }} </p>
+			{% endfor %}
+		{% endif %}
+		
 	</div>
 </div>
 

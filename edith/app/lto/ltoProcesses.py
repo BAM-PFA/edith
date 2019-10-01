@@ -44,9 +44,9 @@ class FreshTape():
 	def format_me(self):
 		MKLTFS = [
 			'mkltfs',#'-f',
-			'--device={}'.format(device),
-			'--tape-serial={}'.format(tapeID),
-			'--volume-name={}'.format(tapeID)
+			'--device={}'.format(self.device),
+			'--tape-serial={}'.format(self.tapeID),
+			'--volume-name={}'.format(self.tapeID)
 			]
 
 		try:
@@ -60,7 +60,7 @@ class FreshTape():
 			# **LTFS15047E error = Medium is already formatted**
 			# "The format operation failed because the medium is already formatted by LTFS."
 			if not "LTFS15047E" in out:
-				self.formatStatus = True
+				self.formatStatus = "Formatted as LTFS"
 			else:
 				self.formatStatus = "The format operation failed because the medium is already formatted by LTFS."
 

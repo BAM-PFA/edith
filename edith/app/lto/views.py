@@ -62,11 +62,6 @@ def format_status():
 	}
 	tapes = []
 
-	statuses = {
-		"/dev/nst0":False,
-		"/dev/nst1":False
-	}
-
 	if not any([x == "no id" for x in (aTapeID,bTapeID)]):
 		for drive, details in devices.items():
 			tape = ltoProcesses.FreshTape(
@@ -79,12 +74,11 @@ def format_status():
 			tapes.append(tape)
 
 	else:
-		for device,tapeID in linuxDevices.items():
-			statuses[device] = "There doesn't appear to be a valid current LTO ID defined."
+		flash("There doesn't appear to be a valid current LTO ID defined.")
 
 	return render_template(
 		'lto/format_status.html',
-		statuses=statuses
+		tapes=tapes
 		)
 
 @lto.route('/lto_id',methods=['GET','POST'])
