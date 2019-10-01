@@ -69,7 +69,6 @@ def format_status():
 					device = details["device"],
 					tapeID = details["ID"]
 					)
-
 			tape.format_me()
 			tapes.append(tape)
 
@@ -96,22 +95,12 @@ def lto_id():
 @lto.route('/lto_id_status',methods=['GET','POST'])
 @login_required
 def lto_id_status():
-	tapeIdRegex = re.compile(r'^((\d{4}[A-Z]A)|(\d{5}A))$')
-	ltoIDstatus = False
-	ltoIdFilePath = os.path.join(utils.get_temp_dir(),'LTOID.txt')
-	try:
-		_data = request.form.to_dict(flat=False)
-		ltoID = request.form['tapeAid']
-		ltoIdFilePath = os.path.join(utils.get_temp_dir(),'LTOID.txt')
-		if re.match(tapeIdRegex,ltoID):
-			with open(ltoIdFilePath,'w') as idfile:
-				idfile.write(ltoID)
-			ltoIDstatus = True
-		else:
-			ltoIDstatus = False
-	except:
-		_data = 'there was an error'
-		ltoID = 'there was an error'
+	_data = request.form.to_dict(flat=False)
+	ltoID = request.form['tapeAid']
+	error, ltoIDstatus = ltoProcesses.establish_lto_id(ltoID)
+
+	if error:
+		flash(error)
 
 	return render_template(
 		'lto/lto_id_status.html',

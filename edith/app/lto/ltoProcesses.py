@@ -4,7 +4,7 @@ import ast
 import json
 from multiprocessing import Pool
 import os
-# import re
+import re
 import subprocess
 # import sys
 # from time import sleep
@@ -385,6 +385,22 @@ def parse_index_schema_file():
 
 	else:
 		print("SCHEMA FILE DOESN'T EXIST?")
+
+def establish_lto_id(ltoID):
+	ltoIDregex = re.compile(r'^((\d{4}[A-Z]A)|(\d{5}A))$')
+	ltoIdFilePath = os.path.join(utils.get_temp_dir(),'LTOID.txt')
+	error = None
+	try:
+		if re.match(tapeIdRegex,ltoID):
+			with open(ltoIdFilePath,'w') as idfile:
+				idfile.write(ltoID)
+			ltoIDstatus = True
+		else:
+			ltoIDstatus = False
+	except:
+		error = 'There was an error writing to the file where the current LTO ID is stored.'
+
+	return error, ltoIDstatus
 
 def post_tape_id_to_rs(writeStatuses):
 	stats = get_tape_stats()

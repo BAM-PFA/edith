@@ -1,5 +1,5 @@
+{% import "bootstrap/utils.html" as utils %}
 {% extends "base.html" %}
-
 {% block content %}
 <div class="card">
 	<div class="card-body">
@@ -8,8 +8,8 @@
 		<p class="card-text">You can go back to the <a href="{{ url_for('lto.lto_menu') }}">LTO menu</a> and do some other stuff if you want (like <a href="{{ url_for('lto.format_lto') }}">format</a> the LTO tapes).</p>
 
 	{% else %}
-
-		<p class="card-text"> The LTO ID you entered ( {{ ltoID }} ) doesn't follow the expected pattern. Try Again!</p>
+		<p class="card-text">{{ utils.flashed_messages() }}</p>
+		<p class="card-text"> The LTO ID you entered ( <p class="font-weight-bold">{{ ltoID }}</p> ) doesn't follow the expected pattern. Try Again!</p>
 
 	{% endif %}
 	</div>
