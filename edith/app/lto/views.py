@@ -27,7 +27,6 @@ def lto_menu():
 		title='LTO MENU'
 		)
 
-
 @lto.route('/format_lto',methods=['GET','POST'])
 @login_required
 def format_lto():
@@ -45,46 +44,43 @@ def format_lto():
 @lto.route('/format_status',methods=['GET','POST'])
 @login_required
 def format_status():
-	# we are using SCSI (SAS) attached drives in linux so I'll defalt the 
+	# we are using SCSI (SAS) attached drives in linux so I'll default the 
 	# device names to nst0 and nst1, which are the non-auto-rewind device 
 	# names
-	linuxDevices = utils.get_devices()
 	aTapeID, bTapeID = utils.get_a_and_b()
-	linuxDevices["/dev/nst0"] = aTapeID
-	linuxDevices["/dev/nst1"] = bTapeID
+	devices = {
+		0:{
+			"drive":"A",
+			"device":"/dev/nst0",
+			"ID":aTapeID
+			},
+		1:{
+			"drive":"B",
+			"device":"/dev/nst1",
+			"ID":bTapeID
+			}
+	}
+	tapes = []
 
 	statuses = {
 		"/dev/nst0":False,
 		"/dev/nst1":False
 	}
 
-	if not aTapeID == "no id" and not bTapeID == "no id":
-		for device,tapeID in linuxDevices.items():
-			# -f force option is here for testing ONLY @fixme remove it for production!
-			MKLTFS = [
-			'mkltfs','-f',
-			'--device={}'.format(device),
-			'--tape-serial={}'.format(tapeID),
-			'--volume-name={}'.format(tapeID)
-			]
+	if not any([x == "no id" for x in (aTapeID,bTapeID)]):
+		for drive, details in devices.items():
+			tape = ltoProcesses.FreshTape(
+					AorB = details["drive"],
+					device = details["device"],
+					tapeID = details["ID"]
+					)
 
-			try:
-				out, err = subprocess.Popen(
-					MKLTFS,
-					stdout=subprocess.PIPE
-					).communicate()
-				# statuses[device] = True
-				print(out)
-				if not "LTFS15047E" in out:
-					statuses[device] = True
-				else:
-					statuses[device] = "can't format tape, maybe it's already formatted"
+			tape.format_me()
+			tapes.append(tape)
 
-			except:
-				statuses[device] = "there was an error in the LTFS command execution... meh?"
 	else:
 		for device,tapeID in linuxDevices.items():
-			statuses[device] = "There doesn't appear to be a valid ID in place for the A and/or B tapes."
+			statuses[device] = "There doesn't appear to be a valid current LTO ID defined."
 
 	return render_template(
 		'lto/format_status.html',
@@ -342,7 +338,7 @@ def write_status():
 	results = {}
 	toWrite = []
 	targetPaths = {}
-	aipSizes = []
+	aipSizes = []	# THIS IS WHERE THE TOTAL SHOULD BE COMPARED TO SPACE AVAILABLE @FIXME
 	errors = None
 	for key,value in _data.items():
 		if 'writeToLTO' in key:
@@ -495,7 +491,7 @@ def dip_status():
 		if "HASHDEEP" in resultString:
 			dip = result.decode().split('|')[1]
 			#print(sip)
-			dipStatus =  result.decode().split('|')[2].rstrip()
+			dipStatus = result.decode().split('|')[2].rstrip()
 			#print(aipStatus)
 			readStatuses[dip] = dipStatus
 	print(readStatuses)

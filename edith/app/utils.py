@@ -132,16 +132,9 @@ def get_current_LTO_id():
 
 	return currentLTOid
 
-def get_devices():
-
-	linuxDevices = {
-		"/dev/nst0":"",
-		"/dev/nst1":""
-		}
-
-	return linuxDevices
-
 def get_a_and_b():
+	# Read the current LTOID.txt file
+	# and return the ID for both A and B tapes
 	noID = [
 		"no lto id in use",
 		"Couldn't read the LTO id file"

@@ -216,11 +216,12 @@ def parse_raw_ingest_form(formData,CurrentIngest):
 	return CurrentIngest
 
 def main(CurrentIngest):
-	# TAKE IN AN `INGEST` OBJECT
-	#   IT SHOULD CONTAIN AT LEAST ONE `INGESTIBLE`
-	# run `pymm` on Ingestibles
-	# post access copies to resourcespace
-
+	'''
+	TAKE IN AN `INGEST` OBJECT
+	IT SHOULD CONTAIN AT LEAST ONE `INGESTIBLE`
+	run `pymm` on Ingestibles
+	post access copies to resourcespace
+	'''
 	# GET THE PYMM PATH TO CALL IN A SEC
 	pymmPath = utils.get_pymm_path()
 	ingestSipPath = os.path.join(pymmPath,'ingestSip.py')

@@ -4,17 +4,83 @@ import ast
 import json
 from multiprocessing import Pool
 import os
-import re
+# import re
 import subprocess
-import sys
-from time import sleep
+# import sys
+# from time import sleep
 # non-standard libraries
-from flask import render_template, request
-import wtforms
+# from flask import render_template, request
+# import wtforms
 # local modules
 from .. import resourcespaceFunctions
 from .. import utils
 
+class Package():
+	"""docstring for Package"""
+	def __init__(self, 
+		path=None,
+		size=None
+		):
+		
+		self.path = path
+		self.size = size
+		
+class FreshTape():
+	"""Class to define an LTO tape"""
+	def __init__(self,
+		AorB=None,
+		device=None,
+		tapeID=None,
+		mountpoint=None
+		):
+		self.AorB = AorB
+		self.device = device
+		self.tapeID = tapeID
+		self.mountpoint = mountpoint
+
+		self.formatStatus = None
+		self.mountStatus = None
+
+	def format_me(self):
+		MKLTFS = [
+			'mkltfs',#'-f',
+			'--device={}'.format(device),
+			'--tape-serial={}'.format(tapeID),
+			'--volume-name={}'.format(tapeID)
+			]
+
+		try:
+			out, err = subprocess.Popen(
+				MKLTFS,
+				stdout=subprocess.PIPE
+				).communicate()
+			# print(out)
+
+			# FROM LTFS SPEC: 
+			# **LTFS15047E error = Medium is already formatted**
+			# "The format operation failed because the medium is already formatted by LTFS."
+			if not "LTFS15047E" in out:
+				self.formatStatus = True
+			else:
+				self.formatStatus = "The format operation failed because the medium is already formatted by LTFS."
+
+		except:
+			self.formatStatus = "there was an error in the LTFS command execution... needs manual investigation?"
+		
+class WriteProcess():
+	"""docstring for WriteProcess"""
+	def __init__(self,
+		arg=None
+		):
+		self.arg = arg
+		
+class TapeMount():
+	"""docstring for TapeMount"""
+	def __init__(self, 
+		mountpoint=None
+		):
+		self.mountpoint = mountpoint
+		
 
 def get_aip_human_name(aipPath):
 	'''
@@ -78,19 +144,6 @@ def run_ltfs(devname,tempdir,mountpoint):
 		print(line.decode())
 
 	return doit.stderr
-
-# MOVE THIS TO UTILS AND RENAME IT FOLDER_SIZE()
-def aip_size(path):
-	'''
-	Stolen from https://stackoverflow.com/q/40840037
-	'''
-	total = 0
-	for entry in os.scandir(path):
-		if entry.is_file():
-			total += entry.stat().st_size
-		elif entry.is_dir():
-		   total += aip_size(entry.path)
-	return total
 
 def run_moveNcopy(aipPath,tapeMountpoint):
 	pythonBinary = utils.get_python_path()
