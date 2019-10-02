@@ -33,10 +33,10 @@ class FreshTape():
 		tapeID=None,
 		mountpoint=None
 		):
-		self.AorB = AorB
-		self.device = device
-		self.tapeID = tapeID
-		self.mountpoint = mountpoint
+		self.AorB = AorB				# A drive or B drive
+		self.device = device 			# e.g., "/dev/nst0"
+		self.tapeID = tapeID 			# 6-digit barcode "19091A"
+		self.mountpoint = mountpoint 	# mountpoint in temp directory
 
 		self.formatStatus = None
 		self.mountStatus = None
@@ -66,6 +66,25 @@ class FreshTape():
 
 		except:
 			self.formatStatus = "there was an error in the LTFS command execution... needs manual investigation?"
+
+	def get_tape_id(self):
+		# purposefully fail to mount device,
+		# parse stderr, and get the tape ID from it
+		command = ['ltfs','-f','-o','devname={}'.format(self.device)]
+		try:
+			out,err = subprocess.Popen(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
+			print("GETTING BARCODE FOR TAPE,HANG ON")
+			for line in err.splitlines():
+				if "Volser(Barcode)" in line.decode():
+					barcodeLine = line.decode().strip().split()
+					barcode = barcodeLine[4]
+					self.tapeID = barcode
+		except:
+			self.mountStatus = "Trouble getting the tape barcode for {} drive".format(self.AorB)
+
+
+	def mount_me(self):
+		pass
 		
 class WriteProcess():
 	"""docstring for WriteProcess"""

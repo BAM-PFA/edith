@@ -112,45 +112,33 @@ def lto_id_status():
 @lto.route('/mount_lto',methods=['GET','POST'])
 @login_required
 def mount_lto():
-
 	mountEmUp = forms.mount()
 
 	# get the current attached tape devices and try to read a barcode from each
 	tempDir = utils.get_temp_dir()
-	barcodes = {"A":"/dev/nst0","B":"/dev/nst1"}
-	for letter, device in barcodes.items():
-		# purposefully fail to mount each device,
-		# send stderr to a text file to parse ,
-		# and get the tape barcode from it
-		now = utils.now()
-		tempFile = os.path.join(tempDir,"{}_{}_temp.txt".format(letter,now))
-		command = ['ltfs','-f','-o','devname={}'.format(device)]
-		out,err = subprocess.Popen(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
-		#print(out)
-		#print("that was out")
-		#print(err)
-		#print("that was err")
-		with open(tempFile,'x') as x:
-			pass
-		with open(tempFile,'w+') as f:
-			print("GETTING BARCODE FOR TAPE,HANG ON")
-			for line in err.splitlines():
-				print(line)
-				f.write(line.decode())
-				f.write('\n')
-		if os.path.exists(tempFile):
-			with open(tempFile,'r') as f:
-				for line in f.readlines():
-					if "Volser(Barcode)" in line:
-						barcodeLine = line.strip().split()
-						barcode = barcodeLine[4]
-						print(barcode)
-						barcodes[letter] = barcode
-		else:
-			barcodes[letter] = "Trouble getting the tape barcode"
-		print(barcodes)
+	drives = {
+		0:{
+			"drive":"A",
+			"device":"/dev/nst0"
+			},
+		1:{
+			"drive":"B",
+			"device":"/dev/nst1"
+			}
+		}
+	tapes = []
+	for drive, details in drives.items():
+		tape = ltoProcesses.FreshTape(
+			AorB=drive["drive"],
+			device=drive["device"]
+			)
+		tapes.append(tape)
 
-		os.remove(tempFile)
+	for tape in tapes:
+		tape.get_tape_id()
+
+		if tape.mountStatus:
+			flash(tape.mountStatus) # i.e. if there was an error
 
 	mountEmUp.tapeBarcodes.data = barcodes
 
