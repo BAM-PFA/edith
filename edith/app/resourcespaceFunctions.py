@@ -164,7 +164,7 @@ def resourcespace_API_call(metadata,quotedPath,filePath):
 	print(httpStatus)
 	print("hey")
 	print(RSrecordID)
-	if httpStatus in ('200',200) and not "Invalid signature" in RSrecordID:
+	if httpStatus in ('200',200) and not any([x in RSrecordID for x in ("Invalid signature","false")]):
 		print("SUCCESS! POSTED THE THING TO RS")
 		utils.delete_it(filePath)
 	return RSrecordID
