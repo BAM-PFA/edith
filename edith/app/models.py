@@ -158,3 +158,31 @@ class Metadata_Field(db.Model):
 	# resourceSpace field ID # 
 	rsFieldID = db.Column(db.Integer)
 	description = db.Column(db.String(200))
+
+class Tape(db.Model):
+	'''
+	Maintain the status of a current tape
+
+	'''
+	__tablename__ = 'tapes'
+
+	id = db.Column(db.Integer, primary_key=True)
+	# A drive or B drive
+	aOrB = db.Column(db.String(10))
+	# tape barcode e.g. 19091A or 19091B
+	tapeBarcode = db.Column(db.String(10))
+	# status: mounted or unmounted
+	status = db.Column(db.String(100))
+	# date the tape was formatted with LTFS
+	formattedDate = db.Column(db.DateTime)
+
+class TapeID(db.Model):
+	'''
+	Track the current Tape ID in use
+	'''
+	__tablename__ = 'tape_ids'
+
+	id = db.Column(db.Integer, primary_key=True)
+	a_version = db.Column(db.String(50))
+	b_version = db.Column(db.String(50))
+	

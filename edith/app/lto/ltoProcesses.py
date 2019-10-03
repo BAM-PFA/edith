@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # standard library modules
 import ast
+from datetime import datetime
 import json
 from multiprocessing import Pool
 import os
@@ -14,6 +15,18 @@ import subprocess
 # local modules
 from .. import resourcespaceFunctions
 from .. import utils
+
+from .. import db
+from .. models import Tape, TapeID
+
+class LTODeck():
+	"""Instance of the deck during an LTO interaction... WIP"""
+	def __init__(self):
+		self.a_drive_device = "/dev/nst0"
+		self.b_drive_device = "/dev/nst1"
+
+	def set_tape_IDs(self,aTapeID=None,bTapeID=None):
+		pass
 
 class Package():
 	"""docstring for Package"""
@@ -82,8 +95,10 @@ class FreshTape():
 		except:
 			self.mountStatus = "Trouble getting the tape barcode for {} drive".format(self.AorB)
 
-
 	def mount_me(self):
+		pass
+
+	def write_status_to_db(self):
 		pass
 		
 class WriteProcess():
@@ -420,6 +435,44 @@ def establish_lto_id(ltoID):
 		error = 'There was an error writing to the file where the current LTO ID is stored.'
 
 	return error, ltoIDstatus
+
+def get_current_LTO_id():
+	tmpDir = get_temp_dir()
+	ltoIdFilePath = os.path.join(tmpDir,'LTOID.txt')
+	if not os.path.exists(ltoIdFilePath):
+		try:
+			with open(ltoIdFilePath,'w') as idfile:
+				idfile.write('no lto id in use')
+		except:
+			print("You have some permission issues writing to the tmp dir")
+	try:
+		with open(ltoIdFilePath,'r') as idfile:
+			currentLTOid = idfile.readline().strip()
+	except:
+		currentLTOid = "Couldn't read the LTO id file"
+
+	return currentLTOid
+
+def get_a_and_b():
+	# Read the current LTOID.txt file
+	# and return the ID for both A and B tapes
+	noID = [
+		"no lto id in use",
+		"Couldn't read the LTO id file"
+		]
+	theID = get_current_LTO_id()
+
+	if not theID in noID:		
+		aTapeID = theID
+		bTapeID = aTapeID[:-1]+"B"
+	else:
+		aTapeID = "no id"
+		bTapeID = "no id"
+
+	return aTapeID,bTapeID
+
+def search_for_existing_tape(tapeID):
+	pass
 
 def post_tape_id_to_rs(writeStatuses):
 	stats = get_tape_stats()

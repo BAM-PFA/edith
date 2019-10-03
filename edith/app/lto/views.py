@@ -19,6 +19,17 @@ from . import ltoProcesses
 from .. import listObjects
 from .. import utils
 
+devices = {
+	0:{
+		"drive":"A",
+		"device":"/dev/nst0"
+		},
+	1:{
+		"drive":"B",
+		"device":"/dev/nst1"
+		}
+}
+
 @lto.route('/lto_menu',methods=['GET','POST'])
 @login_required
 def lto_menu():
@@ -30,7 +41,7 @@ def lto_menu():
 @lto.route('/format_lto',methods=['GET','POST'])
 @login_required
 def format_lto():
-	currentLTOid = utils.get_current_LTO_id()
+	currentLTOid = ltoProcesses.get_current_LTO_id()
 
 	formatLTO = forms.format_form()
 
@@ -47,20 +58,9 @@ def format_status():
 	# we are using SCSI (SAS) attached drives in linux so I'll default the 
 	# device names to nst0 and nst1, which are the non-auto-rewind device 
 	# names
-	aTapeID, bTapeID = utils.get_a_and_b()
-	devices = {
-		0:{
-			"drive":"A",
-			"device":"/dev/nst0",
-			"ID":aTapeID
-			},
-		1:{
-			"drive":"B",
-			"device":"/dev/nst1",
-			"ID":bTapeID
-			}
-	}
-	tapes = []
+	aTapeID, bTapeID = ltoProcesses.get_a_and_b()
+	devices[0]["ID"] = aTapeID
+	devices[1]["ID"] = bTapeID
 
 	if not any([x == "no id" for x in (aTapeID,bTapeID)]):
 		for drive, details in devices.items():
@@ -84,7 +84,7 @@ def format_status():
 @login_required
 def lto_id():
 	newLTOid = forms.LTO_id_form()
-	currentLTOid = utils.get_current_LTO_id()
+	currentLTOid = ltoProcesses.get_current_LTO_id()
 	return render_template(
 		'lto/lto_id.html',
 		title='Create LTO ID',
@@ -145,7 +145,7 @@ def mount_lto():
 	return render_template(
 		'lto/mount_lto.html',
 		title="Mount LTO tapes",
-		currentLTOid = utils.get_current_LTO_id(),
+		currentLTOid = ltoProcesses.get_current_LTO_id(),
 		mountForm=mountEmUp,
 		barcodes=barcodes
 		)

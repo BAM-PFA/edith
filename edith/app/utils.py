@@ -115,50 +115,9 @@ def get_extension(basename):
 	ext = split[1]
 	return ext
 
-def get_current_LTO_id():
-	tmpDir = get_temp_dir()
-	ltoIdFilePath = os.path.join(tmpDir,'LTOID.txt')
-	if not os.path.exists(ltoIdFilePath):
-		try:
-			with open(ltoIdFilePath,'w') as idfile:
-				idfile.write('no lto id in use')
-		except:
-			print("You have some permission issues writing to the tmp dir")
-	try:
-		with open(ltoIdFilePath,'r') as idfile:
-			currentLTOid = idfile.readline().strip()
-	except:
-		currentLTOid = "Couldn't read the LTO id file"
-
-	return currentLTOid
-
-def get_a_and_b():
-	# Read the current LTOID.txt file
-	# and return the ID for both A and B tapes
-	noID = [
-		"no lto id in use",
-		"Couldn't read the LTO id file"
-		]
-	theID = get_current_LTO_id()
-
-	if not theID in noID:		
-		aTapeID = theID
-		bTapeID = aTapeID[:-1]+"B"
-	else:
-		aTapeID = "no id"
-		bTapeID = "no id"
-
-	return aTapeID,bTapeID
-
 def now():
 	now = time.strftime("%Y-%m-%dT%H-%M-%S")
 	return now
-
-def mount_tape(command):
-	print(command)
-	subprocess.run(command,stdin=None,stdout=None,close_fds=True)
-	print("gave it a shot")
-	return True
 
 def clean_temp_dir(_type=None):
 	tempDir = get_temp_dir()
