@@ -19,14 +19,14 @@ from .. import utils
 from .. import db
 from .. models import Tape, TapeID
 
-class LTODeck():
-	"""Instance of the deck during an LTO interaction... WIP"""
-	def __init__(self):
-		self.a_drive_device = "/dev/nst0"
-		self.b_drive_device = "/dev/nst1"
+# class LTODeck():
+# 	"""Instance of the deck during an LTO interaction... WIP"""
+# 	def __init__(self):
+# 		self.a_drive_device = "/dev/nst0"
+# 		self.b_drive_device = "/dev/nst1"
 
-	def set_tape_IDs(self,aTapeID=None,bTapeID=None):
-		pass
+# 	def set_tape_IDs(self,aTapeID=None,bTapeID=None):
+# 		pass
 
 class Package():
 	"""docstring for Package"""
@@ -53,6 +53,10 @@ class FreshTape():
 
 		self.formatStatus = None
 		self.mountStatus = None
+
+	def do_i_exist(self):
+		# s
+		pass
 
 	def format_me(self):
 		MKLTFS = [
@@ -399,7 +403,7 @@ def parse_index_schema_file():
 	pythonBinary = utils.get_python_path()
 	pymmPath = utils.get_pymm_path()
 	ltfsSchemaParserPath = os.path.join(pymmPath,'ltfsSchemaParser.py')
-	aTapeID = utils.get_current_LTO_id()
+	aTapeID = get_current_LTO_id()
 	tempDir = utils.get_temp_dir()
 	aTapeSchema = os.path.join(tempDir,aTapeID+".schema")
 	parseCommand = [
@@ -420,14 +424,29 @@ def parse_index_schema_file():
 	else:
 		print("SCHEMA FILE DOESN'T EXIST?")
 
-def establish_lto_id(ltoID):
+def establish_new_lto_id(ltoID):
 	ltoIDregex = re.compile(r'^((\d{4}[A-Z]A)|(\d{5}A))$')
-	ltoIdFilePath = os.path.join(utils.get_temp_dir(),'LTOID.txt')
+	# ltoIdFilePath = os.path.join(utils.get_temp_dir(),'LTOID.txt')
 	error = None
 	try:
+		db.session.query(TapeID).delete() # clear out any lingering entries
+		db.session.commit()
+	except:
+		pass # maybe if there are no rows yet?
+
+	try:
 		if re.match(tapeIdRegex,ltoID):
-			with open(ltoIdFilePath,'w') as idfile:
-				idfile.write(ltoID)
+			aVersion = ltoID
+			bVersion = ltoID[:-1]+"B"
+			try:
+				a_tape = db.session.query(TapeID).filter(TapeID.id == 1).one()
+				a_tape.a_version = aVersion
+			except:
+				pass
+			if a_tape:
+				pass
+			# with open(ltoIdFilePath,'w') as idfile:
+			# 	idfile.write(ltoID)
 			ltoIDstatus = True
 		else:
 			ltoIDstatus = False
@@ -437,7 +456,10 @@ def establish_lto_id(ltoID):
 	return error, ltoIDstatus
 
 def get_current_LTO_id():
-	tmpDir = get_temp_dir()
+	currentLTOid = db.session.query(TapeID).filter(TapeID.id==1).all()
+	if not currentLTOid:
+		pass
+	tmpDir = utils.get_temp_dir()
 	ltoIdFilePath = os.path.join(tmpDir,'LTOID.txt')
 	if not os.path.exists(ltoIdFilePath):
 		try:

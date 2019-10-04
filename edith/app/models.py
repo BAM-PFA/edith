@@ -171,6 +171,8 @@ class Tape(db.Model):
 	aOrB = db.Column(db.String(10))
 	# tape barcode e.g. 19091A or 19091B
 	tapeBarcode = db.Column(db.String(10))
+	# UUID
+	tapeUUID = db.Column(db.String(100))
 	# status: mounted or unmounted
 	status = db.Column(db.String(100))
 	# date the tape was formatted with LTFS

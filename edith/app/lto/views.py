@@ -97,7 +97,7 @@ def lto_id():
 def lto_id_status():
 	_data = request.form.to_dict(flat=False)
 	ltoID = request.form['tapeAid']
-	error, ltoIDstatus = ltoProcesses.establish_lto_id(ltoID)
+	error, ltoIDstatus = ltoProcesses.establish_new_lto_id(ltoID)
 
 	if error:
 		flash(error)
