@@ -41,22 +41,25 @@ class Package():
 class FreshTape():
 	"""Class to define an LTO tape"""
 	def __init__(self,
-		AorB=None,
 		device=None,
 		tapeID=None,
-		mountpoint=None
+		UUID=None,
+		noTape=None,
+		dbID=None,
+		unformatted=None,
+		mountpoint=None,
+		spaceAvailable=None
 		):
-		self.AorB = AorB				# A drive or B drive
 		self.device = device 			# e.g., "/dev/nst0"
 		self.tapeID = tapeID 			# 6-digit barcode "19091A"
+		self.UUID = UUID				# 32-byte UUID
+		self.noTape = noTape 			# true if the drive is just empty
+		self.unformatted = unformatted	# true if there's a new blank tape
 		self.mountpoint = mountpoint 	# mountpoint in temp directory
+		self.spaceAvailable = spaceAvailable
 
 		self.formatStatus = None
 		self.mountStatus = None
-
-	def do_i_exist(self):
-		# s
-		pass
 
 	def format_me(self):
 		MKLTFS = [
@@ -84,20 +87,22 @@ class FreshTape():
 		except:
 			self.formatStatus = "there was an error in the LTFS command execution... needs manual investigation?"
 
-	def get_tape_id(self):
-		# purposefully fail to mount device,
-		# parse stderr, and get the tape ID from it
-		command = ['ltfs','-f','-o','devname={}'.format(self.device)]
+	def insert_me(self):
+		# make a db record for the tape
+		newTape = Tape(
+			tapeBarcode=self.tapeID,
+			tapeUUID=self.UUID,
+			status="unmounted",
+			# formattedDate=datetime.now(),
+			spaceAvailable=self.spaceAvailable
+			)
+
 		try:
-			out,err = subprocess.Popen(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
-			print("GETTING BARCODE FOR TAPE,HANG ON")
-			for line in err.splitlines():
-				if "Volser(Barcode)" in line.decode():
-					barcodeLine = line.decode().strip().split()
-					barcode = barcodeLine[4]
-					self.tapeID = barcode
-		except:
-			self.mountStatus = "Trouble getting the tape barcode for {} drive".format(self.AorB)
+			db.session.add(newTape)
+		except Exception as e:
+			print(e)
+		db.session.commit()
+		self.dbID = newTape.id
 
 	def mount_me(self):
 		pass
@@ -432,70 +437,108 @@ def establish_new_lto_id(ltoID):
 		db.session.query(TapeID).delete() # clear out any lingering entries
 		db.session.commit()
 	except:
-		pass # maybe if there are no rows yet?
+		pass 
 
-	try:
-		if re.match(tapeIdRegex,ltoID):
-			aVersion = ltoID
-			bVersion = ltoID[:-1]+"B"
-			try:
-				a_tape = db.session.query(TapeID).filter(TapeID.id == 1).one()
-				a_tape.a_version = aVersion
-			except:
-				pass
-			if a_tape:
-				pass
-			# with open(ltoIdFilePath,'w') as idfile:
-			# 	idfile.write(ltoID)
+	if re.match(tapeIdRegex,ltoID):
+		aVersion = ltoID
+		bVersion = ltoID[:-1]+"B"
+		try:
+			newID = TapeID(id=1, a_version=aVersion, b_version=bVersion)
+			db.session.add(newID)
+			db.session.commit()
 			ltoIDstatus = True
-		else:
+		except:
+			error = 'There was an error adding the LTO ID to the database.'
 			ltoIDstatus = False
-	except:
-		error = 'There was an error writing to the file where the current LTO ID is stored.'
 
 	return error, ltoIDstatus
 
 def get_current_LTO_id():
-	currentLTOid = db.session.query(TapeID).filter(TapeID.id==1).all()
-	if not currentLTOid:
-		pass
-	tmpDir = utils.get_temp_dir()
-	ltoIdFilePath = os.path.join(tmpDir,'LTOID.txt')
-	if not os.path.exists(ltoIdFilePath):
-		try:
-			with open(ltoIdFilePath,'w') as idfile:
-				idfile.write('no lto id in use')
-		except:
-			print("You have some permission issues writing to the tmp dir")
 	try:
-		with open(ltoIdFilePath,'r') as idfile:
-			currentLTOid = idfile.readline().strip()
+		currentLTOid = db.session.query(TapeID).get(1).a_version
 	except:
-		currentLTOid = "Couldn't read the LTO id file"
+		currentLTOid = None
 
 	return currentLTOid
 
-def get_a_and_b():
-	# Read the current LTOID.txt file
+def get_a_and_b_IDs():
+	# Read the current LTO ID from db
 	# and return the ID for both A and B tapes
-	noID = [
-		"no lto id in use",
-		"Couldn't read the LTO id file"
-		]
-	theID = get_current_LTO_id()
-
-	if not theID in noID:		
-		aTapeID = theID
-		bTapeID = aTapeID[:-1]+"B"
+	currentLTOid = db.session.query(TapeID).get(1)
+	if currentLTOid:
+		aTapeID = currentLTOid.a_version
+		bTapeID = currentLTOid.b_version
 	else:
-		aTapeID = "no id"
-		bTapeID = "no id"
+		aTapeID = None
+		bTapeID = None
 
 	return aTapeID,bTapeID
 
-def search_for_existing_tape(tapeID):
-	pass
+def search_for_existing_tape(aTapeID,bTapeID):
+	aTape = db.session.query(Tape).filter(tapeBarcode=aTapeID).first()
+	bTape = db.session.query(Tape).filter(tapeBarcode=bTapeID).first()
 
+	return aTape, bTape
+
+def prep_tapes(aTapeID,bTapeID):
+	aTape = get_tape_details(aTapeID,"/dev/nst0")
+	bTape = get_tape_details(bTapeID,"/dev/nst1")
+
+	return aTape,bTape
+
+def get_tape_details(tape,device):
+	# this check should happen after the db has been 
+	# searched for any previous tapes with the ID
+	command = ['ltfs','-f','-o','devname={}'.format(device)]
+	name = None
+	spaceAvailable = 0
+	unformatted = False
+	noTape = False
+	error = False
+	tape = None
+	try:
+		# purposefully fail to mount device,
+		# parse stderr, and get the tape details from it
+		out,err = subprocess.Popen(
+			command,
+			stdout=subprocess.PIPE,
+			stderr=subprocess.PIPE
+			).communicate()
+		
+		for line in err.splitlines():
+			if "Volume Name" in line.decode():
+				name = line.decode().strip().split()[5]
+			elif "Volser(Barcode)" in line.decode():
+				barcode = line.decode().strip().split()[4]
+			elif "Volume UUID" in line.decode():
+				UUID = line.decode().strip().split()[5]
+			elif "LTFS17168E" in line.decode():
+				unformatted = True # UNUSED?
+			elif "LTFS11006E" in line.decode():
+				noTape = True
+			elif "LTFS10030I" in line.decode():
+				try:
+					spaceAvailable = int(line.decode().strip().split()[20])
+					spaceAvailable = utils.mebibytes_to_bytes(spaceAvailable)
+				except:
+					pass
+
+		if name and unformatted and "null" not in name:
+			tape = FreshTape(
+				device=device,
+				tapeID=tapeID,
+				spaceAvailable=spaceAvailable,
+				unformatted=unformatted,
+				noTape=noTape,
+				error=error
+				)
+
+	except:
+		error = "Unable to get details about this drive... try turning it off and on again"
+		tape = FreshTape(error=error)
+
+	return tape
+	
 def post_tape_id_to_rs(writeStatuses):
 	stats = get_tape_stats()
 	ltoID = os.path.basename(stats["A"]["mountpoint"])

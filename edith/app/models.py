@@ -167,8 +167,6 @@ class Tape(db.Model):
 	__tablename__ = 'tapes'
 
 	id = db.Column(db.Integer, primary_key=True)
-	# A drive or B drive
-	aOrB = db.Column(db.String(10))
 	# tape barcode e.g. 19091A or 19091B
 	tapeBarcode = db.Column(db.String(10))
 	# UUID
@@ -177,6 +175,10 @@ class Tape(db.Model):
 	status = db.Column(db.String(100))
 	# date the tape was formatted with LTFS
 	formattedDate = db.Column(db.DateTime)
+	# mountpoint for the logical file system
+	mountpoint = db.Column(db.String(100))
+	# space remaining on the tape
+	spaceAvailable = db.Column(db.Integer)
 
 class TapeID(db.Model):
 	'''

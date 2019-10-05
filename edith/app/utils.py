@@ -136,6 +136,11 @@ def clean_temp_dir(_type=None):
 			except OSError:
 				print(thing+" is not empty... I won't delete it.")
 
+def mebibytes_to_bytes(mebibytes):
+	bytes = mebibytes*1048576
+
+	return bytes
+
 def humansize(nbytes):
 	'''
 	Return Mebibytes/Gibibytes (1024-based blocks)

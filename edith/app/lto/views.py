@@ -19,17 +19,6 @@ from . import ltoProcesses
 from .. import listObjects
 from .. import utils
 
-devices = {
-	0:{
-		"drive":"A",
-		"device":"/dev/nst0"
-		},
-	1:{
-		"drive":"B",
-		"device":"/dev/nst1"
-		}
-}
-
 @lto.route('/lto_menu',methods=['GET','POST'])
 @login_required
 def lto_menu():
@@ -55,22 +44,40 @@ def format_lto():
 @lto.route('/format_status',methods=['GET','POST'])
 @login_required
 def format_status():
-	# we are using SCSI (SAS) attached drives in linux so I'll default the 
+	# we are using SCSI (SAS) attached drives in linux so I'll default the
 	# device names to nst0 and nst1, which are the non-auto-rewind device 
 	# names
-	aTapeID, bTapeID = ltoProcesses.get_a_and_b()
-	devices[0]["ID"] = aTapeID
-	devices[1]["ID"] = bTapeID
+	tapes = []
+	aTape = None
+	bTape = None
+	aTapeID, bTapeID = ltoProcesses.get_a_and_b_IDs()
 
-	if not any([x == "no id" for x in (aTapeID,bTapeID)]):
-		for drive, details in devices.items():
-			tape = ltoProcesses.FreshTape(
-					AorB = details["drive"],
-					device = details["device"],
-					tapeID = details["ID"]
+	if aTapeID: 
+		aTape, bTape = ltoProcesses.search_for_existing_tape(aTapeID,bTapeID) 	# THIS SEEMS MISPLACED... 
+																				# IF THERE'S A CURRENT ID IN THE DB, ITS UNLIKELY TO BE AN ALREADY FORMATTED TAPE... 
+
+		if not aTape and not bTape:
+			aTape, bTape = ltoProcesses.prep_tapes(aTapeID,bTapeID)
+		else:
+			# If the db search returned something (unlikely??) flash error
+			if aTape:
+				flash(
+					"Tape in the A drive ({}) is already formatted.".format(
+						aTape.tapeBarcode
+						)
 					)
-			tape.format_me()
-			tapes.append(tape)
+				tapes.append(aTape)
+			if bTape:
+				flash(
+					"Tape in the B drive ({}) is already formatted.".format(
+						bTape.tapeBarcode
+						)
+					)
+				tapes.append(bTape)
+
+		for tape in aTape,bTape:
+			if tape and not tape.error:
+				tape.insert_me()
 
 	else:
 		flash("There doesn't appear to be a valid current LTO ID defined.")
@@ -85,6 +92,9 @@ def format_status():
 def lto_id():
 	newLTOid = forms.LTO_id_form()
 	currentLTOid = ltoProcesses.get_current_LTO_id()
+	if not currentLTOid:
+		flash("There is no LTO ID currently defined. Make one!")
+		currentLTOid = ""
 	return render_template(
 		'lto/lto_id.html',
 		title='Create LTO ID',
