@@ -79,9 +79,15 @@ class FreshTape():
 			# FROM LTFS SPEC: 
 			# **LTFS15047E error = Medium is already formatted**
 			# "The format operation failed because the medium is already formatted by LTFS."
-			if not "LTFS15047E" in out:
+			
+
+			if not "LTFS15047E" in err.decode():
 				self.formatStatus = "Formatted as LTFS"
+				for line in err.splitlines():
+					if "Volume UUID" in line.decode():
+						self.UUID = line.decode().strip().split()[5]
 			else:
+				# this shouldn't even be needed @ this point....
 				self.formatStatus = "The format operation failed because the medium is already formatted by LTFS."
 
 		except:
@@ -474,11 +480,11 @@ def get_a_and_b_IDs():
 
 	return aTapeID,bTapeID
 
-def search_for_existing_tape(aTapeID,bTapeID):
-	aTape = db.session.query(Tape).filter(tapeBarcode=aTapeID).first()
-	bTape = db.session.query(Tape).filter(tapeBarcode=bTapeID).first()
+# def search_for_existing_tape(aTapeID,bTapeID):
+# 	aTape = db.session.query(Tape).filter(tapeBarcode=aTapeID).first()
+# 	bTape = db.session.query(Tape).filter(tapeBarcode=bTapeID).first()
 
-	return aTape, bTape
+# 	return aTape, bTape
 
 def prep_tapes(aTapeID,bTapeID):
 	aTape = get_tape_details(aTapeID,"/dev/nst0")
@@ -486,7 +492,7 @@ def prep_tapes(aTapeID,bTapeID):
 
 	return aTape,bTape
 
-def get_tape_details(tape,device):
+def get_tape_details(tapeID,device):
 	# this check should happen after the db has been 
 	# searched for any previous tapes with the ID
 	command = ['ltfs','-f','-o','devname={}'.format(device)]
@@ -495,10 +501,11 @@ def get_tape_details(tape,device):
 	unformatted = False
 	noTape = False
 	error = False
-	tape = None
+	tapeID = tapeID
 	try:
 		# purposefully fail to mount device,
 		# parse stderr, and get the tape details from it
+		# returns a FreshTape object w these details
 		out,err = subprocess.Popen(
 			command,
 			stdout=subprocess.PIPE,
@@ -509,12 +516,18 @@ def get_tape_details(tape,device):
 			if "Volume Name" in line.decode():
 				name = line.decode().strip().split()[5]
 			elif "Volser(Barcode)" in line.decode():
-				barcode = line.decode().strip().split()[4]
+				tapeID = line.decode().strip().split()[4]
 			elif "Volume UUID" in line.decode():
 				UUID = line.decode().strip().split()[5]
 			elif "LTFS17168E" in line.decode():
-				unformatted = True # UNUSED?
+				# "Cannot read volume: medium is not partitioned"
+				# i.e. the tape is not formatted w LTFS
+				unformatted = True 
 			elif "LTFS11006E" in line.decode():
+				# "Cannot read volume: failed to load the tape"
+				# taking this to mean that there's no tape in the drive
+				# (or perhaps the tape is unreadable 
+				# and functionally the drive is empty)
 				noTape = True
 			elif "LTFS10030I" in line.decode():
 				try:
@@ -534,8 +547,8 @@ def get_tape_details(tape,device):
 				)
 
 	except:
-		error = "Unable to get details about this drive... try turning it off and on again"
-		tape = FreshTape(error=error)
+		error = "Unable to get details about {} drive... try turning it off and on again".format(device)
+		tape = FreshTape(error=error,tapeID=tapeID)
 
 	return tape
 	

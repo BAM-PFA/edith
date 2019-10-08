@@ -52,35 +52,31 @@ def format_status():
 	bTape = None
 	aTapeID, bTapeID = ltoProcesses.get_a_and_b_IDs()
 
-	if aTapeID: 
-		aTape, bTape = ltoProcesses.search_for_existing_tape(aTapeID,bTapeID) 	# THIS SEEMS MISPLACED... 
-																				# IF THERE'S A CURRENT ID IN THE DB, ITS UNLIKELY TO BE AN ALREADY FORMATTED TAPE... 
-
-		if not aTape and not bTape:
-			aTape, bTape = ltoProcesses.prep_tapes(aTapeID,bTapeID)
-		else:
-			# If the db search returned something (unlikely??) flash error
-			if aTape:
-				flash(
-					"Tape in the A drive ({}) is already formatted.".format(
-						aTape.tapeBarcode
-						)
+	if aTapeID and bTapeID: 
+		# get FreshTape() objects back, with various details assigned
+		aTape, bTape = ltoProcesses.prep_tapes(aTapeID,bTapeID)
+		if not aTape.unformatted:
+			flash(
+				"Tape in the A drive ({}) is already formatted.".format(
+					aTape.tapeID
 					)
-				tapes.append(aTape)
-			if bTape:
-				flash(
-					"Tape in the B drive ({}) is already formatted.".format(
-						bTape.tapeBarcode
-						)
+				)
+		if not bTape.unformatted:
+			flash(
+				"Tape in the B drive ({}) is already formatted.".format(
+					bTape.tapeID
 					)
-				tapes.append(bTape)
-
+				)
 		for tape in aTape,bTape:
 			if tape and not tape.error:
+				tape.format_me()
 				tape.insert_me()
 
 	else:
-		flash("There doesn't appear to be a valid current LTO ID defined.")
+		flash("There doesn't appear to be a valid current LTO ID defined. Make one!")
+
+	tapes.append(aTape)
+	tapes.apend(bTape)
 
 	return render_template(
 		'lto/format_status.html',
