@@ -57,7 +57,7 @@ def format_status():
 		aTape, bTape = ltoProcesses.prep_tapes(aTapeID,bTapeID)
 		print([aTape.unformatted,aTape.error])
 		print([bTape.unformatted,bTape.error])
-		if not aTape.unformatted in (None,False):
+		if aTape.unformatted in (None,False):
 			flash(
 				"Tape in the A drive ({}) is already formatted.".format(
 					aTape.tapeID

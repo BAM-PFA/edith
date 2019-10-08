@@ -78,7 +78,7 @@ class FreshTape():
 				).communicate()
 			#print(out)
 			print("mkltfs "*100)
-			print(out)
+			print(err)
 
 			# FROM LTFS SPEC: 
 			# **LTFS15047E error = Medium is already formatted**
@@ -94,7 +94,7 @@ class FreshTape():
 				self.error = "The format operation failed because the medium is already formatted by LTFS."
 
 		except:
-			self.error = "there was an error in the LTFS command execution... needs manual investigation?"
+			self.error = "there was an error in the MKLTFS command execution... needs manual investigation?"
 
 	def insert_me(self):
 		# make a db record for the tape
@@ -496,17 +496,13 @@ def prep_tapes(aTapeID,bTapeID):
 	return aTape,bTape
 
 def get_tape_details(tapeID,device):
-	import getpass
-	print(getpass.getuser())
-	# this check should happen after the db has been 
-	# searched for any previous tapes with the ID
 	command = ['ltfs','-f','-o','devname={}'.format(device)]
 	name = None
 	spaceAvailable = 0
 	unformatted = False
 	noTape = False
 	error = False
-	tape = FreshTape(error=error,tapeID=tapeID)
+	tape = FreshTape(error=error,tapeID=tapeID,device=device)
 
 	try:
 		# purposefully fail to mount device,
@@ -517,8 +513,8 @@ def get_tape_details(tapeID,device):
 			stdout=subprocess.PIPE,
 			stderr=subprocess.PIPE
 			).communicate()
-		#print('ltfs '*100)
-		#print(err)
+		print('ltfs '*100)
+		print(err.splitlines())
 		for line in err.splitlines():
 			print(line.decode())
 			if "Volume Name" in line.decode():
@@ -538,6 +534,7 @@ def get_tape_details(tapeID,device):
 				# (or perhaps the tape is unreadable 
 				# and functionally the drive is empty)
 				noTape = True
+				print(noTape*50)
 			elif "LTFS10030I" in line.decode():
 				try:
 					spaceAvailable = int(line.decode().strip().split()[20])
@@ -545,19 +542,25 @@ def get_tape_details(tapeID,device):
 				except:
 					pass
 
-		if name and unformatted and "null" not in name:
-			tape.device = device
-			print(device)
-			tape.tapeID = tapeID
-			tape.spaceAvailable = spaceAvailable
-			print(spaceAvailable)
-			tape.unformatted = unformatted
-			tape.noTape = noTape
-			tape.error = error
+		tape.tapeID = tapeID
+		tape.spaceAvailable = spaceAvailable
+		print(spaceAvailable)
+		tape.unformatted = unformatted
+		tape.noTape = noTape
+		tape.error = error
 
 	except:
 		error = "Unable to get details about {} drive... try turning it off and on again".format(device)
-		tape = FreshTape(error=error,tapeID=tapeID)
+		tape.error = error
+
+	print("device")
+	print(tape.device)
+	print("TAPE ID")
+	print(tape.tapeID)
+	print("UNFORMATTED")
+	print(tape.unformatted)
+	print("SPACE")
+	print(tape.spaceAvailable)
 
 	return tape
 
