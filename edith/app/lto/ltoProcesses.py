@@ -65,7 +65,7 @@ class FreshTape():
 
 	def format_me(self):
 		MKLTFS = [
-			'mkltfs',#'-f',
+			'mkltfs',
 			'--device={}'.format(self.device),
 			'--tape-serial={}'.format(self.tapeID),
 			'--volume-name={}'.format(self.tapeID)
@@ -76,7 +76,9 @@ class FreshTape():
 				MKLTFS,
 				stdout=subprocess.PIPE
 				).communicate()
-			# print(out)
+			#print(out)
+			print("mkltfs "*100)
+			print(out)
 
 			# FROM LTFS SPEC: 
 			# **LTFS15047E error = Medium is already formatted**
@@ -89,8 +91,7 @@ class FreshTape():
 					if "Volume UUID" in line.decode():
 						self.UUID = line.decode().strip().split()[5]
 			else:
-				# this shouldn't even be needed @ this point....
-				self.formatStatus = "The format operation failed because the medium is already formatted by LTFS."
+				self.error = "The format operation failed because the medium is already formatted by LTFS."
 
 		except:
 			self.error = "there was an error in the LTFS command execution... needs manual investigation?"
@@ -495,6 +496,8 @@ def prep_tapes(aTapeID,bTapeID):
 	return aTape,bTape
 
 def get_tape_details(tapeID,device):
+	import getpass
+	print(getpass.getuser())
 	# this check should happen after the db has been 
 	# searched for any previous tapes with the ID
 	command = ['ltfs','-f','-o','devname={}'.format(device)]
@@ -514,10 +517,13 @@ def get_tape_details(tapeID,device):
 			stdout=subprocess.PIPE,
 			stderr=subprocess.PIPE
 			).communicate()
-		
+		#print('ltfs '*100)
+		#print(err)
 		for line in err.splitlines():
+			print(line.decode())
 			if "Volume Name" in line.decode():
 				name = line.decode().strip().split()[5]
+				print(name)
 			elif "Volser(Barcode)" in line.decode():
 				tapeID = line.decode().strip().split()[4]
 			elif "Volume UUID" in line.decode():
@@ -541,10 +547,12 @@ def get_tape_details(tapeID,device):
 
 		if name and unformatted and "null" not in name:
 			tape.device = device
+			print(device)
 			tape.tapeID = tapeID
 			tape.spaceAvailable = spaceAvailable
+			print(spaceAvailable)
 			tape.unformatted = unformatted
-			tape.noTape = bnoTape
+			tape.noTape = noTape
 			tape.error = error
 
 	except:
@@ -552,7 +560,7 @@ def get_tape_details(tapeID,device):
 		tape = FreshTape(error=error,tapeID=tapeID)
 
 	return tape
-	
+
 def post_tape_id_to_rs(writeStatuses):
 	stats = get_tape_stats()
 	ltoID = os.path.basename(stats["A"]["mountpoint"])

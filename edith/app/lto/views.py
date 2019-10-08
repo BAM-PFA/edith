@@ -55,7 +55,9 @@ def format_status():
 	if aTapeID and bTapeID: 
 		# get FreshTape() objects back, with various details assigned
 		aTape, bTape = ltoProcesses.prep_tapes(aTapeID,bTapeID)
-		if not aTape.unformatted:
+		print([aTape.unformatted,aTape.error])
+		print([bTape.unformatted,bTape.error])
+		if not aTape.unformatted in (None,False):
 			flash(
 				"Tape in the A drive ({}) is already formatted.".format(
 					aTape.tapeID
@@ -68,7 +70,7 @@ def format_status():
 					)
 				)
 		for tape in aTape,bTape:
-			if tape and not tape.error:
+			if tape and not tape.error and tape.noTape in (False,None):
 				tape.format_me()
 				tape.insert_me()
 
@@ -76,7 +78,7 @@ def format_status():
 		flash("There doesn't appear to be a valid current LTO ID defined. Make one!")
 
 	tapes.append(aTape)
-	tapes.apend(bTape)
+	tapes.append(bTape)
 
 	return render_template(
 		'lto/format_status.html',
