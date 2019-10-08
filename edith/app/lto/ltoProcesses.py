@@ -503,7 +503,8 @@ def get_tape_details(tapeID,device):
 	unformatted = False
 	noTape = False
 	error = False
-	tapeID = tapeID
+	tape = FreshTape(error=error,tapeID=tapeID)
+
 	try:
 		# purposefully fail to mount device,
 		# parse stderr, and get the tape details from it
@@ -539,14 +540,12 @@ def get_tape_details(tapeID,device):
 					pass
 
 		if name and unformatted and "null" not in name:
-			tape = FreshTape(
-				device=device,
-				tapeID=tapeID,
-				spaceAvailable=spaceAvailable,
-				unformatted=unformatted,
-				noTape=noTape,
-				error=error
-				)
+			tape.device = device
+			tape.tapeID = tapeID
+			tape.spaceAvailable = spaceAvailable
+			tape.unformatted = unformatted
+			tape.noTape = bnoTape
+			tape.error = error
 
 	except:
 		error = "Unable to get details about {} drive... try turning it off and on again".format(device)
