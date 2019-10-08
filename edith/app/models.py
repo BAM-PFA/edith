@@ -178,7 +178,7 @@ class Tape(db.Model):
 	# mountpoint for the logical file system
 	mountpoint = db.Column(db.String(100))
 	# space remaining on the tape
-	spaceAvailable = db.Column(db.Integer)
+	spaceAvailable = db.Column(db.BigInteger)
 
 class TapeID(db.Model):
 	'''
