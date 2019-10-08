@@ -48,7 +48,8 @@ class FreshTape():
 		dbID=None,
 		unformatted=None,
 		mountpoint=None,
-		spaceAvailable=None
+		spaceAvailable=None,
+		error=None
 		):
 		self.device = device 			# e.g., "/dev/nst0"
 		self.tapeID = tapeID 			# 6-digit barcode "19091A"
@@ -57,6 +58,7 @@ class FreshTape():
 		self.unformatted = unformatted	# true if there's a new blank tape
 		self.mountpoint = mountpoint 	# mountpoint in temp directory
 		self.spaceAvailable = spaceAvailable
+		self.error = error
 
 		self.formatStatus = None
 		self.mountStatus = None
@@ -91,7 +93,7 @@ class FreshTape():
 				self.formatStatus = "The format operation failed because the medium is already formatted by LTFS."
 
 		except:
-			self.formatStatus = "there was an error in the LTFS command execution... needs manual investigation?"
+			self.error = "there was an error in the LTFS command execution... needs manual investigation?"
 
 	def insert_me(self):
 		# make a db record for the tape
