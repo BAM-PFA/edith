@@ -436,7 +436,7 @@ def parse_index_schema_file():
 		print("SCHEMA FILE DOESN'T EXIST?")
 
 def establish_new_lto_id(ltoID):
-	ltoIDregex = re.compile(r'^((\d{4}[A-Z]A)|(\d{5}A))$')
+	tapeIdRegex = re.compile(r'^((\d{4}[A-Z]A)|(\d{5}A))$')
 	# ltoIdFilePath = os.path.join(utils.get_temp_dir(),'LTOID.txt')
 	error = None
 	try:
