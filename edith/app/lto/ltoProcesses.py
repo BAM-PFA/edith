@@ -100,6 +100,7 @@ class FreshTape():
 						except:
 							pass
 			else:
+				self.unformatted = False
 				self.error = "The format operation failed because the medium is already formatted by LTFS."
 
 		except:
@@ -111,7 +112,7 @@ class FreshTape():
 			tapeBarcode=self.tapeID,
 			tapeUUID=self.UUID,
 			status="unmounted",
-			# formattedDate=datetime.now(),
+			formattedDate=datetime.now(),
 			spaceAvailable=self.spaceAvailable
 			)
 
@@ -492,11 +493,11 @@ def get_a_and_b_IDs():
 
 	return aTapeID,bTapeID
 
-# def search_for_existing_tape(aTapeID,bTapeID):
-# 	aTape = db.session.query(Tape).filter(tapeBarcode=aTapeID).first()
-# 	bTape = db.session.query(Tape).filter(tapeBarcode=bTapeID).first()
+def search_for_existing_tape(aTapeID,bTapeID):
+	aTape = db.session.query(Tape).filter(tapeBarcode=aTapeID).first()
+	bTape = db.session.query(Tape).filter(tapeBarcode=bTapeID).first()
 
-# 	return aTape, bTape
+	return aTape, bTape
 
 def prep_tapes(aTapeID,bTapeID):
 	aTape = get_tape_details(aTapeID,"/dev/nst0")
@@ -508,7 +509,7 @@ def get_tape_details(tapeID,device):
 	command = ['ltfs','-f','-o','devname={}'.format(device)]
 	name = None
 	spaceAvailable = 0
-	unformatted = False
+	unformatted = None
 	noTape = False
 	error = False
 	tape = FreshTape(error=error,tapeID=tapeID,device=device)

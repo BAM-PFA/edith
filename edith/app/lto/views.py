@@ -70,7 +70,7 @@ def format_status():
 					)
 				)
 		for tape in aTape,bTape:
-			if tape and not tape.error and tape.noTape in (False,None):
+			if tape and tape.unformatted and not tape.error and tape.noTape in (False,None):
 				tape.format_me()
 				tape.insert_me()
 
