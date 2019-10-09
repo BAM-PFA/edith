@@ -95,10 +95,13 @@ class FreshTape():
 						self.UUID = line.decode().strip().split()[4]
 					elif "LTFS10030I" in line.decode():
 						try:
-							spaceAvailable = int(line.decode().strip().split()[20])
-							spaceAvailable = utils.mebibytes_to_bytes(spaceAvailable)
+							self.spaceAvailable = int(line.decode().strip().split()[20])
+							self.spaceAvailable = utils.mebibytes_to_bytes(spaceAvailable)
 						except:
 							pass
+					elif "Volume capacity" in line.decode():
+						gb = line.decode().strip().split()[4]
+						self.spaceAvailable = "Approximately {} gigabytes".format(gb)
 			else:
 				self.unformatted = False
 				self.error = "The format operation failed because the medium is already formatted by LTFS."
@@ -108,6 +111,8 @@ class FreshTape():
 
 	def insert_me(self):
 		# make a db record for the tape
+		if not isinstance(self.spaceAvailable,int):
+			self.spaceAvailable = 0
 		newTape = Tape(
 			tapeBarcode=self.tapeID,
 			tapeUUID=self.UUID,
@@ -509,9 +514,9 @@ def get_tape_details(tapeID,device):
 	command = ['ltfs','-f','-o','devname={}'.format(device)]
 	name = None
 	spaceAvailable = 0
-	unformatted = None
+	unformatted = False
 	noTape = False
-	error = False
+	error = None
 	tape = FreshTape(error=error,tapeID=tapeID,device=device)
 
 	try:

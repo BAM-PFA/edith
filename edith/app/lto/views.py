@@ -57,21 +57,21 @@ def format_status():
 		aTape, bTape = ltoProcesses.prep_tapes(aTapeID,bTapeID)
 		print([aTape.unformatted,aTape.error])
 		print([bTape.unformatted,bTape.error])
-		if aTape.unformatted == False:
+		if aTape.unformatted == False and not aTape.noTape:
 			flash(
 				"Tape in the A drive ({}) is already formatted.".format(
 					aTape.tapeID
 					)
 				)
-		if bTape.unformatted == False:
+		if bTape.unformatted == False and not bTape.noTape:
 			flash(
 				"Tape in the B drive ({}) is already formatted.".format(
 					bTape.tapeID
 					)
 				)
 		for tape in aTape,bTape:
-			if tape and tape.unformatted and not tape.error and tape.noTape in (False,None):
-				tape.format_me()
+			tape.format_me()
+			if tape and tape.unformatted and not tape.noTape:
 				tape.insert_me()
 
 	else:
