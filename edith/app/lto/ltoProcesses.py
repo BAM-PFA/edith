@@ -100,8 +100,9 @@ class FreshTape():
 						except:
 							pass
 					elif "Volume capacity" in line.decode():
-						gb = line.decode().strip().split()[4]
-						self.spaceAvailable = "Approximately {} gigabytes".format(gb)
+						# `mkltfs` doesn't return the actual capacity,
+						# it just shows an approximation. use this for display
+						self.formatStatus += "; {}".format(line.decode())
 			else:
 				self.unformatted = False
 				self.error = "The format operation failed because the medium is already formatted by LTFS."
@@ -111,8 +112,6 @@ class FreshTape():
 
 	def insert_me(self):
 		# make a db record for the tape
-		if not isinstance(self.spaceAvailable,int):
-			self.spaceAvailable = 0
 		newTape = Tape(
 			tapeBarcode=self.tapeID,
 			tapeUUID=self.UUID,
