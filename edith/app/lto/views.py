@@ -55,8 +55,8 @@ def format_status():
 	if aTapeID and bTapeID: 
 		# get FreshTape() objects back, with various details assigned
 		aTape, bTape = ltoProcesses.prep_tapes(aTapeID,bTapeID)
-		print([aTape.unformatted,aTape.error])
-		print([bTape.unformatted,bTape.error])
+		# print([aTape.unformatted,aTape.error])
+		# print([bTape.unformatted,bTape.error])
 		if aTape.unformatted == False and not aTape.noTape:
 			flash(
 				"Tape in the A drive ({}) is already formatted.".format(
@@ -121,41 +121,27 @@ def lto_id_status():
 @login_required
 def mount_lto():
 	mountEmUp = forms.mount()
-
+	aTapeID,bTapeID = ltoProcesses.get_a_and_b_IDs()
+	ids = [aTapeID,bTapeID]
+	tapes =[]
 	# get the current attached tape devices and try to read a barcode from each
-	tempDir = utils.get_temp_dir()
-	drives = {
-		0:{
-			"drive":"A",
-			"device":"/dev/nst0"
-			},
-		1:{
-			"drive":"B",
-			"device":"/dev/nst1"
-			}
-		}
-	tapes = []
-	for drive, details in drives.items():
-		tape = ltoProcesses.FreshTape(
-			AorB=drive["drive"],
-			device=drive["device"]
-			)
+	for drive in ("/dev/nst0","/dev/nst1"):
+		tape = ltoProcesses.get_tape_details(None,drive)
+		
+		exists = tape.do_i_exist()
+		if not exists:
+			tape.insert_me()
 		tapes.append(tape)
-
-	for tape in tapes:
-		tape.get_tape_id()
-
-		if tape.mountStatus:
-			flash(tape.mountStatus) # i.e. if there was an error
-
-	mountEmUp.tapeBarcodes.data = barcodes
+		if tape.unformatted:
+			tape.error = "Error: tape in {} drive is not formatted. Go format it!".format(drive)
+			break
 
 	return render_template(
 		'lto/mount_lto.html',
 		title="Mount LTO tapes",
-		currentLTOid = ltoProcesses.get_current_LTO_id(),
+		ids=ids,
 		mountForm=mountEmUp,
-		barcodes=barcodes
+		tapes=tapes
 		)
 
 @lto.route('/mount_status',methods=['GET','POST'])

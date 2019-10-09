@@ -130,9 +130,12 @@ class FreshTape():
 	def mount_me(self):
 		pass
 
-	def write_status_to_db(self):
-		pass
-		
+	def do_i_exist(self):
+		existingTape = db.session.query(Tape).filter_by(tapeUUID=self.tapeUUID).first()
+
+		if existingTape:
+			self.dbID = existingTape.id
+
 class WriteProcess():
 	"""docstring for WriteProcess"""
 	def __init__(self,
@@ -497,11 +500,7 @@ def get_a_and_b_IDs():
 
 	return aTapeID,bTapeID
 
-def search_for_existing_tape(aTapeID,bTapeID):
-	aTape = db.session.query(Tape).filter(tapeBarcode=aTapeID).first()
-	bTape = db.session.query(Tape).filter(tapeBarcode=bTapeID).first()
 
-	return aTape, bTape
 
 def prep_tapes(aTapeID,bTapeID):
 	aTape = get_tape_details(aTapeID,"/dev/nst0")
@@ -527,13 +526,10 @@ def get_tape_details(tapeID,device):
 			stdout=subprocess.PIPE,
 			stderr=subprocess.PIPE
 			).communicate()
-		print('ltfs '*100)
-		print(err.splitlines())
 		for line in err.splitlines():
 			print(line.decode())
 			if "Volume Name" in line.decode():
 				name = line.decode().strip().split()[5]
-				print(name)
 			elif "Volser(Barcode)" in line.decode():
 				try:
 					tapeID = line.decode().strip().split()[4]
@@ -565,7 +561,6 @@ def get_tape_details(tapeID,device):
 
 		tape.tapeID = tapeID
 		tape.spaceAvailable = spaceAvailable
-		print(spaceAvailable)
 		tape.unformatted = unformatted
 		tape.noTape = noTape
 		tape.error = error
@@ -573,15 +568,6 @@ def get_tape_details(tapeID,device):
 	except:
 		error = "Unable to get details about {} drive... try turning it off and on again".format(device)
 		tape.error = error
-
-	print("device")
-	print(tape.device)
-	print("TAPE ID")
-	print(tape.tapeID)
-	print("UNFORMATTED")
-	print(tape.unformatted)
-	print("SPACE")
-	print(tape.spaceAvailable)
 
 	return tape
 

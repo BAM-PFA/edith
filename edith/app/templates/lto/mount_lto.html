@@ -3,19 +3,32 @@
 {% block content %}
 	<div class='card'>
 		<div class="card-body">
-			<h1 "card-title">Mount LTO</h1>
-			<h5 class="card-title">The current base LTO ID in use is:</h5><br>
-			<h6 class="card-subtitle">{{ currentLTOid }}</h6>
+			<h5 class="card-title">FYI the current LTO IDs in use are:</h5><br>
+			<h6 class="card-subtitle">{{ ids[0] }} | {{ ids[1] }}</h6>
 		</div>
 		<div class="card-body">
-			<p class="card-text">
-				Found these formatted tapes:
-			</p>
-			<ul class="list-group list-group-flush">
-				{% for letter, barcode in barcodes.items() %}
-					<li class="list-group-item">{{ letter }} drive: <b>{{ barcode }}</b></li>
+			<p class="card-text">Found these formatted tapes:</p>
+			<table class="table table-striped table-bordered">
+				<thead>
+					<tr>
+						<th width="15%"> Tape ID </th>
+						<th width="15%"> Space available (bytes) </th>
+						<th width="10%"> Logical device </th>
+						<th width="20%"> Errors </th>
+					</tr>
+				</thead>
+				<tbody>
+				{% for tape in tapes %}
+					<tr>
+						<td>{{ tape.tapeID }}</td>
+						<td>{{ tape.spaceAvailable }}</td>
+						<td>{{ tape.device }}</td>
+						<td>{{ tape.error }}</td>
+					</tr>	
 				{% endfor %}
-			</ul><br>
+				</tbody>
+			</table>
+
 			<p class="card-text">If for whatever reason the tapes shown above don't match the current LTO ID, you may need to find and reinsert the current tapes.</p>
 
 			<form action="{{ url_for('lto.mount_status') }}" method='POST'>
