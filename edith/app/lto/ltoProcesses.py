@@ -65,7 +65,7 @@ class FreshTape():
 
 	def format_me(self):
 		MKLTFS = [
-			'mkltfs',
+			'mkltfs','-f',
 			'--device={}'.format(self.device),
 			'--tape-serial={}'.format(self.tapeID),
 			'--volume-name={}'.format(self.tapeID)
@@ -74,22 +74,31 @@ class FreshTape():
 		try:
 			out, err = subprocess.Popen(
 				MKLTFS,
-				stdout=subprocess.PIPE
+				stdout=subprocess.PIPE,
+				stderr=subprocess.PIPE
 				).communicate()
-			#print(out)
+			print(out)
 			print("mkltfs "*100)
 			print(err)
 
 			# FROM LTFS SPEC: 
 			# **LTFS15047E error = Medium is already formatted**
 			# "The format operation failed because the medium is already formatted by LTFS."
-			
+
 
 			if not "LTFS15047E" in err.decode():
 				self.formatStatus = "Formatted as LTFS"
 				for line in err.splitlines():
+					print(line.decode())
 					if "Volume UUID" in line.decode():
-						self.UUID = line.decode().strip().split()[5]
+						print(line.decode().strip().split())
+						self.UUID = line.decode().strip().split()[4]
+					elif "LTFS10030I" in line.decode():
+						try:
+							spaceAvailable = int(line.decode().strip().split()[20])
+							spaceAvailable = utils.mebibytes_to_bytes(spaceAvailable)
+						except:
+							pass
 			else:
 				self.error = "The format operation failed because the medium is already formatted by LTFS."
 
@@ -521,20 +530,27 @@ def get_tape_details(tapeID,device):
 				name = line.decode().strip().split()[5]
 				print(name)
 			elif "Volser(Barcode)" in line.decode():
-				tapeID = line.decode().strip().split()[4]
+				try:
+					tapeID = line.decode().strip().split()[4]
+				except:
+					tapeID = tapeID
 			elif "Volume UUID" in line.decode():
-				UUID = line.decode().strip().split()[5]
+				try:
+					UUID = line.decode().strip().split()[5]
+				except:
+					UUID = None
 			elif "LTFS17168E" in line.decode():
 				# "Cannot read volume: medium is not partitioned"
 				# i.e. the tape is not formatted w LTFS
-				unformatted = True 
+				unformatted = True
 			elif "LTFS11006E" in line.decode():
 				# "Cannot read volume: failed to load the tape"
 				# taking this to mean that there's no tape in the drive
 				# (or perhaps the tape is unreadable 
 				# and functionally the drive is empty)
 				noTape = True
-				print(noTape*50)
+				if noTape:
+					error = "No tape in {} drive.".format(device)
 			elif "LTFS10030I" in line.decode():
 				try:
 					spaceAvailable = int(line.decode().strip().split()[20])
