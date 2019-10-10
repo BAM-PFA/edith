@@ -27,63 +27,11 @@ def lto_menu():
 		title='LTO MENU'
 		)
 
-@lto.route('/format_lto',methods=['GET','POST'])
-@login_required
-def format_lto():
-	currentLTOid = ltoProcesses.get_current_LTO_id()
-
-	formatLTO = forms.format_form()
-
-	return render_template(
-		'lto/format_lto.html',
-		title="Format LTO",
-		formatForm=formatLTO,
-		currentLTOid=currentLTOid
-		)
-
-@lto.route('/format_status',methods=['GET','POST'])
-@login_required
-def format_status():
-	# we are using SCSI (SAS) attached drives in linux so I'll default the
-	# device names to nst0 and nst1, which are the non-auto-rewind device 
-	# names
-	tapes = []
-	aTape = None
-	bTape = None
-	aTapeID, bTapeID = ltoProcesses.get_a_and_b_IDs()
-
-	if aTapeID and bTapeID: 
-		# get FreshTape() objects back, with various details assigned
-		aTape, bTape = ltoProcesses.prep_tapes(aTapeID,bTapeID)
-		# print([aTape.unformatted,aTape.error])
-		# print([bTape.unformatted,bTape.error])
-		if aTape.unformatted == False and not aTape.noTape:
-			flash(
-				"Tape in the A drive ({}) is already formatted.".format(
-					aTape.tapeID
-					)
-				)
-		if bTape.unformatted == False and not bTape.noTape:
-			flash(
-				"Tape in the B drive ({}) is already formatted.".format(
-					bTape.tapeID
-					)
-				)
-		for tape in aTape,bTape:
-			tape.format_me()
-			if tape and tape.unformatted and not tape.noTape:
-				tape.insert_me()
-
-	else:
-		flash("There doesn't appear to be a valid current LTO ID defined. Make one!")
-
-	tapes.append(aTape)
-	tapes.append(bTape)
-
-	return render_template(
-		'lto/format_status.html',
-		tapes=tapes
-		)
+###########################################################
+###########################################################
+#####			LTO ID STUFF
+###########################################################
+###########################################################
 
 @lto.route('/lto_id',methods=['GET','POST'])
 @login_required
@@ -117,12 +65,88 @@ def lto_id_status():
 		ltoIDstatus = ltoIDstatus
 		)
 
+###########################################################
+###########################################################
+#####			LTO FORMATTING
+###########################################################
+###########################################################
+
+@lto.route('/format_lto',methods=['GET','POST'])
+@login_required
+def format_lto():
+	currentLTOid = ltoProcesses.get_current_LTO_id()
+
+	formatLTO = forms.format_form()
+
+	return render_template(
+		'lto/format_lto.html',
+		title="Format LTO",
+		formatForm=formatLTO,
+		currentLTOid=currentLTOid
+		)
+
+@lto.route('/format_status',methods=['GET','POST'])
+@login_required
+def format_status():
+	# we are using SCSI (SAS) attached drives in linux so I'll default the
+	# device names to nst0 and nst1, which are the non-auto-rewind device 
+	# names
+	tapes = []
+	aTape = None
+	bTape = None
+	aTapeID, bTapeID = ltoProcesses.get_a_and_b_IDs()
+
+	if aTapeID and bTapeID: 
+		# this step makes an `ltfs` call on both drives, and gathers
+		# details that are added to FreshTape() objects for each tape
+		# Get the FreshTape() objects back, and do stuff
+		aTape, bTape = ltoProcesses.prep_tapes(aTapeID,bTapeID)
+		# print([aTape.unformatted,aTape.error])
+		# print([bTape.unformatted,bTape.error])
+		if aTape.unformatted == False and not aTape.noTape:
+			flash(
+				"Tape in the A drive ({}) is already formatted.".format(
+					aTape.tapeID
+					)
+				)
+		if bTape.unformatted == False and not bTape.noTape:
+			flash(
+				"Tape in the B drive ({}) is already formatted.".format(
+					bTape.tapeID
+					)
+				)
+		for tape in aTape,bTape:
+			tape.format_me()
+			if tape and tape.unformatted and not tape.noTape:
+				tape.insert_me()
+
+	else:
+		flash("There doesn't appear to be a valid current LTO ID defined. Make one!")
+
+	tapes.append(aTape)
+	tapes.append(bTape)
+
+	return render_template(
+		'lto/format_status.html',
+		tapes=tapes
+		)
+
+
+
+###########################################################
+###########################################################
+#####			LTO MOUNTING
+###########################################################
+###########################################################
+
 @lto.route('/mount_lto',methods=['GET','POST'])
 @login_required
 def mount_lto():
 	mountEmUp = forms.mount()
+	# look in db for current official A/B IDs
 	aTapeID,bTapeID = ltoProcesses.get_a_and_b_IDs()
-	ids = [aTapeID,bTapeID]
+	currentIds = [aTapeID,bTapeID]
+	actualIDs = []
 	tapes =[]
 	# get the current attached tape devices and try to read a barcode from each
 	for drive in ("/dev/nst0","/dev/nst1"):
@@ -135,10 +159,15 @@ def mount_lto():
 			tape.error = "Error: tape in {} drive is not formatted. Go format it!".format(drive)
 			break
 
+	for tape in tapes:
+		# make a list of the actual IDs in use to the 
+		actualIDs.append(tape.tapeID)
+	mountEmUp.actualIDs = actualIDs
+
 	return render_template(
 		'lto/mount_lto.html',
 		title="Mount LTO tapes",
-		ids=ids,
+		currentIds=currentIds,
 		mountForm=mountEmUp,
 		tapes=tapes
 		)
@@ -146,23 +175,26 @@ def mount_lto():
 @lto.route('/mount_status',methods=['GET','POST'])
 @login_required
 def mount_status():
-	statuses = {'errors':[]}
-	userId = os.getegid()
 	tempDir = utils.get_temp_dir()
 	_data = request.form.to_dict(flat=False)
-	print(_data)
-	coolBarcodes = _data["tapeBarcodes"][0]
-	print("barcodes")
-	print(coolBarcodes)
-	# this is dumb. the dict is passed as a string from the form
-	# so i have to re-read it as a dict
-	coolBarcodes = ast.literal_eval(coolBarcodes)
-	devices = {'/dev/nst0':'','/dev/nst0':''}
+	tapeIDs = _data["actualIDs"][0]
+	tapeIDs = ast.literal_eval(tapeIDs)
+	tapes = []
 
-	devices['/dev/nst0'] = coolBarcodes['A']
-	devices['/dev/nst1'] = coolBarcodes['B']
+	for _id in tapeIDs:
+		tape = db.session.query(Tape).filter_by(tapeID=_id).first()
+		tapeObject = FreshTape(
+			dbID=tape.id
+			tapeID=_id,
+			UUID=tape.tapeUUID,
+			spaceAvailable=tape.spaceAvailable
+			)
+		tapeObject.set_mountpoint()
+		tapes.append(tapeObject)
 
-	ltfsDetails = []
+		if os.path.exists(tapeObject.mountpoint):
+			# do stuff
+			pass
 
 	for device, tapeID in devices.items():
 		mountpoint = os.path.join(tempDir,tapeID)
@@ -229,6 +261,27 @@ def mount_status():
 		title="LTO Mount Status",
 		statuses=statuses
 		)
+
+@lto.route('/unmount_lto_status',methods=['GET','POST'])
+@login_required
+def unmount_lto_status():
+	# _data = request.form.to_dict(flat=False)
+	errors = ltoProcesses.unmount_tapes()
+	if errors == True:
+		# i.e., no errors!
+		utils.clean_temp_dir()
+
+	return render_template(
+		'lto/unmount_lto_status.html',
+		title="Unmount tapes status",
+		errors=errors
+		)
+
+###########################################################
+###########################################################
+#####			LTO WRITING
+###########################################################
+###########################################################
 
 @lto.route('/list_aips',methods=['GET','POST'])
 @login_required
@@ -357,20 +410,11 @@ def write_status():
 		errors=errors
 		)
 
-@lto.route('/unmount_lto_status',methods=['GET','POST'])
-@login_required
-def unmount_lto_status():
-	# _data = request.form.to_dict(flat=False)
-	errors = ltoProcesses.unmount_tapes()
-	if errors == True:
-		# i.e., no errors!
-		utils.clean_temp_dir()
-
-	return render_template(
-		'lto/unmount_lto_status.html',
-		title="Unmount tapes status",
-		errors=errors
-		)
+###########################################################
+###########################################################
+#####			LTO READING
+###########################################################
+###########################################################
 
 @lto.route('/choose_deck',methods=['GET','POST'])
 @login_required

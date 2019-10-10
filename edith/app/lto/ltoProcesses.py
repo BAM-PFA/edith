@@ -19,24 +19,11 @@ from .. import utils
 from .. import db
 from .. models import Tape, TapeID
 
-# class LTODeck():
-# 	"""Instance of the deck during an LTO interaction... WIP"""
-# 	def __init__(self):
-# 		self.a_drive_device = "/dev/nst0"
-# 		self.b_drive_device = "/dev/nst1"
-
-# 	def set_tape_IDs(self,aTapeID=None,bTapeID=None):
-# 		pass
-
-class Package():
-	"""docstring for Package"""
-	def __init__(self, 
-		path=None,
-		size=None
-		):
-
-		self.path = path
-		self.size = size
+###########################################################
+###########################################################
+#####			LTO CLASSES
+###########################################################
+###########################################################
 
 class FreshTape():
 	"""Class to define an LTO tape"""
@@ -127,6 +114,13 @@ class FreshTape():
 		db.session.commit()
 		self.dbID = newTape.id
 
+	def set_mountpoint(self):
+		tempDir = utils.get_temp_dir()
+		self.mountpoint = os.path.join(tempDir,self.tapeID)
+		me = db.session.query(Tape).filter_by(tapeID=self.tapeID).first()
+		me.mountpoint = self.mountpoint
+		db.session.commit()
+
 	def mount_me(self):
 		pass
 
@@ -140,19 +134,172 @@ class FreshTape():
 
 		return exists
 
-class WriteProcess():
-	"""docstring for WriteProcess"""
-	def __init__(self,
-		arg=None
-		):
-		self.arg = arg
-
-class TapeMount():
-	"""docstring for TapeMount"""
+class Package():
+	"""docstring for Package"""
 	def __init__(self, 
-		mountpoint=None
+		path=None,
+		size=None
 		):
-		self.mountpoint = mountpoint
+
+		self.path = path
+		self.size = size
+
+###########################################################
+###########################################################
+#####			LTO ID STUFF
+###########################################################
+###########################################################
+
+def establish_new_lto_id(ltoID):
+	tapeIdRegex = re.compile(r'^((\d{4}[A-Z]A)|(\d{5}A))$')
+	# ltoIdFilePath = os.path.join(utils.get_temp_dir(),'LTOID.txt')
+	error = None
+	try:
+		db.session.query(TapeID).delete() # clear out any lingering entries
+		db.session.commit()
+	except:
+		pass 
+
+	if re.match(tapeIdRegex,ltoID):
+		aVersion = ltoID
+		bVersion = ltoID[:-1]+"B"
+		try:
+			newID = TapeID(id=1, a_version=aVersion, b_version=bVersion)
+			db.session.add(newID)
+			db.session.commit()
+			ltoIDstatus = True
+		except:
+			error = 'There was an error adding the LTO ID to the database.'
+			ltoIDstatus = False
+
+	return error, ltoIDstatus
+
+def get_current_LTO_id():
+	try:
+		currentLTOid = db.session.query(TapeID).get(1).a_version
+	except:
+		currentLTOid = None
+
+	return currentLTOid
+
+def get_a_and_b_IDs():
+	# Read the current LTO ID from db
+	# and return the ID for both A and B tapes
+	currentLTOid = db.session.query(TapeID).get(1)
+	if currentLTOid:
+		aTapeID = currentLTOid.a_version
+		bTapeID = currentLTOid.b_version
+	else:
+		aTapeID = None
+		bTapeID = None
+
+	return aTapeID,bTapeID
+
+###########################################################
+###########################################################
+#####			LTO FORMATTING
+###########################################################
+###########################################################
+
+def prep_tapes(aTapeID,bTapeID):
+	aTape = get_tape_details(aTapeID,"/dev/nst0")
+	bTape = get_tape_details(bTapeID,"/dev/nst1")
+
+	return aTape,bTape
+
+def get_tape_details(tapeID,device):
+	command = ['ltfs','-f','-o','devname={}'.format(device)]
+	name = None
+	spaceAvailable = 0
+	unformatted = False
+	noTape = False
+	error = None
+	tape = FreshTape(error=error,tapeID=tapeID,device=device)
+
+	try:
+		# purposefully fail to mount device,
+		# parse stderr, and get the tape details from it
+		# returns a FreshTape object w these details
+		out,err = subprocess.Popen(
+			command,
+			stdout=subprocess.PIPE,
+			stderr=subprocess.PIPE
+			).communicate()
+		for line in err.splitlines():
+			print(line.decode())
+			if "Volser(Barcode)" in line.decode():
+				try:
+					tapeID = line.decode().strip().split()[4]
+				except:
+					tapeID = tapeID
+			elif "Volume UUID" in line.decode():
+				try:
+					UUID = line.decode().strip().split()[5]
+				except:
+					UUID = None
+			elif "LTFS17168E" in line.decode():
+				# "Cannot read volume: medium is not partitioned"
+				# i.e. the tape is not formatted w LTFS
+				unformatted = True
+			elif "LTFS11006E" in line.decode():
+				# "Cannot read volume: failed to load the tape"
+				# taking this to mean that there's no tape in the drive
+				# (or perhaps the tape is unreadable 
+				# and functionally the drive is empty)
+				noTape = True
+				if noTape:
+					error = "No tape in {} drive.".format(device)
+			elif "LTFS10030I" in line.decode():
+				try:
+					spaceAvailable = int(line.decode().strip().split()[20])
+					spaceAvailable = utils.mebibytes_to_bytes(spaceAvailable)
+				except:
+					pass
+
+		tape.UUID = UUID
+		tape.tapeID = tapeID
+		tape.spaceAvailable = spaceAvailable
+		tape.unformatted = unformatted
+		tape.noTape = noTape
+		tape.error = error
+
+	except:
+		error = "Unable to get details about {} drive... try turning it off and on again".format(device)
+		tape.error = error
+
+	return tape
+
+###########################################################
+###########################################################
+#####			LTO MOUNTING
+###########################################################
+###########################################################
+
+def unmount_tapes():
+	# apache user added to sudoers overrides for `umount`
+	aMount,bMount = get_tape_mountpoints()
+	errors = []
+	if not False in (aMount,bMount):
+		for tape in (aMount,bMount):
+			command = [
+			'sudo','umount',
+			tape
+			]
+			out = subprocess.run(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+			if not out.stderr.decode() == '':
+				errors.append(out.stderr.decode())
+			else:
+				pass
+	if not errors == []:
+		return errors
+	else:
+		return True
+
+###########################################################
+###########################################################
+#####			LTO WRITING
+###########################################################
+###########################################################
 
 def get_aip_human_name(aipPath):
 	'''
@@ -192,21 +339,19 @@ def get_aip_human_name(aipPath):
 
 	return humanName
 
-def run_ltfs(devname,tempdir,mountpoint):
-	command = (
-		"sudo ltfs "
-		"-o gid=33 "
-		"-o uid=33 "
-		"-o work_directory={} "
-		"-o noatime "
-		"-o capture_index "
-		"-o devname={} "
-		"{}".format(tempdir,devname,mountpoint)
-		)
-	commandList = command.split()
-	# print(commandList)
+def run_ltfs(devname,tempDir,mountpoint):
+	command = [
+		"ltfs",
+		"-o","gid=33",
+		"-o","uid=33",
+		"-o","work_directory={}".format(tempDir),
+		"-o","noatime",
+		"-o","capture_index",
+		"-o","devname={}".format(devname),
+		"{}".format(mountpoint)
+		]
 	doit = subprocess.Popen(
-		commandList,
+		command,
 		stdin=subprocess.DEVNULL,
 		stdout=subprocess.DEVNULL,
 		stderr=subprocess.PIPE,
@@ -410,25 +555,7 @@ def get_tape_mountpoints():
 
 	return aMount,bMount
 
-def unmount_tapes():
-	# apache user added to sudoers overrides for `umount`
-	aMount,bMount = get_tape_mountpoints()
-	errors = []
-	if not False in (aMount,bMount):
-		for tape in (aMount,bMount):
-			command = [
-			'sudo','umount',
-			tape
-			]
-			out = subprocess.run(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-			if not out.stderr.decode() == '':
-				errors.append(out.stderr.decode())
-			else:
-				pass
-	if not errors == []:
-		return errors
-	else:
-		return True
+
 
 def parse_index_schema_file():
 	# get the first and last name of current_user
@@ -457,121 +584,6 @@ def parse_index_schema_file():
 
 	else:
 		print("SCHEMA FILE DOESN'T EXIST?")
-
-def establish_new_lto_id(ltoID):
-	tapeIdRegex = re.compile(r'^((\d{4}[A-Z]A)|(\d{5}A))$')
-	# ltoIdFilePath = os.path.join(utils.get_temp_dir(),'LTOID.txt')
-	error = None
-	try:
-		db.session.query(TapeID).delete() # clear out any lingering entries
-		db.session.commit()
-	except:
-		pass 
-
-	if re.match(tapeIdRegex,ltoID):
-		aVersion = ltoID
-		bVersion = ltoID[:-1]+"B"
-		try:
-			newID = TapeID(id=1, a_version=aVersion, b_version=bVersion)
-			db.session.add(newID)
-			db.session.commit()
-			ltoIDstatus = True
-		except:
-			error = 'There was an error adding the LTO ID to the database.'
-			ltoIDstatus = False
-
-	return error, ltoIDstatus
-
-def get_current_LTO_id():
-	try:
-		currentLTOid = db.session.query(TapeID).get(1).a_version
-	except:
-		currentLTOid = None
-
-	return currentLTOid
-
-def get_a_and_b_IDs():
-	# Read the current LTO ID from db
-	# and return the ID for both A and B tapes
-	currentLTOid = db.session.query(TapeID).get(1)
-	if currentLTOid:
-		aTapeID = currentLTOid.a_version
-		bTapeID = currentLTOid.b_version
-	else:
-		aTapeID = None
-		bTapeID = None
-
-	return aTapeID,bTapeID
-
-
-
-def prep_tapes(aTapeID,bTapeID):
-	aTape = get_tape_details(aTapeID,"/dev/nst0")
-	bTape = get_tape_details(bTapeID,"/dev/nst1")
-
-	return aTape,bTape
-
-def get_tape_details(tapeID,device):
-	command = ['ltfs','-f','-o','devname={}'.format(device)]
-	name = None
-	spaceAvailable = 0
-	unformatted = False
-	noTape = False
-	error = None
-	tape = FreshTape(error=error,tapeID=tapeID,device=device)
-
-	try:
-		# purposefully fail to mount device,
-		# parse stderr, and get the tape details from it
-		# returns a FreshTape object w these details
-		out,err = subprocess.Popen(
-			command,
-			stdout=subprocess.PIPE,
-			stderr=subprocess.PIPE
-			).communicate()
-		for line in err.splitlines():
-			print(line.decode())
-			if "Volser(Barcode)" in line.decode():
-				try:
-					tapeID = line.decode().strip().split()[4]
-				except:
-					tapeID = tapeID
-			elif "Volume UUID" in line.decode():
-				try:
-					UUID = line.decode().strip().split()[5]
-				except:
-					UUID = None
-			elif "LTFS17168E" in line.decode():
-				# "Cannot read volume: medium is not partitioned"
-				# i.e. the tape is not formatted w LTFS
-				unformatted = True
-			elif "LTFS11006E" in line.decode():
-				# "Cannot read volume: failed to load the tape"
-				# taking this to mean that there's no tape in the drive
-				# (or perhaps the tape is unreadable 
-				# and functionally the drive is empty)
-				noTape = True
-				if noTape:
-					error = "No tape in {} drive.".format(device)
-			elif "LTFS10030I" in line.decode():
-				try:
-					spaceAvailable = int(line.decode().strip().split()[20])
-					spaceAvailable = utils.mebibytes_to_bytes(spaceAvailable)
-				except:
-					pass
-
-		tape.UUID = UUID
-		tape.tapeID = tapeID
-		tape.spaceAvailable = spaceAvailable
-		tape.unformatted = unformatted
-		tape.noTape = noTape
-		tape.error = error
-
-	except:
-		error = "Unable to get details about {} drive... try turning it off and on again".format(device)
-		tape.error = error
-
-	return tape
 
 def post_tape_id_to_rs(writeStatuses):
 	stats = get_tape_stats()
