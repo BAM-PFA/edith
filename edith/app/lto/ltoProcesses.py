@@ -4,6 +4,7 @@ import ast
 from datetime import datetime
 import json
 from multiprocessing import Pool
+from multiprocessing.dummy import Pool as ThreadPool
 import os
 import re
 import subprocess
@@ -33,6 +34,7 @@ class FreshTape():
 		UUID=None,
 		noTape=None,
 		dbID=None,
+		dbRecord=None,
 		unformatted=None,
 		mountpoint=None,
 		spaceAvailable=None,
@@ -41,6 +43,8 @@ class FreshTape():
 		self.device = device 			# e.g., "/dev/nst0"
 		self.tapeID = tapeID 			# 6-digit barcode "19091A"
 		self.UUID = UUID				# 32-byte UUID
+		self.dbID = dbID
+		self.dbRecord = dbRecord
 		self.noTape = noTape 			# true if the drive is just empty
 		self.unformatted = unformatted	# true if there's a new blank tape
 		self.mountpoint = mountpoint 	# mountpoint in temp directory
@@ -70,9 +74,8 @@ class FreshTape():
 
 			# FROM LTFS SPEC: 
 			# **LTFS15047E error = Medium is already formatted**
-			# "The format operation failed because the medium is already formatted by LTFS."
-
-
+			#   "The format operation failed because the medium is 
+			#   already formatted by LTFS."
 			if not "LTFS15047E" in err.decode():
 				self.formatStatus = "Formatted as LTFS"
 				for line in err.splitlines():
@@ -115,24 +118,52 @@ class FreshTape():
 		self.dbID = newTape.id
 
 	def set_mountpoint(self):
+		# Create a directory based on the tape ID
+		# get the db record for the tape and add the mountpoint to it
 		tempDir = utils.get_temp_dir()
 		self.mountpoint = os.path.join(tempDir,self.tapeID)
-		me = db.session.query(Tape).filter_by(tapeID=self.tapeID).first()
-		me.mountpoint = self.mountpoint
-		db.session.commit()
+		try:
+			os.rmdir(self.mountpoint)
+			os.mkdir(self.mountpoint)
+			os.chmod(self.mountpoint,0o777)
+			self.mountStatus = True
+		except Exception as e:
+			self.mountpoint = None
+			self.error = e
+		update_db_attribute("mountpoint",self.mountpoint)
+		# tapeRecord.status = "mounted"
+
 
 	def mount_me(self):
-		pass
+		
 
 	def do_i_exist(self):
+		# look for an entry in the db for this tape
+		# using UUID, which *should* exist at this point
 		exists = False
 		existingTape = db.session.query(Tape).filter_by(tapeUUID=self.UUID).first()
 		#print(self.UUID*50)
 		if existingTape:
 			self.dbID = existingTape.id
+			self.dbRecord = existingTape
 			exists = True
 
 		return exists
+
+	def update_db_attribute(self,attribute,value):
+		status = False
+		if self.dbRecord:
+			self.dbRecord.attribute = value
+			db.session.commit()
+			status = True
+		else:
+			pass
+		if not status:
+			self.error = str(self.error) += (
+				" failed to update tape database field "
+				"{} with {}".format(attribute,value)
+				)
+		return status
 
 class Package():
 	"""docstring for Package"""
@@ -152,7 +183,6 @@ class Package():
 
 def establish_new_lto_id(ltoID):
 	tapeIdRegex = re.compile(r'^((\d{4}[A-Z]A)|(\d{5}A))$')
-	# ltoIdFilePath = os.path.join(utils.get_temp_dir(),'LTOID.txt')
 	error = None
 	try:
 		db.session.query(TapeID).delete() # clear out any lingering entries
@@ -275,6 +305,54 @@ def get_tape_details(tapeID,device):
 ###########################################################
 ###########################################################
 
+def run_mount(tapes):
+	tempDir = utils.get_temp_dir()
+	tapesToMount = [[tempDir,tapes[0]],[tempDir,tapes[1]]]
+	pool = ThreadPool(2)
+	pool.starmap(call_ltfs,tapesToMount)
+	pool.close()
+	# wait for the tapes to mount
+	sleep(13)
+	mountedTapes = []
+	# run the `mount` command to see what actually mounted
+	with subprocess.Popen(['mount'],stdout=subprocess.PIPE) as mount:
+		for line in mount.stdout.read().splitlines():
+			if '/dev/nst' in line.decode():
+				mountedTapes.append(line.decode())
+
+	for tape in tapes:
+		if any([x for x in tape.device if x in ' '.join(mountedTapes)]):
+			tape.mountStatus = 'mounted'
+			tape.dbRecord.status = 'mounted'
+			db.session.commit()
+		else:
+			tape.error = str(tape.error)+=" Error mounting {}".format(tape.tapeID)
+
+	return tapes
+
+def call_ltfs(tempDir,tape):
+	command = [
+		"ltfs",
+		"-o","gid=33",
+		"-o","uid=33",
+		"-o","work_directory={}".format(tempDir),
+		"-o","noatime",
+		"-o","capture_index",
+		"-o","devname={}".format(tape.device),
+		"{}".format(tape.mountpoint)
+		]
+	doit = subprocess.Popen(
+		command,
+		stdin=subprocess.DEVNULL,
+		stdout=subprocess.DEVNULL,
+		stderr=subprocess.PIPE,
+		close_fds=True
+		)
+	for line in doit.stderr.read().splitlines():
+		print(line.decode())
+
+	return doit.stderr
+
 def unmount_tapes():
 	# apache user added to sudoers overrides for `umount`
 	aMount,bMount = get_tape_mountpoints()
@@ -339,28 +417,7 @@ def get_aip_human_name(aipPath):
 
 	return humanName
 
-def run_ltfs(devname,tempDir,mountpoint):
-	command = [
-		"ltfs",
-		"-o","gid=33",
-		"-o","uid=33",
-		"-o","work_directory={}".format(tempDir),
-		"-o","noatime",
-		"-o","capture_index",
-		"-o","devname={}".format(devname),
-		"{}".format(mountpoint)
-		]
-	doit = subprocess.Popen(
-		command,
-		stdin=subprocess.DEVNULL,
-		stdout=subprocess.DEVNULL,
-		stderr=subprocess.PIPE,
-		close_fds=True
-		)
-	for line in doit.stderr.read().splitlines():
-		print(line.decode())
 
-	return doit.stderr
 
 def run_moveNcopy(aipPath,tapeMountpoint):
 	pythonBinary = utils.get_python_path()

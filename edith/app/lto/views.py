@@ -131,8 +131,6 @@ def format_status():
 		tapes=tapes
 		)
 
-
-
 ###########################################################
 ###########################################################
 #####			LTO MOUNTING
@@ -180,8 +178,10 @@ def mount_status():
 	tapeIDs = _data["actualIDs"][0]
 	tapeIDs = ast.literal_eval(tapeIDs)
 	tapes = []
+	ltfsDetails = []
 
 	for _id in tapeIDs:
+		# take the tape ID and search the db for its record
 		tape = db.session.query(Tape).filter_by(tapeID=_id).first()
 		tapeObject = FreshTape(
 			dbID=tape.id
@@ -189,77 +189,19 @@ def mount_status():
 			UUID=tape.tapeUUID,
 			spaceAvailable=tape.spaceAvailable
 			)
+
 		tapeObject.set_mountpoint()
-		tapes.append(tapeObject)
+		mountpoint = tapeObject.mountpoint
 
-		if os.path.exists(tapeObject.mountpoint):
-			# do stuff
-			pass
-
-	for device, tapeID in devices.items():
-		mountpoint = os.path.join(tempDir,tapeID)
-		if os.path.exists(mountpoint):
-			try:
-				os.rmdir(mountpoint)
-				os.mkdir(mountpoint)
-				os.chmod(mountpoint,0o777)
-				print("made the mountpoint at {}".format(mountpoint))
-			except:
-				error = "mountpoint dir exists and is not empty..."
-				statuses['errors'].append(error)
-				print(error)
-				flash(error)
-		else:
-			try:
-				os.mkdir(mountpoint)
-				os.chmod(mountpoint,0o777)
-				print("made the mountpoint at {}".format(mountpoint))
-			except:
-				error = "can't make the mountpoint... check yr permissions"
-				statuses['errors'].append(error)
-				print(error)
-				flash(error)
-
-		details = [device,tempDir,mountpoint]
-		ltfsDetails.append(details)
-
-	print(ltfsDetails)
-	pool = ThreadPool(2)
-	pool.starmap(ltoProcesses.run_ltfs,ltfsDetails)
-	pool.close()
-	# wait for the tapes to mount
-	sleep(13)
-	mountedDevices = []
-	successes = []
-	with subprocess.Popen(['mount'],stdout=subprocess.PIPE) as mount:
-		for line in mount.stdout.read().splitlines():
-			if '/dev/nst' in line.decode():
-				mountedDevices.append(line.decode())
-	print(mountedDevices)
-	for device, tapeID in devices.items():
-		statuses[tapeID] = ''
-		for item in mountedDevices:
-			if tapeID in item:
-				print("THIS TAPE YO")
-				print(tapeID)
-				statuses[tapeID] = 'mounted, ready to go'
-			else:
-				pass
-		if not statuses[tapeID] == 'mounted, ready to go':
-			statuses['errors'].append("error mounting {}".format(tapeID))
-			statuses[tapeID] = 'not mounted, there was an error'
-
-	if statuses['errors'] == []:
-		# if there were no errors, write the current tapes stats
-		# to a temp file for later reading/processing
-		tempStats = ltoProcesses.write_LTO_temp_stats()
-		if tempStats:
-			statuses['errors'] = 'No errors. :)'
+		if mountpoint and os.path.exists(mountpoint):
+			# tapeObject.mount_me()
+			tapes.append(tapeObject)
+	tapes = ltoProcesses.run_mount(tapes)
 
 	return render_template(
 		'lto/mount_status.html',
 		title="LTO Mount Status",
-		statuses=statuses
+		tapes=tapes
 		)
 
 @lto.route('/unmount_lto_status',methods=['GET','POST'])

@@ -179,6 +179,8 @@ class Tape(db.Model):
 	mountpoint = db.Column(db.String(100))
 	# space remaining on the tape
 	spaceAvailable = db.Column(db.BigInteger)
+	# tape errors
+	errors = db.Column(db.String(1000))
 
 class TapeID(db.Model):
 	'''
