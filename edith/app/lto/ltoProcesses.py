@@ -34,10 +34,10 @@ class Package():
 		path=None,
 		size=None
 		):
-		
+
 		self.path = path
 		self.size = size
-		
+
 class FreshTape():
 	"""Class to define an LTO tape"""
 	def __init__(self,
@@ -131,10 +131,14 @@ class FreshTape():
 		pass
 
 	def do_i_exist(self):
-		existingTape = db.session.query(Tape).filter_by(tapeUUID=self.tapeUUID).first()
-
+		exists = False
+		existingTape = db.session.query(Tape).filter_by(tapeUUID=self.UUID).first()
+		#print(self.UUID*50)
 		if existingTape:
 			self.dbID = existingTape.id
+			exists = True
+
+		return exists
 
 class WriteProcess():
 	"""docstring for WriteProcess"""
@@ -142,14 +146,13 @@ class WriteProcess():
 		arg=None
 		):
 		self.arg = arg
-		
+
 class TapeMount():
 	"""docstring for TapeMount"""
 	def __init__(self, 
 		mountpoint=None
 		):
 		self.mountpoint = mountpoint
-		
 
 def get_aip_human_name(aipPath):
 	'''
@@ -528,9 +531,7 @@ def get_tape_details(tapeID,device):
 			).communicate()
 		for line in err.splitlines():
 			print(line.decode())
-			if "Volume Name" in line.decode():
-				name = line.decode().strip().split()[5]
-			elif "Volser(Barcode)" in line.decode():
+			if "Volser(Barcode)" in line.decode():
 				try:
 					tapeID = line.decode().strip().split()[4]
 				except:
@@ -559,6 +560,7 @@ def get_tape_details(tapeID,device):
 				except:
 					pass
 
+		tape.UUID = UUID
 		tape.tapeID = tapeID
 		tape.spaceAvailable = spaceAvailable
 		tape.unformatted = unformatted

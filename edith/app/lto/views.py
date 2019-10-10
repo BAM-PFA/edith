@@ -127,7 +127,6 @@ def mount_lto():
 	# get the current attached tape devices and try to read a barcode from each
 	for drive in ("/dev/nst0","/dev/nst1"):
 		tape = ltoProcesses.get_tape_details(None,drive)
-		
 		exists = tape.do_i_exist()
 		if not exists:
 			tape.insert_me()
