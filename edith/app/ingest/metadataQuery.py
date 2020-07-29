@@ -60,7 +60,7 @@ def xml_query(_metadata,idNumber,dataSourceAccessDetails):
 		"&-find".format(server, dsn, layout, tertiaryAssetIDField, idNumber)
 		)
 
-	# print(requestURL)
+	print(requestURL)
 	xml = requests.get(requestURL,auth=(user,password))
 	# print(xml.text)
 
