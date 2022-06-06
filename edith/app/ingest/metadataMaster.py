@@ -289,7 +289,7 @@ class Metadata:
 
 		rsMetaJSON = json.dumps(rsMetaDict,ensure_ascii=False)
 		# print(rsMetaJSON)
-		quotedJSON = urllib.parse.quote(rsMetaJSON.encode())
+		quotedJSON = urllib.parse.quote_plus(rsMetaJSON.encode())
 		if "%5Cn" in quotedJSON:
 			print("REPLACING NEWLINES")
 			quotedJSON = quotedJSON.replace('%5Cn','%3Cbr%2F%3E')

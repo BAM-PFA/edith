@@ -142,7 +142,7 @@ def resourcespace_API_call(metadata,quotedPath,filePath):
 	'''
 	make a call to the RS create_resource() function
 	'''
-	rsUser = current_user.RSusername
+	rsUser = urllib.parse.quote_plus(current_user.RSusername,safe="")
 	APIkey = current_user.RSkey
 	RSquery = (
 		"user={}"
